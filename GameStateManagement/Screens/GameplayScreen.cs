@@ -77,6 +77,7 @@ namespace GameStateManagement
         private Tile chest_large;
         private Tile door_left;
         private Tile door_right;
+        private Tile peaks;
 
         //Sounds
         SoundEffect chest_open;
@@ -93,6 +94,11 @@ namespace GameStateManagement
         List<TileEntry> interactable_map;
 
         //UI
+        private Texture2D heart_empty;
+        private Texture2D heart_half;
+        private Texture2D heart_full;
+        private Vector2 healthbar_vector;
+        private List<Texture2D> healthbar_list;
 
         //Debug UI
         private bool debug_mode_active = true;
@@ -156,7 +162,7 @@ namespace GameStateManagement
 
             map = new string[,] { { "wl", "wt", "wt", "door_left", "door_right", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
-                                    {"wl", "gr", "gr", "gr", "gr", "chest_small", "gr", "wr"},
+                                    {"wl", "gr", "peaks", "gr", "gr", "chest_small", "gr", "wr"},
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "chest_medium", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
@@ -182,6 +188,8 @@ namespace GameStateManagement
             chest_large = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false, true, chest_open);
             door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0),true,true, ground,true, silver_key, door_open);
             door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), true, true, ground, true, silver_key, door_open);
+
+            peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), 16, new Vector2(0, 0), false, false, null); ;
 
             for(int x = 0; x < map.GetLength(0); x++)
             {
@@ -230,6 +238,9 @@ namespace GameStateManagement
                         }else if (map[x,y] == "chest_large")
                         {
                             tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }else if (map[x,y] == "peaks")
+                        {
+                            tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                         }
                     }
                 }
@@ -257,6 +268,14 @@ namespace GameStateManagement
             oldPlayerPosition= player.Position;
 
             //UI
+            heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
+            heart_half = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_half");
+            heart_full = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_full");
+            healthbar_vector = new Vector2(0,0);
+            healthbar_list = new List<Texture2D>();
+            healthbar_list.Add(heart_full);
+            healthbar_list.Add(heart_full);
+            healthbar_list.Add(heart_full);
 
             //Debug UI
             debug_border = Content.Load<Texture2D>(@"OurContent\Utility\outline");
@@ -285,15 +304,48 @@ namespace GameStateManagement
             }
 
             //Check collision
-            foreach(Rectangle item in collider_map)
+            /*foreach(Rectangle item in collider_map)
             {
                 if (item.Intersects(player.BoundingBox))
                 {
                     player.Position = oldPlayerPosition;
                     break;
                 }
-            }
+            }*/
             
+            //UI
+
+            //HealthBar
+            if(player.HealthPoints >= 2)
+            {
+                healthbar_list[0] = heart_full;
+                if(player.HealthPoints >= 4)
+                {
+                    healthbar_list[1] = heart_full;
+                    if(player.HealthPoints >= 6)
+                    {
+                        healthbar_list[2] = heart_full;
+                    }else if(player.HealthPoints == 5)
+                    {
+                        healthbar_list[2] = heart_half;
+                    }
+                }else if(player.HealthPoints == 3)
+                {
+                    healthbar_list[1] = heart_half;
+                    healthbar_list[2] = heart_empty;
+                }
+            }else if(player.HealthPoints == 1) {
+                healthbar_list[0] = heart_half;
+                healthbar_list[1] = heart_empty;
+                healthbar_list[2] = heart_empty;
+            }
+            else
+            {
+                healthbar_list[0] = heart_empty;
+                healthbar_list[1] = heart_empty;
+                healthbar_list[2] = heart_empty;
+            }
+
             oldPlayerPosition = player.Position;
 
 
@@ -368,6 +420,8 @@ namespace GameStateManagement
 
             DrawPlayer();
 
+            DrawUi();
+
             if(debug_mode_active)
             {
                 DrawDebugUI();
@@ -422,7 +476,10 @@ namespace GameStateManagement
         }
         private void DrawUi()
         {
-
+            for(int i = 0; i < healthbar_list.Count; i++)
+            {
+                _spriteBatch.Draw(healthbar_list[i], new Rectangle((int)healthbar_vector.X - (int)cameraPos.X + targetTextureResolution * i, (int)healthbar_vector.Y - (int) cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+            }
         }
 
         private void DrawDebugUI()
