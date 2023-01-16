@@ -12,6 +12,7 @@
 #region Using Statements
 
 using GameStateManagement.Class;
+using GameStateManagement.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -115,6 +116,7 @@ namespace GameStateManagement
         private Vector2 debug_ui_enemy_collision_vector = new Vector2(0, 160);
         private bool debug_ui_damagingWorld_collision = false;
         private Vector2 debug_ui_damagingWorld_collision_vector = new Vector2(0, 190);
+        private Vector2 debug_ui_testing_value_vector = new Vector2(0,220);
 
         #endregion Variablen
 
@@ -147,6 +149,8 @@ namespace GameStateManagement
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_2"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
                 player = new Player("Spieler", animation, 64, 112);
+                player.DamageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1");
+                player.DeathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
             }
 
             // Ein SpriteBatch zum Zeichnen
@@ -290,9 +294,9 @@ namespace GameStateManagement
             heart_full = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_full");
             healthbar_vector = new Vector2(0,0);
             healthbar_list = new List<Texture2D>();
-            healthbar_list.Add(heart_full);
-            healthbar_list.Add(heart_full);
-            healthbar_list.Add(heart_full);
+            healthbar_list.Add(heart_empty);
+            healthbar_list.Add(heart_empty);
+            healthbar_list.Add(heart_empty);
 
             //Debug UI
             debug_border = Content.Load<Texture2D>(@"OurContent\Utility\outline");
@@ -371,9 +375,18 @@ namespace GameStateManagement
                     {
                         healthbar_list[2] = heart_half;
                     }
+                    else
+                    {
+                        healthbar_list[2] = heart_empty;
+                    }
                 }else if(player.HealthPoints == 3)
                 {
                     healthbar_list[1] = heart_half;
+                    healthbar_list[2] = heart_empty;
+                }
+                else
+                {
+                    healthbar_list[1] = heart_empty;
                     healthbar_list[2] = heart_empty;
                 }
             }else if(player.HealthPoints == 1) {
@@ -392,6 +405,13 @@ namespace GameStateManagement
 
 
             player.Update(gameTime);
+
+            if(player.HealthPoints <= 0)
+            {
+                ScreenManager.RemoveScreen(this);
+                ScreenManager.AddScreen(new DeathScreen(), 0);
+            }
+
             cameraPos.X = (player.PositionX - 580) * -1;
             cameraPos.Y = (player.PositionY - 260) * -1;
             base.Update(gameTime, otherScreenHasFocus, false);
@@ -543,6 +563,7 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "interactable_collision:" + debug_ui_interactable_collision, new Vector2(debug_ui_interactable_collision_vector.X - cameraPos.X, debug_ui_interactable_collision_vector.Y -(int)cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "enemy_collision:" + debug_ui_enemy_collision, new Vector2(debug_ui_enemy_collision_vector.X - cameraPos.X, debug_ui_enemy_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "damagingWorld_collision:" + debug_ui_damagingWorld_collision, new Vector2(debug_ui_damagingWorld_collision_vector.X - cameraPos.X, debug_ui_damagingWorld_collision_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "health: " + player.HealthPoints, new Vector2(debug_ui_testing_value_vector.X - cameraPos.X, debug_ui_testing_value_vector.Y - cameraPos.Y), Color.White);
         }
     }
     #endregion
