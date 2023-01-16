@@ -85,6 +85,12 @@ namespace GameStateManagement
         //Camera
         private Vector3 cameraPos;
 
+        //UI
+
+        //Debug UI
+        private bool debug_mode_active = true;
+        Texture2D debug_border;
+
         #endregion Variablen
 
 
@@ -155,12 +161,12 @@ namespace GameStateManagement
             tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
             tilemap = new List<TileEntry>();
             //Generate TileEntries
-            wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), 16, new Vector2(0,0), false);
-            wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), 16, new Vector2(0, 0), false);
-            wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), 16, new Vector2(0, 0), false);
-            wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), 16, new Vector2(0, 0), false);
-            wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), 16, new Vector2(0, 0), false);
-            wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), 16, new Vector2(0, 0), false);
+            wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), 16, new Vector2(0,0), true);
+            wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), 16, new Vector2(0, 0), true);
+            wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), 16, new Vector2(0, 0), true);
+            wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), 16, new Vector2(0, 0), true);
+            wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), 16, new Vector2(0, 0), true);
+            wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), 16, new Vector2(0, 0), true);
             ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), 16, new Vector2(0, 0), false);
             background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), 16, new Vector2(0, 0), false);
 
@@ -225,6 +231,11 @@ namespace GameStateManagement
             player.PositionY = map.GetLength(1)/2 * targetTextureResolution;
 
             cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
+
+            //UI
+
+            //Debug UI
+            debug_border = Content.Load<Texture2D>(@"OurContent\Utility\outline");
         }
 
         public override void UnloadContent()
@@ -319,7 +330,10 @@ namespace GameStateManagement
 
             DrawPlayer();
 
-            DrawDebugUI();
+            if(debug_mode_active)
+            {
+                DrawDebugUI();
+            }
 
             _spriteBatch.End();
 
@@ -353,7 +367,6 @@ namespace GameStateManagement
 
         private void DrawMap()
         {
-            //_spriteBatch.Draw(door_left, new Rectangle(0, 0, 64, 64), new Rectangle(0,0,16,16), Color.White);
             foreach(TileEntry entry in tilemap)
             {
                 _spriteBatch.Draw(entry.Tile.Texture, new Rectangle((int)entry.DrawVector.X, (int) entry.DrawVector.Y, 64, 64), Color.White);
@@ -376,7 +389,16 @@ namespace GameStateManagement
 
         private void DrawDebugUI()
         {
-
+            foreach(TileEntry item in tilemap)
+            {
+                if(item.Tile.IsInteractable)
+                {
+                    _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.Red);
+                }else if (item.Tile.HasCollision)
+                {
+                    _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                }
+            }
         }
     }
     #endregion
