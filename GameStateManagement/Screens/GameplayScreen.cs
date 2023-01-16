@@ -26,20 +26,12 @@ using System.Threading;
 
 namespace GameStateManagement
 {
-    /// <summary>
-    /// This screen implements the actual game logic. It is just a
-    /// placeholder to get the idea across: you'll probably want to
-    /// put some more interesting gameplay in here!
-    /// </summary>
     internal class GameplayScreen : GameScreen
     {
         #region Fields
 
         private ContentManager Content;
         private SpriteFont gameFont;
-
-        //private Vector2 playerPosition = new Vector2(100, 100);
-        //private Vector2 enemyPosition = new Vector2(100, 100);
 
         private Random random = new Random();
 
@@ -53,7 +45,6 @@ namespace GameStateManagement
 
         // Grafische Ausgabe
         private GraphicsDeviceManager _graphics;
-
         private SpriteBatch _spriteBatch;
 
         // Font
@@ -62,12 +53,29 @@ namespace GameStateManagement
         // Viewport
         private Viewport viewport;
 
-
         // Tastatur abfragen
         private KeyboardState currentKeyboardState;
-
         private KeyboardState previousKeyboardState;
 
+        //World
+        private String[,] map;
+        private Texture2D tileset;
+        private List<TileEntry> tilemap;
+        private int targetTextureResolution = 64;
+        private Tile wall_leftcorner;
+        private Tile wall_rightcorner;
+        private Tile wall_top;
+        private Tile wall_bottom;
+        private Tile wall_left;
+        private Tile wall_right;
+        private Tile ground;
+        private Tile background;
+        private Tile chest_small;
+        private Tile chest_medium;
+        private Tile chest_large;
+        private Tile door_left;
+        private Tile door_right;
+            
         #endregion Variablen
 
 
@@ -107,7 +115,86 @@ namespace GameStateManagement
             //Sound effects
             SoundEffect.MasterVolume = 0.05f;
 
-        }
+            //World
+            Room r1 = new Room(24, 24);
+            //map = r1.Map;
+
+            map = new string[,] { { "wl", "wt", "wt", "door_left", "door_right", "wt", "wt", "wr" },
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "cl", "wb", "wb", "wb", "wb", "wb", "wb", "cr"}};
+
+            tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
+            tilemap = new List<TileEntry>();
+            //Generate TileEntries
+            wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), 16, new Vector2(0,0), false);
+            wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), 16, new Vector2(0, 0), false);
+            wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), 16, new Vector2(0, 0), false);
+            wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), 16, new Vector2(0, 0), false);
+            wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), 16, new Vector2(0, 0), false);
+            wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), 16, new Vector2(0, 0), false);
+            ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), 16, new Vector2(0, 0), false);
+            background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), 16, new Vector2(0, 0), false);
+            chest_small = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false);
+            chest_medium = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false);
+            chest_large = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false);
+            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0), false);
+            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), false);
+
+            for(int x = 0; x < map.GetLength(0); x++)
+            {
+                for(int y = 0; y < map.GetLength(1); y++)
+                {
+                    if (map[x,y] == "wl")
+                    {
+                        tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution*y,targetTextureResolution*x),64));
+                    }else if (map[x,y] == "wr")
+                    {
+                        tilemap.Add(new TileEntry(wall_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "wt")
+                    {
+                        tilemap.Add(new TileEntry(wall_top, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x, y] == "wb")
+                    {
+                        tilemap.Add(new TileEntry(wall_bottom, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x, y] == "cl")
+                    {
+                        tilemap.Add(new TileEntry(wall_leftcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x, y] == "cr")
+                    {
+                        tilemap.Add(new TileEntry(wall_rightcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "gr")
+                    {
+                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "bgrnd")
+                    {
+                        tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "door_left")
+                    {
+                        tilemap.Add(new TileEntry(door_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "door_right")
+                    {
+                        tilemap.Add(new TileEntry(door_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "chest_small")
+                    {
+                        tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "chest_medium")
+                    {
+                        tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }else if (map[x,y] == "chest_large")
+                    {
+                        tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }
+                }
+            }
+
+    }
 
         /// <summary>
         /// Unload graphics content used by the game.
@@ -192,10 +279,12 @@ namespace GameStateManagement
         {
             ScreenManager.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Deferred,null, SamplerState.PointClamp, null, null, null, null);
 
             // Hintergrund zeichnen
             DrawBackground();
+
+            DrawMap();
 
             // Feinde zeichnen
             DrawEnemy();
@@ -224,6 +313,15 @@ namespace GameStateManagement
         private void DrawBackground()
         {
 
+        }
+
+        private void DrawMap()
+        {
+            //_spriteBatch.Draw(door_left, new Rectangle(0, 0, 64, 64), new Rectangle(0,0,16,16), Color.White);
+            foreach(TileEntry entry in tilemap)
+            {
+                _spriteBatch.Draw(entry.Tile.Texture, new Rectangle((int)entry.DrawVector.X, (int) entry.DrawVector.Y, 64, 64), Color.White);
+            }
         }
 
         private void DrawEnemy()
