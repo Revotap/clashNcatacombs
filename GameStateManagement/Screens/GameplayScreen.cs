@@ -85,6 +85,12 @@ namespace GameStateManagement
         //Camera
         private Vector3 cameraPos;
 
+        //Colliders
+        List<Rectangle> collider_map;
+
+        //Interactables
+        List<TileEntry> interactable_map;
+
         //UI
 
         //Debug UI
@@ -232,6 +238,21 @@ namespace GameStateManagement
 
             cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
 
+            collider_map = new List<Rectangle>();
+            interactable_map = new List<TileEntry>();
+            //generate collision map and interactable map
+            foreach(TileEntry item in tilemap)
+            {
+                if (item.Tile.HasCollision)
+                {
+                    collider_map.Add(item.BoundingBox);
+                }
+                if(item.Tile.IsInteractable)
+                {
+                    interactable_map.Add(item);
+                }
+            }
+
             //UI
 
             //Debug UI
@@ -259,6 +280,8 @@ namespace GameStateManagement
             {
 
             }
+
+            //Check collision
             player.Update(gameTime);
             cameraPos.X = (player.PositionX - 580) * -1;
             cameraPos.Y = (player.PositionY - 260) * -1;
@@ -389,15 +412,14 @@ namespace GameStateManagement
 
         private void DrawDebugUI()
         {
-            foreach(TileEntry item in tilemap)
+            foreach(Rectangle item in collider_map)
             {
-                if(item.Tile.IsInteractable)
-                {
-                    _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.Red);
-                }else if (item.Tile.HasCollision)
-                {
-                    _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.White);
-                }
+                _spriteBatch.Draw(debug_border, item, Color.White);
+            }
+
+            foreach(TileEntry item in interactable_map)
+            {
+                _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.Red);
             }
         }
     }
