@@ -28,7 +28,14 @@ namespace GameStateManagement.Class
         private Tile neighborInteractable = null;
         private SoundEffect interactionSound;
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision)
+        private bool doesDamage = false;
+
+        private int timeSinceLastAttack = 0;
+        private int attackSpeed = 700;
+        private int baseDamage = 1;
+        private SoundEffect attackSound;
+
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -37,9 +44,10 @@ namespace GameStateManagement.Class
 
             this.interactedTextureVector = textureVector;
             this.interactedTexture = texture;
+            this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -51,9 +59,10 @@ namespace GameStateManagement.Class
             this.interactedTexture = texture;
 
             this.interactionSound= sound;
+            this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, SoundEffect sound)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, SoundEffect sound, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -65,9 +74,10 @@ namespace GameStateManagement.Class
             this.interactedTexture = interactedTextureTile.texture;
 
             this.interactionSound = sound;
+            this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, bool isLocked, Key requiredItem, SoundEffect sound)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, bool isLocked, Key requiredItem, SoundEffect sound, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -82,9 +92,10 @@ namespace GameStateManagement.Class
             this.requiredItem = requiredItem;
 
             this.interactionSound = sound;
+            this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, SoundEffect sound)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, SoundEffect sound, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -96,9 +107,10 @@ namespace GameStateManagement.Class
             this.interactedTexture = texture;
 
             this.interactionSound = sound;
+            this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, bool isLocked, Key requiredItem, SoundEffect sound)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, bool isLocked, Key requiredItem, SoundEffect sound, bool doesDamage)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -113,6 +125,7 @@ namespace GameStateManagement.Class
             this.requiredItem = requiredItem;
 
             this.interactionSound = sound;
+            this.doesDamage = doesDamage;
         }
 
         public void interarctAsNeighbor()
@@ -168,6 +181,20 @@ namespace GameStateManagement.Class
             }            
         }
 
+        public void doDamage(GameTime gameTime, Character target)
+        {
+            timeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastAttack > attackSpeed)
+            {
+                timeSinceLastAttack -= attackSpeed;
+                if (attackSound != null)
+                {
+                    attackSound.Play();
+                }
+                target.doDamage(baseDamage);
+            }
+        }
+
         public Texture2D Texture { get => texture; set => texture = value; }
         public int TextureResolution { get => textureResolution; set => textureResolution = value; }
         public Vector2 TextureVector { get => textureVector; set => textureVector = value; }
@@ -179,5 +206,6 @@ namespace GameStateManagement.Class
         public bool IsLocked { get => isLocked; set => isLocked = value; }
         internal Tile NeighborInteractable { get => neighborInteractable; set => neighborInteractable = value; }
         public Key RequiredItem { get => requiredItem; set => requiredItem = value; }
+        public bool DoesDamage { get => doesDamage; set => doesDamage = value; }
     }
 }

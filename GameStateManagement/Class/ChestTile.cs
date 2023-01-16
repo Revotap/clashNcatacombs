@@ -13,25 +13,25 @@ namespace GameStateManagement.Class
     {
         private List<Item> loot;
         private SoundEffect interactSound;
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage)
         {
             this.loot = new List<Item>();
         }
 
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, Item loot, SoundEffect sound) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, interactedTextureVector, sound)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, Item loot, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, interactedTextureVector, sound, doesDamage)
         {
             this.loot = new List<Item>();
             this.loot.Add(loot);
         }
 
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, Item loot, SoundEffect sound) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, interactedTextureTile, sound)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, Item loot, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, interactedTextureTile, sound, doesDamage)
         {
             this.loot = new List<Item>();
             this.loot.Add(loot);
             this.interactSound= sound;
         }
 
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Item loot, SoundEffect sound) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Item loot, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage)
         {
             this.loot = new List<Item>();
             this.loot.Add(loot);

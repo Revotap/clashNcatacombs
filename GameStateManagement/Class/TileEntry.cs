@@ -20,7 +20,7 @@ namespace GameStateManagement.Class
             this.DrawVector = drawVector;
             this.targetTextureResolution = targetTextureResolution;
 
-            if (tile.HasCollision || tile.IsInteractable)
+            if (tile.HasCollision || tile.IsInteractable || tile.DoesDamage)
             {
                 this.boundingBox = new Rectangle((int)drawVector.X, (int)drawVector.Y, targetTextureResolution, targetTextureResolution);
             }    
