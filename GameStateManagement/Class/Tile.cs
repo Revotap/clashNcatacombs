@@ -158,7 +158,11 @@ namespace GameStateManagement.Class
                         {
                             inventory.RemoveItem(i);
                             isLocked = false;
-                            neighborInteractable.interarctAsNeighbor();
+
+                            if(neighborInteractable != null)
+                            {
+                                neighborInteractable.interarctAsNeighbor();
+                            }
                             if(interactionSound != null)
                             {
                                 interactionSound.Play();

@@ -63,6 +63,5 @@ namespace GameStateManagement.Class
                 return "Empty";
             }
         }
-
     }
 }

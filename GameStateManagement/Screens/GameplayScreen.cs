@@ -102,12 +102,17 @@ namespace GameStateManagement
         private Texture2D deathscreen_wallpaper;
         private Song deathscreen_sound;
 
+        //Invenotry
+        private TileEntry interactableNearby;
+
         //UI
         private Texture2D heart_empty;
         private Texture2D heart_half;
         private Texture2D heart_full;
         private Vector2 healthbar_vector;
         private List<Texture2D> healthbar_list;
+
+        private Vector2 ui_interact_string_vector = new Vector2(550, 400);
 
         //Debug UI
         private bool debug_mode_active = true;
@@ -122,6 +127,11 @@ namespace GameStateManagement
         private bool debug_ui_damagingWorld_collision = false;
         private Vector2 debug_ui_damagingWorld_collision_vector = new Vector2(0, 190);
         private Vector2 debug_ui_testing_value_vector = new Vector2(0,220);
+
+        private Vector2 debug_ui_inventory_0_vector = new Vector2(0,250);
+        private Vector2 debug_ui_inventory_1_vector = new Vector2(0, 280);
+        private Vector2 debug_ui_inventory_2_vector = new Vector2(0,310);
+        private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
 
         #endregion Variablen
 
@@ -204,11 +214,14 @@ namespace GameStateManagement
             ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), 16, new Vector2(0, 0), false, false);
             background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), 16, new Vector2(0, 0), false, false);
 
-            chest_small = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false, true,chest_open, false);
-            chest_medium = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false, true, chest_open, false);
-            chest_large = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false, true, chest_open, false);
+            chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false, true, ground, silver_key,chest_open, false);
+            chest_medium = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false, true, ground, golden_key, chest_open, false);
+            chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false, true, ground, diamond_key, chest_open, false);
             door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0),true,true, ground,true, silver_key, door_open, false);
             door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), true, true, ground, true, silver_key, door_open, false);
+            door_left.NeighborInteractable = door_right;
+            door_right.NeighborInteractable = door_left;
+
 
             peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), 16, new Vector2(0, 0), false, false, null, true);
 
@@ -339,8 +352,10 @@ namespace GameStateManagement
                 if (item.BoundingBox.Intersects(player.BoundingBox))
                 {
                     debug_ui_interactable_collision = true;
+                    interactableNearby = item;
                     break;
                 }
+                interactableNearby = null;
                 debug_ui_interactable_collision = false;
             }
 
@@ -476,6 +491,13 @@ namespace GameStateManagement
                 {
                     player.moveDown();
                 }
+                if (keyboardState.IsKeyDown(Keys.E))
+                {
+                    if(interactableNearby != null)
+                    {
+                        player.PlayerInventory.AddItem(interactableNearby.Tile.Interact(player.PlayerInventory));
+                    }
+                }
             }
         }
 
@@ -553,6 +575,11 @@ namespace GameStateManagement
             {
                 _spriteBatch.Draw(healthbar_list[i], new Rectangle((int)healthbar_vector.X - (int)cameraPos.X + targetTextureResolution * i, (int)healthbar_vector.Y - (int) cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
             }
+
+            if (interactableNearby != null)
+            {
+                _spriteBatch.DrawString(spriteFont, "Interact [E]", new Vector2(ui_interact_string_vector.X - cameraPos.X, ui_interact_string_vector.Y - cameraPos.Y), Color.White);
+            } 
         }
 
         private void DrawDebugUI()
@@ -575,6 +602,11 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "enemy_collision:" + debug_ui_enemy_collision, new Vector2(debug_ui_enemy_collision_vector.X - cameraPos.X, debug_ui_enemy_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "damagingWorld_collision:" + debug_ui_damagingWorld_collision, new Vector2(debug_ui_damagingWorld_collision_vector.X - cameraPos.X, debug_ui_damagingWorld_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "health: " + player.HealthPoints, new Vector2(debug_ui_testing_value_vector.X - cameraPos.X, debug_ui_testing_value_vector.Y - cameraPos.Y), Color.White);
+
+            _spriteBatch.DrawString(spriteFont, "inventory_0: " + player.PlayerInventory.GetItemName(0), new Vector2(debug_ui_inventory_0_vector.X - cameraPos.X, debug_ui_inventory_0_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_1: " + player.PlayerInventory.GetItemName(1), new Vector2(debug_ui_inventory_1_vector.X - cameraPos.X, debug_ui_inventory_1_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_2: " + player.PlayerInventory.GetItemName(2), new Vector2(debug_ui_inventory_2_vector.X - cameraPos.X, debug_ui_inventory_2_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_3: " + player.PlayerInventory.GetItemName(3), new Vector2(debug_ui_inventory_3_vector.X - cameraPos.X, debug_ui_inventory_3_vector.Y - cameraPos.Y), Color.White);
         }
     }
     #endregion
