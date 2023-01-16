@@ -87,6 +87,7 @@ namespace GameStateManagement
 
         //Colliders
         List<Rectangle> collider_map;
+        private Vector2 oldPlayerPosition;
 
         //Interactables
         List<TileEntry> interactable_map;
@@ -253,6 +254,8 @@ namespace GameStateManagement
                 }
             }
 
+            oldPlayerPosition= player.Position;
+
             //UI
 
             //Debug UI
@@ -282,6 +285,18 @@ namespace GameStateManagement
             }
 
             //Check collision
+            foreach(Rectangle item in collider_map)
+            {
+                if (item.Intersects(player.BoundingBox))
+                {
+                    player.Position = oldPlayerPosition;
+                    break;
+                }
+            }
+            
+            oldPlayerPosition = player.Position;
+
+
             player.Update(gameTime);
             cameraPos.X = (player.PositionX - 580) * -1;
             cameraPos.Y = (player.PositionY - 260) * -1;
