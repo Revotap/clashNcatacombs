@@ -18,6 +18,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
@@ -96,6 +97,10 @@ namespace GameStateManagement
 
         //damaging Tiles
         List<TileEntry> damage_tile_map;
+
+        //deahtscreen
+        private Texture2D deathscreen_wallpaper;
+        private Song deathscreen_sound;
 
         //UI
         private Texture2D heart_empty;
@@ -288,6 +293,10 @@ namespace GameStateManagement
 
             oldPlayerPosition= player.Position;
 
+            //deahtscreen
+            deathscreen_wallpaper = Content.Load<Texture2D>(@"OurContent\Utility\you_died");
+            deathscreen_sound = Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect");
+
             //UI
             heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
             heart_half = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_half");
@@ -409,6 +418,8 @@ namespace GameStateManagement
             if(player.HealthPoints <= 0)
             {
                 ScreenManager.RemoveScreen(this);
+                MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect"));
+                ScreenManager.AddScreen(new DeathBackgroundScreen(), 0);
                 ScreenManager.AddScreen(new DeathScreen(), 0);
             }
 
