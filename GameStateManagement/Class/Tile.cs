@@ -33,7 +33,13 @@ namespace GameStateManagement.Class
         private int timeSinceLastAttack = 0;
         private int attackSpeed = 700;
         private int baseDamage = 1;
+
+        private int timeSinceLastFrame = 0;
+        private int frameSpeed = 400;
         private SoundEffect attackSound;
+        private int NextTexture = 0;
+
+        private List<Texture2D> animation = new List<Texture2D>();
 
         public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool doesDamage)
         {
@@ -47,7 +53,7 @@ namespace GameStateManagement.Class
             this.doesDamage = doesDamage;
         }
 
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage)
+        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage, List<Texture2D> animation)
         {
             this.Texture = texture;
             this.TextureResolution = textureResolution;
@@ -60,6 +66,7 @@ namespace GameStateManagement.Class
 
             this.interactionSound= sound;
             this.doesDamage = doesDamage;
+            this.animation = animation;
         }
 
         public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, SoundEffect sound, bool doesDamage)
@@ -126,6 +133,21 @@ namespace GameStateManagement.Class
 
             this.interactionSound = sound;
             this.doesDamage = doesDamage;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            timeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastFrame > frameSpeed)
+            {
+                timeSinceLastFrame -= frameSpeed;
+                texture = animation.ElementAt(NextTexture);
+                NextTexture++;
+                if(NextTexture >= animation.Count)
+                {
+                    NextTexture = 0;
+                }
+            }
         }
 
         public void interarctAsNeighbor()

@@ -22,6 +22,7 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 #endregion Using Statements
@@ -115,7 +116,7 @@ namespace GameStateManagement
         private Vector2 ui_interact_string_vector = new Vector2(550, 400);
 
         //Debug UI
-        private bool debug_mode_active = true;
+        private bool debug_mode_active = false;
         Texture2D debug_border;
 
         private bool debug_ui_wall_collision = false;
@@ -222,8 +223,12 @@ namespace GameStateManagement
             door_left.NeighborInteractable = door_right;
             door_right.NeighborInteractable = door_left;
 
-
-            peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), 16, new Vector2(0, 0), false, false, null, true);
+            List<Texture2D> peak_animation = new List<Texture2D>();
+            peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"));
+            peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_2"));
+            peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_3"));
+            peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_4"));
+            peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), 16, new Vector2(0, 0), false, false, null, true, peak_animation);
 
             for(int x = 0; x < map.GetLength(0); x++)
             {
@@ -429,6 +434,7 @@ namespace GameStateManagement
 
 
             player.Update(gameTime);
+            peaks.Update(gameTime);
 
             if(player.HealthPoints <= 0)
             {

@@ -13,7 +13,7 @@ namespace GameStateManagement.Class
     {
         private List<Item> loot;
         private SoundEffect interactSound;
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage, null)
         {
             this.loot = new List<Item>();
         }
@@ -31,7 +31,7 @@ namespace GameStateManagement.Class
             this.interactSound= sound;
         }
 
-        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Item loot, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage)
+        public ChestTile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Item loot, SoundEffect sound, bool doesDamage) : base(texture, textureResolution, textureVector, hasCollision, isInteractable, sound, doesDamage, null)
         {
             this.loot = new List<Item>();
             this.loot.Add(loot);
