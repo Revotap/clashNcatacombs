@@ -76,6 +76,10 @@ namespace GameStateManagement
         private Tile door_left;
         private Tile door_right;
 
+        //Sounds
+        SoundEffect chest_open;
+        SoundEffect door_open;
+
         //Camera
         private Vector3 cameraPos;
 
@@ -123,6 +127,13 @@ namespace GameStateManagement
 
             //Sound effects
             SoundEffect.MasterVolume = 0.05f;
+            chest_open = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Coins");
+            door_open = Content.Load<SoundEffect>(@"OurContent\Audi\SoundEffects\door_wood_open");
+
+            //Items
+            Key silver_key = new Key("Silver Key", 0, null, 16);
+            Key golden_key = new Key("Golden Key", 1, null, 16);
+            Key diamond_key = new Key("Diamond Key", 2, null, 16);
 
             //World
             Room r1 = new Room(24, 24);
@@ -130,11 +141,11 @@ namespace GameStateManagement
 
             map = new string[,] { { "wl", "wt", "wt", "door_left", "door_right", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
+                                    {"wl", "gr", "gr", "gr", "gr", "chest_small", "gr", "wr"},
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
-                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
-                                    {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "chest_medium", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
-                                    { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "chest_large", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "cl", "wb", "wb", "wb", "wb", "wb", "wb", "cr"}};
@@ -150,11 +161,12 @@ namespace GameStateManagement
             wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), 16, new Vector2(0, 0), false);
             ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), 16, new Vector2(0, 0), false);
             background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), 16, new Vector2(0, 0), false);
-            chest_small = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false);
-            chest_medium = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false);
-            chest_large = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false);
-            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0), false);
-            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), false);
+
+            chest_small = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false, true,chest_open);
+            chest_medium = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false, true, chest_open);
+            chest_large = new Tile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false, true, chest_open);
+            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0),true,true, ground,true, silver_key, door_open);
+            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), true, true, ground, true, silver_key, door_open);
 
             for(int x = 0; x < map.GetLength(0); x++)
             {
@@ -190,15 +202,20 @@ namespace GameStateManagement
                     }else if (map[x,y] == "door_right")
                     {
                         tilemap.Add(new TileEntry(door_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "chest_small")
+                    }else
                     {
-                        tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "chest_medium")
-                    {
-                        tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "chest_large")
-                    {
-                        tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+
+                        if (map[x,y] == "chest_small")
+                        {
+                            tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }else if (map[x,y] == "chest_medium")
+                        {
+                            tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }else if (map[x,y] == "chest_large")
+                        {
+                            tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
                     }
                 }
             }
