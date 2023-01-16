@@ -41,7 +41,7 @@ namespace GameStateManagement
 
         #region Variablen
 
-        private PlayerOld player;
+        private Player player;
 
         // Grafische Ausgabe
         private GraphicsDeviceManager _graphics;
@@ -75,7 +75,10 @@ namespace GameStateManagement
         private Tile chest_large;
         private Tile door_left;
         private Tile door_right;
-            
+
+        //Camera
+        private Vector3 cameraPos;
+
         #endregion Variablen
 
 
@@ -101,6 +104,12 @@ namespace GameStateManagement
             if(player == null)
             {
                 //player = new PlayerOld(Content.Load<Texture2D>("ship"), Content.Load<Texture2D>("laser"), Content.Load<SoundEffect>("laserfire"));
+                List<Texture2D> animation = new List<Texture2D>();
+                animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_0"));
+                animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_1"));
+                animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_2"));
+                animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
+                player = new Player("Spieler", animation, 64, 112);
             }
 
             // Ein SpriteBatch zum Zeichnen
@@ -193,8 +202,11 @@ namespace GameStateManagement
                     }
                 }
             }
+            player.PositionX = map.GetLength(0)/2 * targetTextureResolution;
+            player.PositionY = map.GetLength(1)/2 * targetTextureResolution;
 
-    }
+            cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
+        }
 
         /// <summary>
         /// Unload graphics content used by the game.
@@ -225,7 +237,9 @@ namespace GameStateManagement
             {
 
             }
-
+            player.Update(gameTime);
+            cameraPos.X = (player.PositionX - 580) * -1;
+            cameraPos.Y = (player.PositionY - 260) * -1;
             base.Update(gameTime, otherScreenHasFocus, false);
         }
 
@@ -260,14 +274,22 @@ namespace GameStateManagement
 
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
-                    //MoveShipLeft();
-                    //player.MoveShipLeft();
+                    player.moveLeft();
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Right))
                 {
-                    //MoveShipRight();
-                    //player.MoveShipRight();
+                    player.moveRight();
+                }
+                
+                if(keyboardState.IsKeyDown(Keys.Up))
+                {
+                    player.moveUp();
+                }
+
+                if (keyboardState.IsKeyDown(Keys.Down))
+                {
+                    player.moveDown();
                 }
             }
         }
@@ -279,7 +301,7 @@ namespace GameStateManagement
         {
             ScreenManager.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred,null, SamplerState.PointClamp, null, null, null, null);
+            _spriteBatch.Begin(SpriteSortMode.Deferred,null, SamplerState.PointClamp, null, null, null, Matrix.CreateTranslation(cameraPos));
 
             // Hintergrund zeichnen
             DrawBackground();
@@ -288,6 +310,8 @@ namespace GameStateManagement
 
             // Feinde zeichnen
             DrawEnemy();
+
+            DrawPlayer();
 
             DrawDebugUI();
 
@@ -329,12 +353,16 @@ namespace GameStateManagement
 
         }
         
-        public void DrawUi()
+        private void DrawPlayer()
+        {
+            _spriteBatch.Draw(player.Texture, new Rectangle((int)player.PositionX, (int)player.PositionY, 64, 112), Color.White);
+        }
+        private void DrawUi()
         {
 
         }
 
-        public void DrawDebugUI()
+        private void DrawDebugUI()
         {
 
         }
