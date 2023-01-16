@@ -58,6 +58,8 @@ namespace GameStateManagement
         private KeyboardState previousKeyboardState;
 
         //World
+        private int surrounding_width = 20;
+
         private String[,] map;
         private Texture2D tileset;
         private List<TileEntry> tilemap;
@@ -128,7 +130,7 @@ namespace GameStateManagement
             //Sound effects
             SoundEffect.MasterVolume = 0.05f;
             chest_open = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Coins");
-            door_open = Content.Load<SoundEffect>(@"OurContent\Audi\SoundEffects\door_wood_open");
+            door_open = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\door_wood_open");
 
             //Items
             Key silver_key = new Key("Silver Key", 0, null, 16);
@@ -225,9 +227,6 @@ namespace GameStateManagement
             cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
         }
 
-        /// <summary>
-        /// Unload graphics content used by the game.
-        /// </summary>
         public override void UnloadContent()
         {
             Content.Unload();
@@ -237,11 +236,6 @@ namespace GameStateManagement
 
         #region Update and Draw
 
-        /// <summary>
-        /// Updates the state of the game. This method checks the GameScreen.IsActive
-        /// property, so the game will stop updating when the pause menu is active,
-        /// or if you tab away to a different application.
-        /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
@@ -311,21 +305,16 @@ namespace GameStateManagement
             }
         }
 
-        /// <summary>
-        /// Draws the gameplay screen.
-        /// </summary>
         public override void Draw(GameTime gameTime)
         {
             ScreenManager.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(SpriteSortMode.Deferred,null, SamplerState.PointClamp, null, null, null, Matrix.CreateTranslation(cameraPos));
 
-            // Hintergrund zeichnen
             DrawBackground();
 
             DrawMap();
 
-            // Feinde zeichnen
             DrawEnemy();
 
             DrawPlayer();
@@ -353,7 +342,13 @@ namespace GameStateManagement
 
         private void DrawBackground()
         {
-
+            for(int i = -surrounding_width; i < map.GetLength(1) + surrounding_width; i++)
+            {
+                for(int y = -surrounding_width; y < map.GetLength(0) + surrounding_width; y++)
+                {
+                    _spriteBatch.Draw(background.Texture, new Rectangle(i * targetTextureResolution, y * targetTextureResolution, targetTextureResolution, targetTextureResolution), Color.White);
+                }
+            }
         }
 
         private void DrawMap()
