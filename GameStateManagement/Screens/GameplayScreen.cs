@@ -60,6 +60,9 @@ namespace GameStateManagement
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
 
+        private MouseState currentMouseState;
+        private MouseState previousMouseState;
+
         //World
         private int surrounding_width = 20;
 
@@ -88,6 +91,7 @@ namespace GameStateManagement
 
         //Camera
         private Vector3 cameraPos;
+        private Camera worldCamera;
 
         //Colliders
         List<Rectangle> collider_map;
@@ -295,6 +299,7 @@ namespace GameStateManagement
             player.PositionY = map.GetLength(1)/2 * targetTextureResolution;
 
             cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
+            worldCamera = new Camera(viewport);
 
             collider_map = new List<Rectangle>();
             interactable_map = new List<TileEntry>();
@@ -353,9 +358,10 @@ namespace GameStateManagement
                                                        bool coveredByOtherScreen)
         {
             currentKeyboardState = Keyboard.GetState();
-
-
             previousKeyboardState = currentKeyboardState;
+
+            currentMouseState = Mouse.GetState();
+            //previousMouseState = currentMouseState;
 
             if (!otherScreenHasFocus)
             {
@@ -459,23 +465,14 @@ namespace GameStateManagement
             cameraPos.Y = (player.PositionY - 260) * -1;
 
             //Update casted spells
-            for(int i = casted_spells.Count-1; i > 0; i--)
+            for(int i = casted_spells.Count-1; i >= 0; i--)
             {
                 casted_spells[i].Update(gameTime);
                 if (Vector2.Distance(casted_spells[i].Position, casted_spells[i].originPosition) > maxDistanceOfCastedSpell)
                 {
                     casted_spells.Remove(casted_spells[i]);
-
                 }
             }
-            /*foreach (Item item in casted_spells)
-            {
-                item.Update(gameTime);
-                if(Vector2.Distance(item.Position, item.originPosition) > maxDistanceOfCastedSpell)
-                {
-                    casted_spells.Remove(item);
-                }
-            }*/
 
             base.Update(gameTime, otherScreenHasFocus, false);
         }
@@ -538,13 +535,13 @@ namespace GameStateManagement
                 }
                 //Cast fireball
                 //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                if(mouseState.LeftButton == ButtonState.Pressed)
+                if(currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton != ButtonState.Pressed)
                 {
                     // Get the mouse position in world coordinates
                     Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
 
                     // Get the direction from the player to the mouse
-                    Vector2 fireballDirection = mousePosition - player.Position;
+                    Vector2 fireballDirection = new Vector2(mousePosition.X - player.Position.X, mousePosition.Y - player.Position.Y);
                     fireballDirection.Normalize();
 
                     float rotation = (float)Math.Atan2(fireballDirection.X, fireballDirection.Y);
@@ -556,6 +553,12 @@ namespace GameStateManagement
 
                     // Play the fireball sound
                     //fireballSound.Play();
+
+                    previousMouseState = currentMouseState;
+                }
+                if(currentMouseState.LeftButton == ButtonState.Released)
+                {
+                    previousMouseState = currentMouseState;
                 }
             }
         }
