@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,20 @@ namespace GameStateManagement.Class
         private int rarity;
         private int id;
 
+        // Properties
+        public Vector2 Position { get; set; }
+        public Vector2 Direction { get; set; }
+        public float Speed { get; set; }
+        public float Rotation { get; set; }
+        public Vector2 target { get; set; }
+
+        public Vector2 originPosition { get; set; }
+
         public Item() { }
+
+        public abstract void Update(GameTime gameTime);
+
+        public abstract void Draw(SpriteBatch spriteBatch);
 
         public Texture2D Texture { get => texture; set => texture = value; }
         public int TextureResolution { get => textureResolution; set => textureResolution = value; }

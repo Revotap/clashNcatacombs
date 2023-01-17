@@ -116,7 +116,7 @@ namespace GameStateManagement
         private Vector2 ui_interact_string_vector = new Vector2(550, 400);
 
         //Debug UI
-        private bool debug_mode_active = false;
+        private bool debug_mode_active = true;
         Texture2D debug_border;
 
         private bool debug_ui_wall_collision = false;
@@ -134,6 +134,11 @@ namespace GameStateManagement
         private Vector2 debug_ui_inventory_2_vector = new Vector2(0,310);
         private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
 
+        //Spells
+        Item fireball;
+        Texture2D fireball_texture;
+        List<Item> casted_spells;
+        float maxDistanceOfCastedSpell = 2000;
         #endregion Variablen
 
 
@@ -189,7 +194,7 @@ namespace GameStateManagement
             Key diamond_key = new Key("Diamond Key", 2, null, 16);
 
             //World
-            Room r1 = new Room(24, 24);
+            //Room r1 = new Room(24, 24);
             //map = r1.Map;
 
             map = new string[,] { { "wl", "wt", "wt", "door_left", "door_right", "wt", "wt", "wr" },
@@ -202,6 +207,8 @@ namespace GameStateManagement
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "cl", "wb", "wb", "wb", "wb", "wb", "wb", "cr"}};
+
+            //map = Room.GenerateGameworld3();
 
             tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
             tilemap = new List<TileEntry>();
@@ -314,6 +321,10 @@ namespace GameStateManagement
             //deahtscreen
             deathscreen_wallpaper = Content.Load<Texture2D>(@"OurContent\Utility\you_died");
             deathscreen_sound = Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect");
+
+            //Casted spells
+            casted_spells = new List<Item>();
+            fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\flamethrower_2_2");
 
             //UI
             heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
@@ -446,6 +457,26 @@ namespace GameStateManagement
 
             cameraPos.X = (player.PositionX - 580) * -1;
             cameraPos.Y = (player.PositionY - 260) * -1;
+
+            //Update casted spells
+            for(int i = casted_spells.Count-1; i > 0; i--)
+            {
+                casted_spells[i].Update(gameTime);
+                if (Vector2.Distance(casted_spells[i].Position, casted_spells[i].originPosition) > maxDistanceOfCastedSpell)
+                {
+                    casted_spells.Remove(casted_spells[i]);
+
+                }
+            }
+            /*foreach (Item item in casted_spells)
+            {
+                item.Update(gameTime);
+                if(Vector2.Distance(item.Position, item.originPosition) > maxDistanceOfCastedSpell)
+                {
+                    casted_spells.Remove(item);
+                }
+            }*/
+
             base.Update(gameTime, otherScreenHasFocus, false);
         }
 
@@ -460,6 +491,7 @@ namespace GameStateManagement
             int playerIndex = (int)ControllingPlayer.Value;
 
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
+            MouseState mouseState = Mouse.GetState();
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
 
             // The game pauses either if the user presses the pause button, or if
@@ -504,6 +536,27 @@ namespace GameStateManagement
                         player.PlayerInventory.AddItem(interactableNearby.Tile.Interact(player.PlayerInventory));
                     }
                 }
+                //Cast fireball
+                //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if(mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    // Get the mouse position in world coordinates
+                    Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
+
+                    // Get the direction from the player to the mouse
+                    Vector2 fireballDirection = mousePosition - player.Position;
+                    fireballDirection.Normalize();
+
+                    float rotation = (float)Math.Atan2(fireballDirection.X, fireballDirection.Y);
+                    //Matrix rotationMatrix = Matrix.CreateRotationZ(rotation);
+
+                    // Create a new fireball at the player's position
+                    fireball = new Fireball(fireball_texture, new Vector2(player.PositionX + player.Width/2, player.PositionY + player.Height/4*3), fireballDirection, 10f, rotation, player.Position, mousePosition);
+                    casted_spells.Add(fireball);
+
+                    // Play the fireball sound
+                    //fireballSound.Play();
+                }
             }
         }
 
@@ -520,6 +573,8 @@ namespace GameStateManagement
             DrawEnemy();
 
             DrawPlayer();
+
+            DrawCastedSpells();
 
             DrawUi();
 
@@ -575,6 +630,22 @@ namespace GameStateManagement
         {
             _spriteBatch.Draw(player.Texture, new Rectangle((int)player.PositionX, (int)player.PositionY, 64, 112), Color.White);
         }
+
+        private void DrawCastedSpells()
+        {
+            foreach (Item item in casted_spells)
+            {
+                if(item.target.X < item.originPosition.X)
+                {
+                    _spriteBatch.Draw(item.Texture, item.Position, null, Color.White, item.Rotation, new Vector2(item.Texture.Width / 2, item.Texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
+                }
+                else
+                {
+                    _spriteBatch.Draw(item.Texture, item.Position, null, Color.White, item.Rotation, new Vector2(item.Texture.Width / 2, item.Texture.Height / 2), 1.0f, SpriteEffects.None, 0);
+                }
+            }
+        }
+
         private void DrawUi()
         {
             for(int i = 0; i < healthbar_list.Count; i++)
