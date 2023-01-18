@@ -14,46 +14,31 @@ namespace GameStateManagement.Class
     internal class Enemy : Character
     {
         #region Variables
-        private Item loot;
+        private List<Item> loot_table;
         private int exp;
-
-        #endregion
-
-        #region Properties
-        public Item Loot { get => loot;}
-        public int Exp { get => exp;}
+        
+        //Not in use currently
+        private Vector2 direction;
+        private float rotation;
         #endregion
 
         #region Constructor
-        public Enemy(String name, List<Texture2D> enemyTexture, int width, int height, Item loot, int exp, int positionX, int positionY, int damage)
+        public Enemy(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound, List<Item> loot, int exp) : base (name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
         {
-            base.Name = name;
-            base.TextureList = enemyTexture;
-            base.Texture = TextureList.FirstOrDefault();
-            this.loot = loot;
+            this.loot_table = loot;
             this.exp = exp;
-            base.PositionX= positionX;
-            base.PositionY= positionY;
-            base.BaseDamage= damage;
-
-            base.Speed = 4f;
-            base.Width = width;
-            base.Height = height;
-            base.BoundingBox = new Rectangle((int)base.PositionX, (int)base.PositionY + this.Height / 2, width, height / 2);
         }
         #endregion
-
-        
 
         #region Methods
         public Item dropItem()
         {
-            return Loot;
+            return loot_table[new Random().Next(0, loot_table.Count)];
         }
 
         public int ExpGrant()
         {
-            return Exp;
+            return exp;
         }
 
         public override void moveUp()
@@ -78,52 +63,51 @@ namespace GameStateManagement.Class
 
         public override void Update(GameTime gameTime)
         {
-            base.BoundingBoxX = (int)base.PositionX;
-            base.BoundingBoxY = (int)base.PositionY + this.Height / 2;
+            base.boundingBox.X = (int)position.X;
+            base.boundingBox.Y = (int)position.Y + height / 2;
 
             //Update der Animation
-            TimeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
-            if (TimeSinceLastFrame > MillisecondsPerFrame)
+            timeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastFrame > frameSpeed)
             {
-                TimeSinceLastFrame -= MillisecondsPerFrame;
-                base.Texture = TextureList.ElementAt(NextTexture);
-                NextTexture++;
-                if (NextTexture >= TextureList.Count)
+                timeSinceLastFrame -= frameSpeed;
+                nextTexture++;
+                if (nextTexture >= textures.Count)
                 {
-                    NextTexture = 0;
+                    nextTexture = 0;
                 }
             }
         }
 
-        public override void doDamage(int damage)
+        public override void receiveDamage(Character source, int damage)
         {
-            if (DamageReceivedSound != null)
+            if (damageReceivedSound != null)
             {
-                DamageReceivedSound.Play();
+                damageReceivedSound.Play();
             }
             
-            this.HealthPoints -= damage;
+            health -= damage;
         }
 
         public override void attack(GameTime gameTime, Character target)
         {
-            TimeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
-            if (TimeSinceLastAttack > AttackSpeed)
+            timeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastAttack > attackSpeed)
             {
-                TimeSinceLastAttack -= AttackSpeed;
-                if(AttackSound != null)
+                timeSinceLastAttack -= attackSpeed;
+                if(attackWithNoWeaponSound != null)
                 {
-                    AttackSound.Play();
+                    attackWithNoWeaponSound.Play();
                 }
-                target.doDamage(BaseDamage);
+                target.receiveDamage(this, baseDamage);
             }
         }
 
-        //Getter and Setter
-        public new Texture2D Texture { get => base.Texture; set => base.Texture = value; }
-        public new Vector2 Position { get => base.Position; set => base.Position = value; }
-        public new Rectangle BoundingBox { get => base.BoundingBox; }
+        //Not in use currently
+        public void moveTo(Vector2 position)
+        {
 
+        }
         #endregion
 
     }

@@ -181,7 +181,7 @@ namespace GameStateManagement.Class
                 {
                     attackSound.Play();
                 }
-                target.doDamage(baseDamage);
+                target.receiveDamage(null,baseDamage);
             }
         }
     }

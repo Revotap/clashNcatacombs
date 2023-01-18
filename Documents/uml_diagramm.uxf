@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.0.0">
-  <zoom_level>10</zoom_level>
+  <zoom_level>15</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>0</x>
-      <y>80</y>
-      <w>420</w>
-      <h>490</h>
+      <x>105</x>
+      <y>120</y>
+      <w>825</w>
+      <h>765</h>
     </coordinates>
     <panel_attributes>Character
 &lt;&lt;abstract&gt;&gt;
 --
-- name: String
-- healths int
-- baseDamage: int
-- boundingBox: Rectangle
-- movementSpeed: float
-- position: Vector2
-- width: int
-- height: int
-- currentTexture: Texture2D
-- textureList: List&lt;Texture2D&gt;
-- nextTexture: int
-- timeSinceLastFrame: int
-- millisecondsPerFrame: int
-- timeSinceLastAttack: int
-- attackSpeed: int
-- damageReceivedSound: SoundEffect
-- attackWithNoWeaponSound: SoundEffect
-- deathSound: SoundEffect
-- equiptedItem: Item
+# name: String
+# healths int
+# baseDamage: int
+# boundingBox: Rectangle
+# movementSpeed: float
++ position: Vector2
+# width: int
+# height: int
+# textureList: List&lt;Texture2D&gt;
+# nextTexture: int
+# timeSinceLastFrame: int
+# frameSpeed: int
+# timeSinceLastAttack: int
+# attackSpeed: int
+# damageReceivedSound: SoundEffect
+# attackWithNoWeaponSound: SoundEffect
+# deathSound: SoundEffect
+# equiptedItem: Item
 --
-+ Character(): Character
++ Character(String name, int health, int width, int height, Vector2 position
+	List&lt;Texture2D&gt; textures, float movementSpeed, SoundEffect damageReceivedSound,
+	SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Character
 --
 + Update(GameTime gameTime): void &lt;&lt;abstract&gt;&gt;
 + moveUp(): void &lt;&lt;abstract&gt;&gt;
@@ -46,20 +47,22 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>230</x>
-      <y>700</y>
-      <w>500</w>
-      <h>250</h>
+      <x>555</x>
+      <y>1050</y>
+      <w>840</w>
+      <h>420</h>
     </coordinates>
     <panel_attributes>Player
 --
-- interactableNearby: Tile
-- inventory: Inventory
++ interactableNearby: Tile
++ inventory: Inventory
 - currentXP: int
 - maxXPForCurrentLevel: int
 - level: int
 --
-+ Player(String name, List&lt;Texture2D&gt; texture, int width, int height): Player
++ Player(String name, int health, int width, int height, Vector2 position,
+List&lt;Texture2D&gt; textures, float movementSpeed, SoundEffect damageReceivedSound,
+SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 --
 + moveUp(): void &lt;&lt;override&gt;&gt;
 + moveDown(): void &lt;&lt;override&gt;
@@ -73,10 +76,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>10</x>
-      <y>1000</y>
-      <w>660</w>
-      <h>290</h>
+      <x>315</x>
+      <y>1500</y>
+      <w>990</w>
+      <h>420</h>
     </coordinates>
     <panel_attributes>Enemy
 --
@@ -102,34 +105,34 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>70</x>
-      <y>560</y>
-      <w>80</w>
-      <h>460</h>
+      <x>405</x>
+      <y>870</y>
+      <w>120</w>
+      <h>660</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;440.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;420.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
-      <y>560</y>
-      <w>80</w>
-      <h>160</h>
+      <x>720</x>
+      <y>870</y>
+      <w>120</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;140.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>440</x>
-      <y>80</y>
-      <w>460</w>
-      <h>150</h>
+      <x>960</x>
+      <y>120</y>
+      <w>690</w>
+      <h>225</h>
     </coordinates>
     <panel_attributes>Item
 &lt;&lt;abstract&gt;&gt;
@@ -147,10 +150,10 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>940</x>
-      <y>180</y>
-      <w>530</w>
-      <h>90</h>
+      <x>1710</x>
+      <y>270</y>
+      <w>795</w>
+      <h>135</h>
     </coordinates>
     <panel_attributes>Key
 --
@@ -164,10 +167,10 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1720</x>
-      <y>230</y>
-      <w>870</w>
-      <h>140</h>
+      <x>2880</x>
+      <y>345</y>
+      <w>1305</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>Fireball
 --
@@ -184,10 +187,10 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>890</x>
-      <y>110</y>
-      <w>640</w>
-      <h>40</h>
+      <x>1635</x>
+      <y>165</y>
+      <w>960</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>
@@ -196,10 +199,10 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1010</x>
-      <y>120</y>
-      <w>30</w>
-      <h>80</h>
+      <x>1815</x>
+      <y>180</y>
+      <w>45</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
@@ -207,10 +210,10 @@ extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>440</x>
-      <y>330</y>
-      <w>230</w>
-      <h>150</h>
+      <x>960</x>
+      <y>495</y>
+      <w>345</w>
+      <h>225</h>
     </coordinates>
     <panel_attributes>Inventory
 --
@@ -229,10 +232,10 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>550</x>
-      <y>220</y>
-      <w>40</w>
-      <h>130</h>
+      <x>1125</x>
+      <y>330</y>
+      <w>60</w>
+      <h>195</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
@@ -244,10 +247,10 @@ m2=n
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>550</x>
-      <y>470</y>
-      <w>40</w>
-      <h>250</h>
+      <x>1125</x>
+      <y>705</y>
+      <w>60</w>
+      <h>375</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
@@ -259,10 +262,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>750</x>
-      <y>300</y>
-      <w>720</w>
-      <h>700</h>
+      <x>1425</x>
+      <y>450</y>
+      <w>1080</w>
+      <h>1050</h>
     </coordinates>
     <panel_attributes>Tile
 --
@@ -314,10 +317,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>690</x>
-      <y>1190</y>
-      <w>510</w>
-      <h>140</h>
+      <x>1335</x>
+      <y>1785</y>
+      <w>765</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>TileEntry
 Wrapper class for tiles
@@ -333,10 +336,10 @@ Wrapper class for tiles
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>930</x>
-      <y>990</y>
-      <w>40</w>
-      <h>220</h>
+      <x>1695</x>
+      <y>1485</y>
+      <w>60</w>
+      <h>330</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=n
@@ -348,10 +351,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1100</x>
-      <y>1080</y>
-      <w>690</w>
-      <h>100</h>
+      <x>1950</x>
+      <y>1620</y>
+      <w>1035</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>ChestTile
 --
@@ -365,10 +368,10 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1350</x>
-      <y>990</y>
-      <w>80</w>
-      <h>110</h>
+      <x>2325</x>
+      <y>1485</y>
+      <w>120</w>
+      <h>165</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends
@@ -378,10 +381,10 @@ extends
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>930</x>
-      <y>1100</y>
-      <w>190</w>
-      <h>50</h>
+      <x>1695</x>
+      <y>1650</y>
+      <w>285</w>
+      <h>75</h>
     </coordinates>
     <panel_attributes>lt=-
 m2=1
@@ -391,10 +394,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1510</x>
+      <x>2565</x>
       <y>0</y>
-      <w>1020</w>
-      <h>200</h>
+      <w>1530</w>
+      <h>300</h>
     </coordinates>
     <panel_attributes>Spell
 --
@@ -415,10 +418,10 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1590</x>
-      <y>190</y>
-      <w>150</w>
-      <h>120</h>
+      <x>2685</x>
+      <y>285</y>
+      <w>225</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>

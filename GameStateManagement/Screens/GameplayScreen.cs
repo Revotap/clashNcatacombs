@@ -165,9 +165,9 @@ namespace GameStateManagement
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_1"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_2"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
-                player = new Player("Spieler", animation, 64, 112);
-                player.DamageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1");
-                player.DeathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
+                player = new Player("Spieler", 6, 64, 112, new Vector2(1000,1000), animation, 4f, 
+                    Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1"),
+                    Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed"), null);
             }
 
             // Ein SpriteBatch zum Zeichnen
@@ -309,10 +309,9 @@ namespace GameStateManagement
                     }
                 }
             }
-            player.PositionX = map.GetLength(0)/2 * targetTextureResolution;
-            player.PositionY = map.GetLength(1)/2 * targetTextureResolution;
+            player.position = new Vector2(map.GetLength(0)/2 * targetTextureResolution, map.GetLength(1) / 2 * targetTextureResolution);
 
-            cameraPos = new Vector3(player.Position.X, player.PositionY, 0);
+            cameraPos = new Vector3(player.position.X, player.position.Y, 0);
             worldCamera = new Camera(viewport);
 
             collider_map = new List<Rectangle>();
@@ -335,7 +334,7 @@ namespace GameStateManagement
                 }
             }
 
-            oldPlayerPosition= player.Position;
+            oldPlayerPosition= player.position;
 
             //deahtscreen
             deathscreen_wallpaper = Content.Load<Texture2D>(@"OurContent\Utility\you_died");
@@ -393,7 +392,7 @@ namespace GameStateManagement
             }
             foreach(TileEntry item in interactable_map)
             {
-                if (item.boundingBox.Intersects(player.BoundingBox))
+                if (item.boundingBox.Intersects(player.BoundingBox()))
                 {
                     debug_ui_interactable_collision = true;
                     interactableNearby = item;
@@ -411,7 +410,7 @@ namespace GameStateManagement
             //Damage from world
             foreach(TileEntry item in damage_tile_map)
             {
-                if (item.boundingBox.Intersects(player.BoundingBox))
+                if (item.boundingBox.Intersects(player.BoundingBox()))
                 {
                     debug_ui_damagingWorld_collision = true;
                     item.tile.attack(gameTime, player);
@@ -423,7 +422,7 @@ namespace GameStateManagement
             //Check collision with walls
             foreach(Rectangle item in collider_map)
             {
-                if (item.Intersects(player.BoundingBox))
+                if (item.Intersects(player.BoundingBox()))
                 {
                     debug_ui_wall_collision = true;
                     //player.Position = oldPlayerPosition;
@@ -435,16 +434,16 @@ namespace GameStateManagement
             //UI
 
             //HealthBar
-            if(player.HealthPoints >= 2)
+            if(player.Health() >= 2)
             {
                 healthbar_list[0] = heart_full;
-                if(player.HealthPoints >= 4)
+                if(player.Health() >= 4)
                 {
                     healthbar_list[1] = heart_full;
-                    if(player.HealthPoints >= 6)
+                    if(player.Health() >= 6)
                     {
                         healthbar_list[2] = heart_full;
-                    }else if(player.HealthPoints == 5)
+                    }else if(player.Health() == 5)
                     {
                         healthbar_list[2] = heart_half;
                     }
@@ -452,7 +451,7 @@ namespace GameStateManagement
                     {
                         healthbar_list[2] = heart_empty;
                     }
-                }else if(player.HealthPoints == 3)
+                }else if(player.Health() == 3)
                 {
                     healthbar_list[1] = heart_half;
                     healthbar_list[2] = heart_empty;
@@ -462,7 +461,7 @@ namespace GameStateManagement
                     healthbar_list[1] = heart_empty;
                     healthbar_list[2] = heart_empty;
                 }
-            }else if(player.HealthPoints == 1) {
+            }else if(player.Health() == 1) {
                 healthbar_list[0] = heart_half;
                 healthbar_list[1] = heart_empty;
                 healthbar_list[2] = heart_empty;
@@ -474,13 +473,13 @@ namespace GameStateManagement
                 healthbar_list[2] = heart_empty;
             }
 
-            oldPlayerPosition = player.Position;
+            oldPlayerPosition = player.position;
 
 
             player.Update(gameTime);
             peaks.Update(gameTime);
 
-            if(player.HealthPoints <= 0)
+            if(player.Health() <= 0)
             {
                 ScreenManager.RemoveScreen(this);
                 MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect"));
@@ -488,8 +487,8 @@ namespace GameStateManagement
                 ScreenManager.AddScreen(new DeathScreen(), 0);
             }
 
-            cameraPos.X = (player.PositionX - 580) * -1;
-            cameraPos.Y = (player.PositionY - 260) * -1;
+            cameraPos.X = (player.position.X - 580) * -1;
+            cameraPos.Y = (player.position.Y - 260) * -1;
 
             //Update casted spells
             for(int i = casted_spells.Count-1; i >= 0; i--)
@@ -557,7 +556,7 @@ namespace GameStateManagement
                 {
                     if(interactableNearby != null)
                     {
-                        player.PlayerInventory.AddItem(interactableNearby.tile.Interact(player.PlayerInventory));
+                        player.inventory.AddItem(interactableNearby.tile.Interact(player.inventory));
                     }
                 }
                 //Cast fireball
@@ -568,7 +567,7 @@ namespace GameStateManagement
                     Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
 
                     // Get the direction from the player to the mouse
-                    Vector2 fireballDirection = new Vector2(mousePosition.X - player.Position.X, mousePosition.Y - player.Position.Y);
+                    Vector2 fireballDirection = new Vector2(mousePosition.X - player.position.X, mousePosition.Y - player.position.Y);
                     fireballDirection.Normalize();
 
                     float rotation = (float)Math.Atan2(fireballDirection.X, fireballDirection.Y);
@@ -577,7 +576,7 @@ namespace GameStateManagement
                     // Create a new fireball at the player's position
                     //fireball = new Fireball(fireball_texture, new Vector2(player.PositionX + player.Width/2, player.PositionY + player.Height/4*3), fireballDirection, 10f, rotation, player.Position, mousePosition);
                     fireball = new Fireball("fireball", fireball_texture,0, rotation, 10f);
-                    Vector2 originPosition = new Vector2(player.PositionX + player.Width / 2, player.PositionY + player.Height / 4 * 3);
+                    Vector2 originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
                     casted_spells.Add(fireball.Cast(originPosition, rotation, fireballDirection, mousePosition, originPosition));
 
                     // Play the fireball sound
@@ -660,7 +659,7 @@ namespace GameStateManagement
         
         private void DrawPlayer()
         {
-            _spriteBatch.Draw(player.Texture, new Rectangle((int)player.PositionX, (int)player.PositionY, 64, 112), Color.White);
+            _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), Color.White);
         }
 
         private void DrawCastedSpells()
@@ -710,12 +709,12 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "interactable_collision:" + debug_ui_interactable_collision, new Vector2(debug_ui_interactable_collision_vector.X - cameraPos.X, debug_ui_interactable_collision_vector.Y -(int)cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "enemy_collision:" + debug_ui_enemy_collision, new Vector2(debug_ui_enemy_collision_vector.X - cameraPos.X, debug_ui_enemy_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "damagingWorld_collision:" + debug_ui_damagingWorld_collision, new Vector2(debug_ui_damagingWorld_collision_vector.X - cameraPos.X, debug_ui_damagingWorld_collision_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "health: " + player.HealthPoints, new Vector2(debug_ui_testing_value_vector.X - cameraPos.X, debug_ui_testing_value_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "health: " + player.Health(), new Vector2(debug_ui_testing_value_vector.X - cameraPos.X, debug_ui_testing_value_vector.Y - cameraPos.Y), Color.White);
 
-            _spriteBatch.DrawString(spriteFont, "inventory_0: " + player.PlayerInventory.GetItemName(0), new Vector2(debug_ui_inventory_0_vector.X - cameraPos.X, debug_ui_inventory_0_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "inventory_1: " + player.PlayerInventory.GetItemName(1), new Vector2(debug_ui_inventory_1_vector.X - cameraPos.X, debug_ui_inventory_1_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "inventory_2: " + player.PlayerInventory.GetItemName(2), new Vector2(debug_ui_inventory_2_vector.X - cameraPos.X, debug_ui_inventory_2_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "inventory_3: " + player.PlayerInventory.GetItemName(3), new Vector2(debug_ui_inventory_3_vector.X - cameraPos.X, debug_ui_inventory_3_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_0: " + player.inventory.GetItemName(0), new Vector2(debug_ui_inventory_0_vector.X - cameraPos.X, debug_ui_inventory_0_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_1: " + player.inventory.GetItemName(1), new Vector2(debug_ui_inventory_1_vector.X - cameraPos.X, debug_ui_inventory_1_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_2: " + player.inventory.GetItemName(2), new Vector2(debug_ui_inventory_2_vector.X - cameraPos.X, debug_ui_inventory_2_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "inventory_3: " + player.inventory.GetItemName(3), new Vector2(debug_ui_inventory_3_vector.X - cameraPos.X, debug_ui_inventory_3_vector.Y - cameraPos.Y), Color.White);
         }
     }
     #endregion

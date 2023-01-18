@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -12,26 +13,18 @@ namespace GameStateManagement.Class
     internal class Player : Character
     {
         #region Variables
-        Tile interactableNearby;
-        Inventory playerInventory;
+        public Tile interactableNearby { get; set; }
+        public Inventory inventory { get; set; }
+        private int currentXP = 0;
+        private int maxXPForCurrentLevel = 10;
+        private int level = 1;
+
         #endregion
 
         #region Construktor
-        public Player(String name, List<Texture2D> playerTexture, int width, int height)
+        public Player(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound) : base(name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
         {
-            base.Name = name;
-            base.TextureList = playerTexture;
-            base.Texture = TextureList.FirstOrDefault();
-
-            //Debugging
-            base.T_class = "Knight";
-            base.HealthPoints = 6;
-            base.Speed = 4f;
-
-            base.Width = width;
-            base.Height = height;
-            base.BoundingBox = new Rectangle((int) base.PositionX, (int) base.PositionY + this.Height/2, width, height/2);
-            this.PlayerInventory= new Inventory();
+            this.inventory= new Inventory();
         }
         #endregion
 
@@ -40,92 +33,88 @@ namespace GameStateManagement.Class
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                base.PositionY -= base.Speed;
+                position = new Vector2(position.X, position.Y - movementSpeed);
             }
         }
         public override void moveDown()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                base.PositionY += base.Speed;
+                position = new Vector2(position.X, position.Y + movementSpeed);
             }
         }
         public override void moveLeft()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                base.PositionX -= base.Speed;
+                position = new Vector2(position.X - movementSpeed, position.Y);
             }
         }
         public override void moveRight()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                base.PositionX += base.Speed;
+                position = new Vector2(position.X + movementSpeed, position.Y);
             }
         }
 
         public override void Update(GameTime gameTime)
         {
-            base.BoundingBoxX = (int) base.PositionX;
-            base.BoundingBoxY = (int) base.PositionY + this.Height/2;
+            boundingBox.X = (int) position.X;
+            boundingBox.Y = (int) position.Y + height/2;
 
             //Update der Animation
-            TimeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
-            if (TimeSinceLastFrame > MillisecondsPerFrame)
+            timeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastFrame > frameSpeed)
             {
-                TimeSinceLastFrame -= MillisecondsPerFrame;
-                base.Texture = TextureList.ElementAt(NextTexture);
-                NextTexture++;
-                if (NextTexture >= TextureList.Count)
+                timeSinceLastFrame -= frameSpeed;
+                nextTexture++;
+                if (nextTexture >= textures.Count)
                 {
-                    NextTexture = 0;
+                    nextTexture = 0;
                 }
             }
         }
 
-        public override void doDamage(int damage)
+        public override void receiveDamage(Character source, int damage)
         {
-            if(this.HealthPoints <= 0)
+            if(health <= 0)
             {
                 return;
             }
 
-            if (DamageReceivedSound != null)
+            if (damageReceivedSound != null)
             {
-                DamageReceivedSound.Play();
+                damageReceivedSound.Play();
             }
-            this.HealthPoints -= damage;
+            this.health -= damage;
 
-            if (this.HealthPoints <= 0)
+            if (this.health <= 0)
             {
-                if (DeathSound != null)
+                if (deathSound != null)
                 {
-                    DeathSound.Play();
+                    deathSound.Play();
                 }
             }
         }
 
         public override void attack(GameTime gameTime, Character target)
         {
-            TimeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
-            if (TimeSinceLastAttack > AttackSpeed)
+            timeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastAttack > attackSpeed)
             {
-                TimeSinceLastAttack -= AttackSpeed;
-                if (AttackSound != null)
+                timeSinceLastAttack -= attackSpeed;
+                if (attackWithNoWeaponSound != null)
                 {
-                    AttackSound.Play();
+                    attackWithNoWeaponSound.Play();
                 }
-                target.doDamage(10);
+                target.receiveDamage(this, 10);
             }
         }
 
-        //Getter and Setter
-        public new Texture2D Texture { get => base.Texture; set => base.Texture = value; }
-        public new Vector2 Position { get => base.Position; set => base.Position = value; }
+        public int getCurrentXP() { return currentXP; }
+        public int getMaxXForCurrentLevel() { return maxXPForCurrentLevel; }
+        public int getLevel() { return level; }
         #endregion
-        public new Rectangle BoundingBox { get => base.BoundingBox; }
-        internal Tile InteractableNearby { get => interactableNearby; set => interactableNearby = value; }
-        internal Inventory PlayerInventory { get => playerInventory; set => playerInventory = value; }
     }
 }

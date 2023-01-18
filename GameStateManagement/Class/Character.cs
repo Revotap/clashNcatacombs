@@ -12,40 +12,43 @@ namespace GameStateManagement.Class
     internal abstract class Character
     {
         #region Variables
-        private String name;
-        private String t_class;
-        private int healthPoints;
-        private int baseDamage;
-        //Placeholder for inventory
-        //placeholder for weapon
-        private Rectangle boundingBox;
+        protected String name;
+        protected int health;
+        protected int baseDamage = 1;
+        protected Rectangle boundingBox;
+        protected float movementSpeed = 2f;
+        public Vector2 position { get; set; }
+        protected int width;
+        protected int height;
 
-        //Not in UML
-        private float speed;
-        private Texture2D texture;
-        private Vector2 position;
+        protected List<Texture2D> textures;
+        protected int nextTexture;
+        protected int timeSinceLastFrame = 0;
+        protected int frameSpeed = 150;
 
-        //Neu
-        private int width;
-        private int height;
+        protected int timeSinceLastAttack = 0;
+        protected int attackSpeed = 700;
 
-        private List<Texture2D> textureList;
-        private int nextTexture = 1;
-        private int timeSinceLastFrame = 0;
-        private int millisecondsPerFrame = 150;
+        protected SoundEffect damageReceivedSound;
+        protected SoundEffect attackWithNoWeaponSound;
+        protected SoundEffect deathSound;
 
-        private int timeSinceLastAttack = 0;
-        private int attackSpeed = 700;
-
-        private SoundEffect damageReceivedSound;
-       private SoundEffect attackSound;
-        private SoundEffect deathSound;
-        
+        protected Item equiptedItem;
         #endregion
 
         #region Constructor
-        public Character()
-        {
+        public Character(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound) {
+            this.name = name;
+            this.health = health;
+            this.width = width;
+            this.height = height;
+            this.position = position;
+            this.textures = textures;
+            this.movementSpeed = movementSpeed;
+            this.damageReceivedSound = damageReceivedSound;
+            this.deathSound = deathSound;
+            this.attackWithNoWeaponSound= attackWithNoWeaponSound;
+            this.boundingBox = new Rectangle((int)position.X, (int)position.Y + height / 2, width, height / 2);
         }
         #endregion
 
@@ -56,33 +59,20 @@ namespace GameStateManagement.Class
         public abstract void moveLeft();
         public abstract void moveRight();
         public abstract void attack(GameTime gameTime, Character target);
-
-        public abstract void doDamage(int damage);
-
-        //Getters and Setters
-        protected string Name { get => name; set => name = value; }
-        protected string T_class { get => t_class; set => t_class = value; }
-        public int HealthPoints { get => healthPoints; set => healthPoints = value; }
-        protected Rectangle BoundingBox { get => boundingBox; set => boundingBox = value; }
-        protected int BoundingBoxX { get => boundingBox.X; set => boundingBox.X = value; }
-        protected int BoundingBoxY { get => boundingBox.Y; set => boundingBox.Y = value; }
-        protected float Speed { get => speed; set => speed = value; }
-        protected Texture2D Texture { get => texture; set => texture = value; }
-        public Vector2 Position { get =>  position; set => position = value; }
-        public float PositionX { get => position.X; set => position.X = value; }
-        public float PositionY { get => position.Y; set => position.Y = value; }
-        public int Width { get => width; set => width = value; }
-        public int Height { get => height; set => height = value; }
-        public List<Texture2D> TextureList { get => textureList; set => textureList = value; }
-        public int NextTexture { get => nextTexture; set => nextTexture = value; }
-        public int TimeSinceLastFrame { get => timeSinceLastFrame; set => timeSinceLastFrame = value; }
-        public int MillisecondsPerFrame { get => millisecondsPerFrame; set => millisecondsPerFrame = value; }
-        public int BaseDamage { get => baseDamage; set => baseDamage = value; }
-        public int AttackSpeed { get => attackSpeed; set => attackSpeed = value; }
-        public int TimeSinceLastAttack { get => timeSinceLastAttack; set => timeSinceLastAttack = value; }
-        public SoundEffect DamageReceivedSound { get => damageReceivedSound; set => damageReceivedSound = value; }
-        public SoundEffect AttackSound { get => attackSound; set => attackSound = value; }
-        public SoundEffect DeathSound { get => deathSound; set => deathSound = value; }
+        public abstract void receiveDamage(Character source, int damage);
+        public String Name() { return name; }
+        public int Health() { return health; }
+        public Rectangle BoundingBox() { return boundingBox; }
+        public int Width() { return width; }
+        public int Height() { return height; }
+        public Texture2D Texture() { 
+            if(nextTexture < textures.Count)
+            {
+                return textures[nextTexture];
+            }
+            return null;
+        }
+        public Item EquiptedItem() { return equiptedItem; }
         #endregion
 
     }
