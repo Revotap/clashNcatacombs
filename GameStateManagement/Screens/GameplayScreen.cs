@@ -463,7 +463,7 @@ namespace GameStateManagement
                 if (item.Intersects(player.BoundingBox()))
                 {
                     debug_ui_wall_collision = true;
-                    //player.Position = oldPlayerPosition;
+                    //player.position = oldPlayerPosition;
                     break;
                 }
                 debug_ui_wall_collision = false;
