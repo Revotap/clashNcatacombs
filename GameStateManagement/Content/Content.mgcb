@@ -693,6 +693,18 @@
 /processorParam:TextureFormat=Color
 /build:OurContent/Map/background.png
 
+#begin OurContent/Map/bottom_left_corner_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Map/bottom_left_corner_2.png
+
 #begin OurContent/Map/bottom_left_corner.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -704,6 +716,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OurContent/Map/bottom_left_corner.png
+
+#begin OurContent/Map/bottom_right_corner_2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Map/bottom_right_corner_2.png
 
 #begin OurContent/Map/bottom_right_corner.png
 /importer:TextureImporter

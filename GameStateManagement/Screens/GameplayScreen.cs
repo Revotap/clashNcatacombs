@@ -21,9 +21,15 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
+using System.Xml.Serialization;
 
 #endregion Using Statements
 
@@ -71,7 +77,9 @@ namespace GameStateManagement
         private List<TileEntry> tilemap;
         private int targetTextureResolution = 64;
         private Tile wall_leftcorner;
+        private Tile wall_leftcorner_2;
         private Tile wall_rightcorner;
+        private Tile wall_rightcorner_2;
         private Tile wall_top;
         private Tile wall_bottom;
         private Tile wall_left;
@@ -123,6 +131,7 @@ namespace GameStateManagement
         private bool debug_mode_active = true;
         Texture2D debug_border;
 
+        private Vector2 debug_ui_player_position_vector = new Vector2(0, 70);
         private bool debug_ui_wall_collision = false;
         private Vector2 debug_ui_wall_collision_vector = new Vector2(0,100);
         private bool debug_ui_interactable_collision = false;
@@ -165,7 +174,7 @@ namespace GameStateManagement
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_1"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_2"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
-                player = new Player("Spieler", 6, 64, 112, new Vector2(1000,1000), animation, 4f, 
+                player = new Player("Spieler", 6, 64, 112, new Vector2(0,1000), animation, 4f, 
                     Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1"),
                     Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed"), null);
             }
@@ -193,24 +202,38 @@ namespace GameStateManagement
             //Room r1 = new Room(24, 24);
             //map = r1.Map;
 
-            map = new string[,] { { "wl", "wt", "wt", "door_left", "door_right", "wt", "wt", "wr" },
+            map = new string[,] { { "wl", "wt", "wt", "dl", "dl", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
-                                    {"wl", "gr", "peaks", "gr", "gr", "chest_small", "gr", "wr"},
+                                    {"wl", "gr", "peaks", "gr", "gr", "c0", "gr", "wr"},
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
-                                    {"wl", "gr", "gr", "gr", "gr", "gr", "chest_medium", "wr"},
+                                    {"wl", "gr", "gr", "gr", "gr", "gr", "c1", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
-                                    { "wl", "gr", "gr", "gr", "gr", "gr", "chest_large", "wr"},
+                                    { "wl", "gr", "gr", "gr", "gr", "gr", "c2", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "cl", "wb", "wb", "wb", "wb", "wb", "wb", "cr"}};
 
-            //map = Room.GenerateGameworld3();
+            //FILESYSTEM TEST
+            /*XmlSerializer serializer = new XmlSerializer(typeof(string[,]));
+            using(FileStream fs = new FileStream("level.xml", FileMode.Create) )
+            {
+                serializer.Serialize(fs, map);
+            }*/
+
+            //MySerializer.Serialize("level.xml", map);
+
+            //map = MySerializer.Deserialize("level.xml");
+
+
+            map = LevelManager.map_01;
 
             tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
             tilemap = new List<TileEntry>();
             //Generate TileEntries
             wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), true);
+            wall_leftcorner_2 = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner_2"), true);
             wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), true);
+            wall_rightcorner_2 = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner_2"), true);
             wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), true);
             wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), true);
             wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), true);
@@ -255,61 +278,76 @@ namespace GameStateManagement
             peaks.SetDoesDamage(1, null, 700);
             peaks.SetIsAnimated(peak_animation, 400, null);
 
+            Vector2 playerStartingPos = new Vector2(0,0);
+
             for (int x = 0; x < map.GetLength(0); x++)
             {
                 for(int y = 0; y < map.GetLength(1); y++)
                 {
-                    if (map[x,y] == "wl")
+                    if (map[x, y] == "wl")
                     {
-                        tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution*y,targetTextureResolution*x),64));
-                    }else if (map[x,y] == "wr")
+                        tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    } else if (map[x, y] == "wr")
                     {
                         tilemap.Add(new TileEntry(wall_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "wt")
+                    } else if (map[x, y] == "wt")
                     {
                         tilemap.Add(new TileEntry(wall_top, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x, y] == "wb")
+                    } else if (map[x, y] == "wb")
                     {
                         tilemap.Add(new TileEntry(wall_bottom, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x, y] == "cl")
+                    } else if (map[x, y] == "cl")
                     {
                         tilemap.Add(new TileEntry(wall_leftcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x, y] == "cr")
+                    } else if (map[x, y] == "cr")
                     {
                         tilemap.Add(new TileEntry(wall_rightcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "gr")
+                    }
+                    else if (map[x, y] == "cl2")
+                    {
+                        tilemap.Add(new TileEntry(wall_leftcorner_2, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }
+                    else if (map[x, y] == "cr2")
+                    {
+                        tilemap.Add(new TileEntry(wall_rightcorner_2, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    }
+                    else if (map[x, y] == "gr")
                     {
                         tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "bgrnd")
+                    } else if (map[x, y] == "bgrnd")
                     {
                         tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "door_left")
+                    } else if (map[x, y] == "dl")
                     {
                         tilemap.Add(new TileEntry(door_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else if (map[x,y] == "door_right")
+                    } else if (map[x, y] == "dr")
                     {
                         tilemap.Add(new TileEntry(door_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    } else if (map[x,y] == "") {
+                        tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }else
-                    {
-                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        {
+                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
 
-                        if (map[x,y] == "chest_small")
-                        {
-                            tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                        }else if (map[x,y] == "chest_medium")
-                        {
-                            tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                        }else if (map[x,y] == "chest_large")
-                        {
-                            tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                        }else if (map[x,y] == "peaks")
-                        {
-                            tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            if (map[x, y] == "c0")
+                            {
+                                tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            } else if (map[x, y] == "c1")
+                            {
+                                tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            } else if (map[x, y] == "c2")
+                            {
+                                tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            } else if (map[x, y] == "pk")
+                            {
+                                tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            } else if (map[x, y] == "pl")
+                            {
+                                player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
+                            }
                         }
-                    }
                 }
             }
-            player.position = new Vector2(map.GetLength(0)/2 * targetTextureResolution, map.GetLength(1) / 2 * targetTextureResolution);
 
             cameraPos = new Vector3(player.position.X, player.position.Y, 0);
             worldCamera = new Camera(viewport);
@@ -334,7 +372,7 @@ namespace GameStateManagement
                 }
             }
 
-            oldPlayerPosition= player.position;
+            oldPlayerPosition = player.position;
 
             //deahtscreen
             deathscreen_wallpaper = Content.Load<Texture2D>(@"OurContent\Utility\you_died");
@@ -705,6 +743,8 @@ namespace GameStateManagement
             {
                 _spriteBatch.Draw(debug_border, new Rectangle((int)item.drawVector.X, (int)item.drawVector.Y, targetTextureResolution, targetTextureResolution), Color.Yellow);
             }
+            _spriteBatch.DrawString(spriteFont, "player_location: [X:" + player.position.X + ",Y:" + player.position.Y, new Vector2(debug_ui_player_position_vector.X - cameraPos.X, debug_ui_player_position_vector.Y - cameraPos.Y), Color.White);
+
             _spriteBatch.DrawString(spriteFont, "wall_collision:" + debug_ui_wall_collision, new Vector2(debug_ui_wall_collision_vector.X - cameraPos.X, debug_ui_wall_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "interactable_collision:" + debug_ui_interactable_collision, new Vector2(debug_ui_interactable_collision_vector.X - cameraPos.X, debug_ui_interactable_collision_vector.Y -(int)cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "enemy_collision:" + debug_ui_enemy_collision, new Vector2(debug_ui_enemy_collision_vector.X - cameraPos.X, debug_ui_enemy_collision_vector.Y - cameraPos.Y), Color.White);
