@@ -9,25 +9,21 @@ namespace GameStateManagement.Class
 {
     internal class TileEntry
     {
-        private Tile tile;
-        private Vector2 drawVector;
+        public Tile tile { get; }
+        public Vector2 drawVector { get; set; }
         private int targetTextureResolution;
-        private Rectangle boundingBox;
+        public Rectangle boundingBox { get; }
 
         public TileEntry(Tile tile, Vector2 drawVector, int targetTextureResolution)
         {
-            this.Tile = tile;
-            this.DrawVector = drawVector;
+            this.tile = tile;
+            this.drawVector = drawVector;
             this.targetTextureResolution = targetTextureResolution;
 
-            if (tile.HasCollision || tile.IsInteractable || tile.DoesDamage)
+            if (tile.getHasCollision() || tile.getIsInteractable() || tile.getDoesDamage())
             {
                 this.boundingBox = new Rectangle((int)drawVector.X, (int)drawVector.Y, targetTextureResolution, targetTextureResolution);
             }    
         }
-
-        public Vector2 DrawVector { get => drawVector; set => drawVector = value; }
-        public Rectangle BoundingBox { get => boundingBox; set => boundingBox = value; }
-        internal Tile Tile { get => tile; set => tile = value; }
     }
 }

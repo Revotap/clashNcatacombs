@@ -217,31 +217,53 @@ namespace GameStateManagement
             tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
             tilemap = new List<TileEntry>();
             //Generate TileEntries
-            wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), 16, new Vector2(0,0), true, false);
-            wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), 16, new Vector2(0, 0), true, false);
-            wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), 16, new Vector2(0, 0), true, false);
-            wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), 16, new Vector2(0, 0), true, false);
-            wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), 16, new Vector2(0, 0), true, false);
-            wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), 16, new Vector2(0, 0), true, false);
-            ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), 16, new Vector2(0, 0), false, false);
-            background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), 16, new Vector2(0, 0), false, false);
+            wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), true);
+            wall_rightcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_right_corner"), true);
+            wall_top = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_top"), true);
+            wall_bottom = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_bottom"), true);
+            wall_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_left"), true);
+            wall_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\wall_right"), true);
+            ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), false);
+            background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), false);
 
-            chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), 16, new Vector2(0, 0), false, true, ground, silver_key,chest_open, false);
-            chest_medium = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), 16, new Vector2(0, 0), false, true, ground, golden_key, chest_open, false);
-            chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), 16, new Vector2(0, 0), false, true, ground, diamond_key, chest_open, false);
-            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), 16, new Vector2(0, 0),true,true, ground,true, silver_key, door_open, false);
-            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), 16, new Vector2(0, 0), true, true, ground, true, silver_key, door_open, false);
-            door_left.NeighborInteractable = door_right;
-            door_right.NeighborInteractable = door_left;
+            //Loot tables for chests
+            List<Item> loot_table_chest_small = new List<Item>();
+            loot_table_chest_small.Add(silver_key);
 
+            List<Item> loot_table_chest_medium = new List<Item>();
+            loot_table_chest_medium.Add(golden_key);
+
+            List<Item> loot_table_chest_large = new List<Item>();
+            loot_table_chest_large.Add(diamond_key);
+
+            //Generate Chest Tiles
+            chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), false, loot_table_chest_small);
+            chest_small.SetIsInteractable(ground.texture(), null, chest_open);
+
+            chest_medium = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), false, loot_table_chest_medium);
+            chest_medium.SetIsInteractable(ground.texture(), null, chest_open);
+
+            chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), false, loot_table_chest_large);
+            chest_large.SetIsInteractable(ground.texture(), null, chest_open);
+
+            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), true);
+            door_left.SetIsLocked(silver_key);
+            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), true);
+            door_right.SetIsLocked(silver_key);
+
+            door_left.SetIsInteractable(ground.texture(), door_right, door_open);
+            door_right.SetIsInteractable(ground.texture(), door_left, door_open);
+
+            peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), false);
             List<Texture2D> peak_animation = new List<Texture2D>();
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"));
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_2"));
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_3"));
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_4"));
-            peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), 16, new Vector2(0, 0), false, false, null, true, peak_animation);
+            peaks.SetDoesDamage(1, null, 700);
+            peaks.SetIsAnimated(peak_animation, 400, null);
 
-            for(int x = 0; x < map.GetLength(0); x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
                 for(int y = 0; y < map.GetLength(1); y++)
                 {
@@ -307,15 +329,15 @@ namespace GameStateManagement
             //generate collision map and interactable map
             foreach(TileEntry item in tilemap)
             {
-                if (item.Tile.HasCollision)
+                if (item.tile.getHasCollision())
                 {
-                    collider_map.Add(item.BoundingBox);
+                    collider_map.Add(item.boundingBox);
                 }
-                if(item.Tile.IsInteractable)
+                if(item.tile.getIsInteractable())
                 {
                     interactable_map.Add(item);
                 }
-                if (item.Tile.DoesDamage)
+                if (item.tile.getDoesDamage())
                 {
                     damage_tile_map.Add(item);
                 }
@@ -369,9 +391,17 @@ namespace GameStateManagement
             }
 
             //Interactables
+            //Check and remove already interacted interactables
+            for(int i = interactable_map.Count -1; i >= 0; i--)
+            {
+                if (!interactable_map[i].tile.getIsInteractable())
+                {
+                    interactable_map.Remove(interactable_map[i]);
+                }
+            }
             foreach(TileEntry item in interactable_map)
             {
-                if (item.BoundingBox.Intersects(player.BoundingBox))
+                if (item.boundingBox.Intersects(player.BoundingBox))
                 {
                     debug_ui_interactable_collision = true;
                     interactableNearby = item;
@@ -380,14 +410,19 @@ namespace GameStateManagement
                 interactableNearby = null;
                 debug_ui_interactable_collision = false;
             }
+            if(interactable_map.Count == 0)
+            {
+                interactableNearby = null;
+                debug_ui_interactable_collision = false;
+            }
 
             //Damage from world
             foreach(TileEntry item in damage_tile_map)
             {
-                if (item.BoundingBox.Intersects(player.BoundingBox))
+                if (item.boundingBox.Intersects(player.BoundingBox))
                 {
                     debug_ui_damagingWorld_collision = true;
-                    item.Tile.doDamage(gameTime, player);
+                    item.tile.attack(gameTime, player);
                     break;
                 }
                 debug_ui_damagingWorld_collision = false;
@@ -530,7 +565,7 @@ namespace GameStateManagement
                 {
                     if(interactableNearby != null)
                     {
-                        player.PlayerInventory.AddItem(interactableNearby.Tile.Interact(player.PlayerInventory));
+                        player.PlayerInventory.AddItem(interactableNearby.tile.Interact(player.PlayerInventory));
                     }
                 }
                 //Cast fireball
@@ -611,7 +646,7 @@ namespace GameStateManagement
             {
                 for(int y = -surrounding_width; y < map.GetLength(0) + surrounding_width; y++)
                 {
-                    _spriteBatch.Draw(background.Texture, new Rectangle(i * targetTextureResolution, y * targetTextureResolution, targetTextureResolution, targetTextureResolution), Color.White);
+                    _spriteBatch.Draw(background.texture(), new Rectangle(i * targetTextureResolution, y * targetTextureResolution, targetTextureResolution, targetTextureResolution), Color.White);
                 }
             }
         }
@@ -620,7 +655,7 @@ namespace GameStateManagement
         {
             foreach(TileEntry entry in tilemap)
             {
-                _spriteBatch.Draw(entry.Tile.Texture, new Rectangle((int)entry.DrawVector.X, (int) entry.DrawVector.Y, 64, 64), Color.White);
+                _spriteBatch.Draw(entry.tile.texture(), new Rectangle((int)entry.drawVector.X, (int) entry.drawVector.Y, 64, 64), Color.White);
             }
         }
 
@@ -671,11 +706,11 @@ namespace GameStateManagement
 
             foreach(TileEntry item in interactable_map)
             {
-                _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.Green);
+                _spriteBatch.Draw(debug_border, new Rectangle((int)item.drawVector.X, (int)item.drawVector.Y, targetTextureResolution, targetTextureResolution), Color.Green);
             }
             foreach (TileEntry item in damage_tile_map)
             {
-                _spriteBatch.Draw(debug_border, new Rectangle((int)item.DrawVector.X, (int)item.DrawVector.Y, targetTextureResolution, targetTextureResolution), Color.Yellow);
+                _spriteBatch.Draw(debug_border, new Rectangle((int)item.drawVector.X, (int)item.drawVector.Y, targetTextureResolution, targetTextureResolution), Color.Yellow);
             }
             _spriteBatch.DrawString(spriteFont, "wall_collision:" + debug_ui_wall_collision, new Vector2(debug_ui_wall_collision_vector.X - cameraPos.X, debug_ui_wall_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "interactable_collision:" + debug_ui_interactable_collision, new Vector2(debug_ui_interactable_collision_vector.X - cameraPos.X, debug_ui_interactable_collision_vector.Y -(int)cameraPos.Y), Color.White);

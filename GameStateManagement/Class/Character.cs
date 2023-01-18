@@ -38,7 +38,7 @@ namespace GameStateManagement.Class
         private int attackSpeed = 700;
 
         private SoundEffect damageReceivedSound;
-        private SoundEffect attackSound;
+       private SoundEffect attackSound;
         private SoundEffect deathSound;
         
         #endregion

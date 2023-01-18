@@ -11,155 +11,115 @@ namespace GameStateManagement.Class
 {
     internal class Tile
     {
-        private Texture2D texture;
-        private int textureResolution;
-        private Vector2 textureVector;
+        private List<Texture2D> textures;
 
-        private Texture2D interactedTexture;
-        private Vector2 interactedTextureVector;
-        
-        private bool hasCollision;
-        private bool isInteractable;
-        private bool interacted = false;
-
-        private bool isLocked = false;
-        private Key requiredItem;
-
-        private Tile neighborInteractable = null;
-        private SoundEffect interactionSound;
-
-        private bool doesDamage = false;
-
-        private int timeSinceLastAttack = 0;
-        private int attackSpeed = 700;
-        private int baseDamage = 1;
-
-        private int timeSinceLastFrame = 0;
-        private int frameSpeed = 400;
-        private SoundEffect attackSound;
-        private int NextTexture = 0;
-
-        private List<Texture2D> animation = new List<Texture2D>();
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool doesDamage)
+        public Texture2D texture()
         {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-
-            this.interactedTextureVector = textureVector;
-            this.interactedTexture = texture;
-            this.doesDamage = doesDamage;
-        }
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, SoundEffect sound, bool doesDamage, List<Texture2D> animation)
-        {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-            this.isInteractable = isInteractable;
-
-            this.interactedTextureVector = textureVector;
-            this.interactedTexture = texture;
-
-            this.interactionSound= sound;
-            this.doesDamage = doesDamage;
-            this.animation = animation;
-        }
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, SoundEffect sound, bool doesDamage)
-        {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-            this.isInteractable = isInteractable;
-
-            this.interactedTextureVector = interactedTextureTile.textureVector;
-            this.interactedTexture = interactedTextureTile.texture;
-
-            this.interactionSound = sound;
-            this.doesDamage = doesDamage;
-        }
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Tile interactedTextureTile, bool isLocked, Key requiredItem, SoundEffect sound, bool doesDamage)
-        {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-            this.isInteractable = isInteractable;
-
-            this.interactedTextureVector = interactedTextureTile.textureVector;
-            this.interactedTexture = interactedTextureTile.texture;
-
-            this.isLocked= isLocked;
-            this.requiredItem = requiredItem;
-
-            this.interactionSound = sound;
-            this.doesDamage = doesDamage;
-        }
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, SoundEffect sound, bool doesDamage)
-        {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-            this.isInteractable = isInteractable;
-
-            this.interactedTextureVector = interactedTextureVector;
-            this.interactedTexture = texture;
-
-            this.interactionSound = sound;
-            this.doesDamage = doesDamage;
-        }
-
-        public Tile(Texture2D texture, int textureResolution, Vector2 textureVector, bool hasCollision, bool isInteractable, Vector2 interactedTextureVector, bool isLocked, Key requiredItem, SoundEffect sound, bool doesDamage)
-        {
-            this.Texture = texture;
-            this.TextureResolution = textureResolution;
-            this.TextureVector = textureVector;
-            this.HasCollision = hasCollision;
-            this.isInteractable = isInteractable;
-
-            this.interactedTextureVector = interactedTextureVector;
-            this.interactedTexture = texture;
-
-            this.isLocked = isLocked;
-            this.requiredItem = requiredItem;
-
-            this.interactionSound = sound;
-            this.doesDamage = doesDamage;
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            timeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
-            if (timeSinceLastFrame > frameSpeed)
+            if(textures.Count > 0)
             {
-                timeSinceLastFrame -= frameSpeed;
-                texture = animation.ElementAt(NextTexture);
-                NextTexture++;
-                if(NextTexture >= animation.Count)
-                {
-                    NextTexture = 0;
-                }
+                return textures[nextTexture];
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public void interarctAsNeighbor()
+        protected bool hasCollision { get; set; } = false;
+        public bool getHasCollision() { return hasCollision; }
+        protected bool isInteractable { get; set; } = false;
+        public bool getIsInteractable() { return isInteractable; }
+        protected bool interacted { get; set; } = false;
+        protected bool isLocked { get; set; } = false;
+        protected bool doesDamage { get; set; } = false;
+        public bool getDoesDamage() { return doesDamage; }
+        protected bool isAnimated { get; set; } = false;
+
+        private Texture2D interactedTexture;
+        private Tile neightbourInteractable;
+        protected SoundEffect interactionSound { get; set; }
+
+        private Item requiredItem { get; set; }
+        public Item getRequiredItem() { return requiredItem; }
+
+        private int baseDamage = 1;
+        private SoundEffect attackSound;
+        private int attackSpeed = 700;
+
+        private int frameSpeed = 400;
+        private SoundEffect animationSound;
+
+        private int timeSinceLastAttack = 0;
+        private int timeSinceLastFrame = 0;
+        private int nextTexture = 0;
+
+        public Tile(Texture2D textures, bool hasCollision)
         {
-            if(this.isInteractable)
+            this.textures = new List<Texture2D>();
+            this.textures.Add(textures);
+            this.hasCollision = hasCollision;
+        }
+
+        public void SetIsInteractable(Texture2D interactedTexture, Tile neighbourInteractable, SoundEffect interactionSound)
+        {
+            this.isInteractable = true;
+            this.interactedTexture = interactedTexture;
+            this.neightbourInteractable= neighbourInteractable;
+            this.interactionSound= interactionSound;
+        }
+
+        public void SetIsLocked(Item requiredItem)
+        {
+            this.isLocked = true;
+            this.requiredItem= requiredItem;
+        }
+
+        public void SetDoesDamage(int baseDamage, SoundEffect attackSound, int attackSpeed)
+        {
+            this.doesDamage = true;
+            this.baseDamage = baseDamage;
+            this.attackSound= attackSound;
+            this.attackSpeed = attackSpeed;
+        }
+
+        public void SetIsAnimated(List<Texture2D> animation, int frameSpeed, SoundEffect animationSound)
+        {
+            this.isAnimated= true;
+            this.textures = animation;
+            this.frameSpeed= frameSpeed;
+            this.animationSound= animationSound;
+        }
+
+        //Methods
+        public void Update(GameTime gameTime)
+        {
+            if (this.isAnimated)
+            {
+                timeSinceLastFrame += gameTime.ElapsedGameTime.Milliseconds;
+                if (timeSinceLastFrame > frameSpeed)
+                {
+                    timeSinceLastFrame -= frameSpeed;
+                    nextTexture++;
+                    if (nextTexture >= textures.Count-1)
+                    {
+                        nextTexture = 0;
+                    }
+                }
+            }
+            
+        }
+
+        protected void Interact()
+        {
+            if (this.isInteractable)
             {
                 isLocked = false;
                 interacted = true;
                 isInteractable = false;
                 this.hasCollision = false;
-                this.textureVector = interactedTextureVector;
-                this.texture = interactedTexture;
+                this.textures.Clear();
+                this.textures.Add(interactedTexture);
+                nextTexture = 0;
             }
         }
 
@@ -169,10 +129,10 @@ namespace GameStateManagement.Class
             {
                 return null;
             }
-            if(isLocked)
+            if (isLocked)
             {
                 //Key required
-                foreach(Item i in inventory.Item_list)
+                foreach (Item i in inventory.Item_list)
                 {
                     if (i != null)
                     {
@@ -181,11 +141,11 @@ namespace GameStateManagement.Class
                             inventory.RemoveItem(i);
                             isLocked = false;
 
-                            if(neighborInteractable != null)
+                            if (neightbourInteractable != null)
                             {
-                                neighborInteractable.interarctAsNeighbor();
+                                neightbourInteractable.Interact();
                             }
-                            if(interactionSound != null)
+                            if (interactionSound != null)
                             {
                                 interactionSound.Play();
                             }
@@ -197,17 +157,21 @@ namespace GameStateManagement.Class
             }
             else //No Key required
             {
-                interacted = true;
-                isInteractable = false;
-                this.hasCollision = false;
-                this.textureVector = interactedTextureVector;
-                this.texture = interactedTexture;
+                this.Interact();
+                if (neightbourInteractable != null)
+                {
+                    neightbourInteractable.Interact();
+                }
+                if (interactionSound != null)
+                {
+                    interactionSound.Play();
+                }
 
                 return null;
-            }            
+            }
         }
 
-        public void doDamage(GameTime gameTime, Character target)
+        public void attack(GameTime gameTime, Character target)
         {
             timeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
             if (timeSinceLastAttack > attackSpeed)
@@ -220,18 +184,5 @@ namespace GameStateManagement.Class
                 target.doDamage(baseDamage);
             }
         }
-
-        public Texture2D Texture { get => texture; set => texture = value; }
-        public int TextureResolution { get => textureResolution; set => textureResolution = value; }
-        public Vector2 TextureVector { get => textureVector; set => textureVector = value; }
-        public bool HasCollision { get => hasCollision; set => hasCollision = value; }
-        public bool IsInteractable { get => isInteractable; set => isInteractable = value; }
-        public bool Interacted { get => interacted; set => interacted = value; }
-        internal Texture2D InteractedTexture { get => interactedTexture; set => interactedTexture = value; }
-        public Vector2 InteractedTextureVector { get => interactedTextureVector; set => interactedTextureVector = value; }
-        public bool IsLocked { get => isLocked; set => isLocked = value; }
-        internal Tile NeighborInteractable { get => neighborInteractable; set => neighborInteractable = value; }
-        public Key RequiredItem { get => requiredItem; set => requiredItem = value; }
-        public bool DoesDamage { get => doesDamage; set => doesDamage = value; }
     }
 }

@@ -4,7 +4,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>430</x>
+      <x>0</x>
       <y>0</y>
       <w>420</w>
       <h>490</h>
@@ -46,7 +46,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
+      <x>230</x>
       <y>620</y>
       <w>500</w>
       <h>250</h>
@@ -73,7 +73,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>440</x>
+      <x>10</x>
       <y>920</y>
       <w>660</w>
       <h>290</h>
@@ -102,7 +102,7 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>500</x>
+      <x>70</x>
       <y>480</y>
       <w>80</w>
       <h>460</h>
@@ -114,7 +114,7 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>710</x>
+      <x>280</x>
       <y>480</y>
       <w>80</w>
       <h>160</h>
@@ -126,7 +126,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>870</x>
+      <x>440</x>
       <y>0</y>
       <w>370</w>
       <h>170</h>
@@ -148,7 +148,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1490</x>
+      <x>1060</x>
       <y>0</y>
       <w>530</w>
       <h>90</h>
@@ -165,7 +165,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1490</x>
+      <x>1060</x>
       <y>110</y>
       <w>870</w>
       <h>90</h>
@@ -182,7 +182,7 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1230</x>
+      <x>800</x>
       <y>30</y>
       <w>280</w>
       <h>40</h>
@@ -194,7 +194,7 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1390</x>
+      <x>960</x>
       <y>40</y>
       <w>120</w>
       <h>130</h>
@@ -205,7 +205,7 @@ extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>870</x>
+      <x>440</x>
       <y>250</y>
       <w>230</w>
       <h>150</h>
@@ -226,7 +226,7 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>980</x>
+      <x>550</x>
       <y>160</y>
       <w>40</w>
       <h>110</h>
@@ -241,7 +241,7 @@ m2=n
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>980</x>
+      <x>550</x>
       <y>390</y>
       <w>40</w>
       <h>250</h>
@@ -256,7 +256,7 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1180</x>
+      <x>750</x>
       <y>220</y>
       <w>710</w>
       <h>670</h>
@@ -264,18 +264,17 @@ m2=1
     <panel_attributes>Tile
 --
 - texture: List&lt;Texture2D&gt;
-- sourceTextureResolution: int
 
-- hasCollision: bool
-- isInteractable: bool
-- interacted: bool
-- isLocked : bool
-- doesDamage: bool
-- isAnimated: bool
+# hasCollision: bool
+# isInteractable: bool
+# interacted: bool
+# isLocked : bool
+# doesDamage: bool
+# isAnimated: bool
 
 - interactedTexture: Texture2D
-- neighborInteractable: Tile
-- interactionSound: SoundEffect
+- neighbourInteractable: Tile
+# interactionSound: SoundEffect
 
 - requiredItem: Item
 
@@ -291,22 +290,28 @@ m2=1
 - nextTexture: int
 
 --
-+ Tile(Texture2D textures, int sourceTextureResolution, bool hasCollision): Tile
++ Tile(Texture2D textures, bool hasCollision): Tile
 --
-+ IsInteractable(Texture2D interactedTexture, Tile neighbourInteractable, SoundEffect interactionSound): void
-+ IsLocked(Item requiredItem): void
-+ DoesDamage(int baseDamage, SoundEffect attackSound, int attackSpeed): void
-+ IsAnimated(int frameSpeed, SoundEffect animationSound): void
++ SetIsInteractable(Texture2D interactedTexture, Tile neighbourInteractable, SoundEffect interactionSound): void
++ SetIsLocked(Item requiredItem): void
++ SetDoesDamage(int baseDamage, SoundEffect attackSound, int attackSpeed): void
++ SetIsAnimated(List&lt;Texture2D&gt; animation, int frameSpeed, SoundEffect animationSound): void
 
 + Update(GameTime gameTime): void
+# Interact(): void
 + Interact(Inventory inventory): Item &lt;&lt;virtual&gt;&gt;
-+ attack(GameTime gameTime, Character target): void</panel_attributes>
++ attack(GameTime gameTime, Character target): void
+
++ texture(): Texture2D
++ getHasCollision(): bool
++ getIsInteractable(): bool
++ getDoesDamage(): bool</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1120</x>
+      <x>690</x>
       <y>1110</y>
       <w>510</w>
       <h>140</h>
@@ -325,7 +330,7 @@ Wrapper class for tiles
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1360</x>
+      <x>930</x>
       <y>880</y>
       <w>40</w>
       <h>250</h>
@@ -340,16 +345,16 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1530</x>
+      <x>1100</x>
       <y>1000</y>
-      <w>510</w>
+      <w>690</w>
       <h>100</h>
     </coordinates>
     <panel_attributes>ChestTile
 --
 - loot: List&lt;Item&gt;
 --
-+ ChestTile(Texture2D textures, int sourceTextureResolution, bool hasCollision, List&lt;Item&gt; loot): ChestTile
++ ChestTile(Texture2D textures, bool hasCollision, List&lt;Item&gt; loot): ChestTile
 --
 + Interact(Inventory inventory): Item &lt;&lt;override&gt;&gt;</panel_attributes>
     <additional_attributes/>
@@ -357,7 +362,7 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1780</x>
+      <x>1350</x>
       <y>880</y>
       <w>80</w>
       <h>140</h>
@@ -370,7 +375,7 @@ extends
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1360</x>
+      <x>930</x>
       <y>1020</y>
       <w>190</w>
       <h>50</h>
