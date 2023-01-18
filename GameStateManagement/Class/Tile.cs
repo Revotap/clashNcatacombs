@@ -132,7 +132,7 @@ namespace GameStateManagement.Class
             if (isLocked)
             {
                 //Key required
-                foreach (Item i in inventory.Item_list)
+                foreach (Item i in inventory.item_list)
                 {
                     if (i != null)
                     {
