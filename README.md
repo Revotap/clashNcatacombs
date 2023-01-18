@@ -8,8 +8,8 @@ This is the project work for the university module "Game Developement". The goal
 ### Basic functionality:
 - [X] The player can be moved with the keyboard or the mouse
 - [ ] Collision detection for player movement
-- [ ] A level contains at least 5 rooms
-- [ ] At least 3 levels are connected threw paths or doors
+- [X] A level contains at least 5 rooms
+- [X] At least 3 rooms are connected threw paths or doors
 - [ ] At least 3 different types of enemies. They differ in look, life total and speed and are placed in a room
 - [ ] Collision detection for enemies
 - [ ] There are items in the rooms for players to pick up
