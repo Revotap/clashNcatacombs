@@ -274,7 +274,7 @@ namespace GameStateManagement
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"));
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_2"));
             peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_3"));
-            peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_4"));
+            //peak_animation.Add(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_4"));
             peaks.SetDoesDamage(1, null, 700);
             peaks.SetIsAnimated(peak_animation, 400, null);
 
@@ -323,7 +323,7 @@ namespace GameStateManagement
                     } else if (map[x, y] == "dr")
                     {
                         tilemap.Add(new TileEntry(door_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x,y] == "") {
+                    } else if (map[x,y] == "" || map[x,y] == "  ") {
                         tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }else
                         {
