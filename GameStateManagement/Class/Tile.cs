@@ -136,7 +136,7 @@ namespace GameStateManagement.Class
                 {
                     if (i != null)
                     {
-                        if (i.Id == requiredItem.Id)
+                        if (i.name == requiredItem.name)
                         {
                             inventory.RemoveItem(i);
                             isLocked = false;

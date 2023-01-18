@@ -8,19 +8,12 @@ using System.Threading.Tasks;
 
 namespace GameStateManagement.Class
 {
-    internal class Fireball : Item
+    internal class Fireball : Spell
     {
         // Constructor
-        public Fireball(Texture2D texture, Vector2 position, Vector2 direction, float speed, float rotation, Vector2 originPosition, Vector2 target)
-        {
-            base.Texture = texture;
-            base.Position = position;
-            base.Direction = direction;
-            base.Speed = speed;
-            base.Rotation= rotation;
-            base.originPosition= originPosition;
-            base.target= target;
-        }
+        public Fireball(String name, Texture2D texture, int rarity, float rotation, float speed) : base(name, texture, rarity, rotation, speed) { }
+
+        private Fireball(String name, Texture2D texture, int rarity, float rotation, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition) : base(name, texture, rarity, rotation, speed, position, direction, targetPosition, originPosition) { }
 
         // Update method
         public override void Update(GameTime gameTime)
@@ -29,10 +22,9 @@ namespace GameStateManagement.Class
             Position += Direction * Speed;
         }
 
-        // Draw method
-        public override void Draw(SpriteBatch spriteBatch)
+        public override Spell Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition)
         {
-            spriteBatch.Draw(Texture, Position, Color.White);
+            return new Fireball(base.name, base.texture, base.rarity, rotation, base.Speed, position, direction, targetPosition, originPosition);
         }
     }
 }

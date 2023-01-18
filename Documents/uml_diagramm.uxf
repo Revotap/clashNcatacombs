@@ -5,7 +5,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>0</y>
+      <y>230</y>
       <w>420</w>
       <h>490</h>
     </coordinates>
@@ -47,7 +47,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>230</x>
-      <y>620</y>
+      <y>850</y>
       <w>500</w>
       <h>250</h>
     </coordinates>
@@ -74,7 +74,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>10</x>
-      <y>920</y>
+      <y>1150</y>
       <w>660</w>
       <h>290</h>
     </coordinates>
@@ -103,7 +103,7 @@
     <id>Relation</id>
     <coordinates>
       <x>70</x>
-      <y>480</y>
+      <y>710</y>
       <w>80</w>
       <h>460</h>
     </coordinates>
@@ -115,7 +115,7 @@ Extends</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>280</x>
-      <y>480</y>
+      <y>710</y>
       <w>80</w>
       <h>160</h>
     </coordinates>
@@ -127,20 +127,19 @@ Extends</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>440</x>
-      <y>0</y>
-      <w>370</w>
-      <h>170</h>
+      <y>230</y>
+      <w>460</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>Item
 &lt;&lt;abstract&gt;&gt;
 --
-- name: String
-- texture: Texture2D
-- sourceTextureResolution: int
-- rarity: int
-- rotation: Vector2
++ name: String
++ texture: Texture2D
++ rarity: int
++ rotation: Vector2
 --
-+ Item(): Item
++ Item(String name, Texture2D texture, int rarity, Vector2 rotation): Item
 --
 </panel_attributes>
     <additional_attributes/>
@@ -148,8 +147,8 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1060</x>
-      <y>0</y>
+      <x>940</x>
+      <y>330</y>
       <w>530</w>
       <h>90</h>
     </coordinates>
@@ -157,7 +156,7 @@ Extends</panel_attributes>
 --
 
 --
-+ Key(String name, int rarity, Texture2D texture, int sourceTextureResolution): Item
++ Key(String name, int rarity, Texture2D texture, Vector2 rotation): Item
 --
 </panel_attributes>
     <additional_attributes/>
@@ -165,48 +164,51 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1060</x>
-      <y>110</y>
+      <x>1720</x>
+      <y>380</y>
       <w>870</w>
-      <h>90</h>
+      <h>140</h>
     </coordinates>
     <panel_attributes>Fireball
 --
 
 --
-+ Fireball(String name, Vector2 position, Vector2 direction, float speed, float rotation, Vector2 originPosition, Vector2 targetPosition): Item
++ Fireball(String name, Vector2 position, Vector2 direction, float speed, float rotation, Vector2 originPosition, Vector2 targetPosition): Fireball
+- Fireball(String name, Texture2D texture, int rarity, Vector2 rotation, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Fireball
+
 --
-+ Update(GameTime gameTime): void</panel_attributes>
++ Update(GameTime gameTime): void &lt;&lt;override&gt;&gt;
++ Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Fireball &lt;&lt;override&gt;&gt;</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>800</x>
-      <y>30</y>
-      <w>280</w>
+      <x>890</x>
+      <y>260</y>
+      <w>640</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>
-    <additional_attributes>260.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>620.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>960</x>
-      <y>40</y>
-      <w>120</w>
-      <h>130</h>
+      <x>1010</x>
+      <y>270</y>
+      <w>30</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>100.0;110.0;10.0;110.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>440</x>
-      <y>250</y>
+      <y>480</y>
       <w>230</w>
       <h>150</h>
     </coordinates>
@@ -217,8 +219,8 @@ extends</panel_attributes>
 --
 + Inventory(): Inventory
 --
-+AddItem(Item item): bool
-+RemoveItem(Item item): bool
++ AddItem(Item item): bool
++ RemoveItem(Item item): bool
 - GetItemName(int index): String
 </panel_attributes>
     <additional_attributes/>
@@ -227,22 +229,22 @@ extends</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>550</x>
-      <y>160</y>
+      <y>370</y>
       <w>40</w>
-      <h>110</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
 m2=n
 
 </panel_attributes>
-    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>550</x>
-      <y>390</y>
+      <y>620</y>
       <w>40</w>
       <h>250</h>
     </coordinates>
@@ -257,9 +259,9 @@ m2=1
     <id>UMLClass</id>
     <coordinates>
       <x>750</x>
-      <y>220</y>
-      <w>710</w>
-      <h>670</h>
+      <y>450</y>
+      <w>720</w>
+      <h>700</h>
     </coordinates>
     <panel_attributes>Tile
 --
@@ -312,17 +314,17 @@ m2=1
     <id>UMLClass</id>
     <coordinates>
       <x>690</x>
-      <y>1110</y>
+      <y>1340</y>
       <w>510</w>
       <h>140</h>
     </coordinates>
     <panel_attributes>TileEntry
 Wrapper class for tiles
 --
-- tile: Tile
-- drawVector: Vector2
++ tile: Tile
++ drawVector: Vector2
 - targetTextureResolution
-- boundingBox: Rectangle
++ boundingBox: Rectangle
 --
 + TileEntry(Tile tile, Vector2 drawVector, int targetTextureResolution): TileEntry</panel_attributes>
     <additional_attributes/>
@@ -331,22 +333,22 @@ Wrapper class for tiles
     <id>Relation</id>
     <coordinates>
       <x>930</x>
-      <y>880</y>
+      <y>1140</y>
       <w>40</w>
-      <h>250</h>
+      <h>220</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=n
 m2=1
 
 </panel_attributes>
-    <additional_attributes>10.0;230.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>1100</x>
-      <y>1000</y>
+      <y>1230</y>
       <w>690</w>
       <h>100</h>
     </coordinates>
@@ -363,20 +365,20 @@ m2=1
     <id>Relation</id>
     <coordinates>
       <x>1350</x>
-      <y>880</y>
+      <y>1140</y>
       <w>80</w>
-      <h>140</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends
 </panel_attributes>
-    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>930</x>
-      <y>1020</y>
+      <y>1250</y>
       <w>190</w>
       <h>50</h>
     </coordinates>
@@ -384,5 +386,41 @@ extends
 m2=1
 </panel_attributes>
     <additional_attributes>10.0;20.0;170.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1510</x>
+      <y>150</y>
+      <w>1020</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>Spell
+--
++ position: Vector2
++ direction: Vector2
++ speed: float
++ targetPosition: Vector2
++ originPosition: Vector2
+--
++ Spell(String name, Texture2D texture, int rarity, Vector2 rotation, float speed): Spell
+# Spell(String name, Texture2D texture, int rarity, Vector2 rotation, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Spell
+--
++ Update(GameTime gameTime): void &lt;&lt;abstract&gt;&gt;
++ Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition) : void &lt;&lt;abstract&gt;&gt;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1590</x>
+      <y>340</y>
+      <w>150</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+extends</panel_attributes>
+    <additional_attributes>130.0;100.0;20.0;100.0;20.0;10.0</additional_attributes>
   </element>
 </diagram>

@@ -10,34 +10,6 @@ namespace GameStateManagement.Class
 {
     internal class Key : Item
     {
-        
-        public Key(String name, int rarity, Texture2D texture, int textureSize)
-        {
-            base.Name = name;
-            base.Texture = texture;
-            base.TextureResolution = textureSize;
-            base.Rarity = rarity;
-
-            if(name == "Silver Key")
-            {
-                base.Id = 1;
-            }else if(name == "Golden key")
-            {
-                base.Id = 2;
-            }else if(name == "Diamond Key")
-            {
-                base.Id = 3;
-            }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            throw new NotImplementedException();
-        }
+        public Key(string name, int rarity, Texture2D texture, float rotation) : base(name, texture, rarity, rotation) { }
     }
 }

@@ -56,7 +56,7 @@ namespace GameStateManagement.Class
         public String GetItemName(int index)
         {
             if (item_list.Count > index && item_list[index] != null) {
-                return item_list[index].Name;
+                return item_list[index].name;
             }
             else
             {

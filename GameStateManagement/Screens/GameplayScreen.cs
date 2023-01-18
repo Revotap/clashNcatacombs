@@ -139,27 +139,20 @@ namespace GameStateManagement
         private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
 
         //Spells
-        Item fireball;
+        Spell fireball;
         Texture2D fireball_texture;
-        List<Item> casted_spells;
+        List<Spell> casted_spells;
         float maxDistanceOfCastedSpell = 2000;
         #endregion Variablen
 
 
         #region Initialization
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public GameplayScreen()
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
         }
 
-        /// <summary>
-        /// Load graphics content for the game.
-        /// </summary>
         public override void LoadContent()
         {
             if (Content == null)
@@ -167,7 +160,6 @@ namespace GameStateManagement
             
             if(player == null)
             {
-                //player = new PlayerOld(Content.Load<Texture2D>("ship"), Content.Load<Texture2D>("laser"), Content.Load<SoundEffect>("laserfire"));
                 List<Texture2D> animation = new List<Texture2D>();
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_0"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_1"));
@@ -350,7 +342,7 @@ namespace GameStateManagement
             deathscreen_sound = Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect");
 
             //Casted spells
-            casted_spells = new List<Item>();
+            casted_spells = new List<Spell>();
             fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\flamethrower_2_2");
 
             //UI
@@ -583,8 +575,10 @@ namespace GameStateManagement
                     //Matrix rotationMatrix = Matrix.CreateRotationZ(rotation);
 
                     // Create a new fireball at the player's position
-                    fireball = new Fireball(fireball_texture, new Vector2(player.PositionX + player.Width/2, player.PositionY + player.Height/4*3), fireballDirection, 10f, rotation, player.Position, mousePosition);
-                    casted_spells.Add(fireball);
+                    //fireball = new Fireball(fireball_texture, new Vector2(player.PositionX + player.Width/2, player.PositionY + player.Height/4*3), fireballDirection, 10f, rotation, player.Position, mousePosition);
+                    fireball = new Fireball("fireball", fireball_texture,0, rotation, 10f);
+                    Vector2 originPosition = new Vector2(player.PositionX + player.Width / 2, player.PositionY + player.Height / 4 * 3);
+                    casted_spells.Add(fireball.Cast(originPosition, rotation, fireballDirection, mousePosition, originPosition));
 
                     // Play the fireball sound
                     //fireballSound.Play();
@@ -671,15 +665,15 @@ namespace GameStateManagement
 
         private void DrawCastedSpells()
         {
-            foreach (Item item in casted_spells)
+            foreach (Spell item in casted_spells)
             {
-                if(item.target.X < item.originPosition.X)
+                if(item.targetPosition.X < item.originPosition.X)
                 {
-                    _spriteBatch.Draw(item.Texture, item.Position, null, Color.White, item.Rotation, new Vector2(item.Texture.Width / 2, item.Texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
+                    _spriteBatch.Draw(item.texture, item.Position, null, Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
                 }
                 else
                 {
-                    _spriteBatch.Draw(item.Texture, item.Position, null, Color.White, item.Rotation, new Vector2(item.Texture.Width / 2, item.Texture.Height / 2), 1.0f, SpriteEffects.None, 0);
+                    _spriteBatch.Draw(item.texture, item.Position, null, Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.None, 0);
                 }
             }
         }

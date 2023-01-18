@@ -11,31 +11,16 @@ namespace GameStateManagement.Class
 {
     internal abstract class Item
     {
-        private String name;
-        private Texture2D texture;
-        private int textureResolution;
-        private int rarity;
-        private int id;
+        public string name { get; set; }
+        public Texture2D texture { get; set; }
+        public int rarity { get; set; }
+        public float rotation { get; set; }
 
-        // Properties
-        public Vector2 Position { get; set; }
-        public Vector2 Direction { get; set; }
-        public float Speed { get; set; }
-        public float Rotation { get; set; }
-        public Vector2 target { get; set; }
-
-        public Vector2 originPosition { get; set; }
-
-        public Item() { }
-
-        public abstract void Update(GameTime gameTime);
-
-        public abstract void Draw(SpriteBatch spriteBatch);
-
-        public Texture2D Texture { get => texture; set => texture = value; }
-        public int TextureResolution { get => textureResolution; set => textureResolution = value; }
-        public string Name { get => name; set => name = value; }
-        public int Rarity { get => rarity; set => rarity = value; }
-        public int Id { get => id; set => id = value; }
+        public Item(String name, Texture2D texture, int rarity, float rotation) {
+            this.name = name;
+            this.texture = texture;
+            this.rarity = rarity;
+            this.rotation = rotation;
+        }
     }
 }
