@@ -349,8 +349,6 @@ namespace GameStateManagement
                     {
                         if (words[1] == "h")
                         {
-                            //throw new Exception("Phrase: " + phrase + ", words[0]: " + words[0] + " words[1]: " + words[1] + " words[2]: " + words[2]);
-
                             Tile tmp = new Tile(horizontal_door_left, true);
                             if (words.Length > 2)
                             {
@@ -406,13 +404,13 @@ namespace GameStateManagement
                             }
                             else if (words[0] == "c1")
                             {
-                                ChestTile tmp = new ChestTile(chest_medium, false, loot_table_chest_small);
+                                ChestTile tmp = new ChestTile(chest_medium, false, loot_table_chest_medium);
                                 tmp.SetIsInteractable(ground.texture(), null, chest_open);
                                 tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                             }
                             else if (words[0] == "c2")
                             {
-                                ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_small);
+                                ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large);
                                 tmp.SetIsInteractable(ground.texture(), null, chest_open);
                                 tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                             }
@@ -433,9 +431,34 @@ namespace GameStateManagement
             {
                 if (crossInteractableTiles[0,i] != null && crossInteractableTiles[1,i] != null) {
                     crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), crossInteractableTiles[1,i], door_open);
-                    crossInteractableTiles[0, i].SetIsLocked(silver_key);
                     crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), crossInteractableTiles[0, i], door_open);
-                    crossInteractableTiles[1, i].SetIsLocked(silver_key);
+                    //0,1 gold,6
+                    if (i == 0 || i == 6)
+                    {
+                        crossInteractableTiles[0, i].SetIsLocked(silver_key);
+                        crossInteractableTiles[1, i].SetIsLocked(silver_key);
+                    } else if (i == 1)
+                    {
+                        crossInteractableTiles[0, i].SetIsLocked(golden_key);
+                        crossInteractableTiles[1, i].SetIsLocked(golden_key);
+                    } else if (i == 7)
+                    {
+                        crossInteractableTiles[0, i].SetIsLocked(diamond_key);
+                        crossInteractableTiles[1, i].SetIsLocked(diamond_key);
+                    }
+                }
+                else
+                {
+                    if(crossInteractableTiles[0, i] != null)
+                    {
+                        crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), null, door_open);
+                        crossInteractableTiles[0, i].SetIsLocked(diamond_key);
+                    }
+                    else if (crossInteractableTiles[1, i] != null)
+                    {
+                        crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), null, door_open);
+                        crossInteractableTiles[1, i].SetIsLocked(diamond_key);
+                    }
                 }
             }
 
