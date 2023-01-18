@@ -86,9 +86,9 @@ namespace GameStateManagement
         private Tile wall_right;
         private Tile ground;
         private Tile background;
-        private Tile chest_small;
-        private Tile chest_medium;
-        private Tile chest_large;
+        private Texture2D chest_small;
+        private Texture2D chest_medium;
+        private Texture2D chest_large;
         private Texture2D horizontal_door_left;
         private Texture2D horizontal_door_right;
         private Texture2D vertical_door_left;
@@ -260,8 +260,12 @@ namespace GameStateManagement
             List<Item> loot_table_chest_large = new List<Item>();
             loot_table_chest_large.Add(diamond_key);
 
+            chest_small = Content.Load<Texture2D>(@"OurContent\Map\chest_small");
+            chest_medium = Content.Load<Texture2D>(@"OurContent\Map\chest_medium");
+            chest_large = Content.Load<Texture2D>(@"OurContent\Map\chest_large");
+
             //Generate Chest Tiles
-            chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), false, loot_table_chest_small);
+            /*chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), false, loot_table_chest_small);
             chest_small.SetIsInteractable(ground.texture(), null, chest_open);
 
             chest_medium = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), false, loot_table_chest_medium);
@@ -269,7 +273,7 @@ namespace GameStateManagement
 
             chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), false, loot_table_chest_large);
             chest_large.SetIsInteractable(ground.texture(), null, chest_open);
-
+            */
             /*door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), true);
             door_left.SetIsLocked(silver_key);
             door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), true);
@@ -396,17 +400,27 @@ namespace GameStateManagement
 
                             if (words[0] == "c0")
                             {
-                                tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (words[0] == "c1")
+                                ChestTile tmp = new ChestTile(chest_small, false, loot_table_chest_small);
+                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (words[0] == "c1")
                             {
-                                tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (words[0] == "c2")
+                                ChestTile tmp = new ChestTile(chest_medium, false, loot_table_chest_small);
+                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (words[0] == "c2")
                             {
-                                tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (words[0] == "pk")
+                                ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_small);
+                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (words[0] == "pk")
                             {
                                 tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (words[0] == "pl")
+                            }
+                            else if (words[0] == "pl")
                             {
                                 player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
                             }
