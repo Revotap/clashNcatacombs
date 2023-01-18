@@ -4,7 +4,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>105</x>
+      <x>45</x>
       <y>120</y>
       <w>825</w>
       <h>765</h>
@@ -47,7 +47,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>555</x>
+      <x>495</x>
       <y>1050</y>
       <w>840</w>
       <h>420</h>
@@ -76,7 +76,7 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>315</x>
+      <x>255</x>
       <y>1500</y>
       <w>990</w>
       <h>420</h>
@@ -105,7 +105,7 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>405</x>
+      <x>345</x>
       <y>870</y>
       <w>120</w>
       <h>660</h>
@@ -117,7 +117,7 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>720</x>
+      <x>660</x>
       <y>870</y>
       <w>120</w>
       <h>210</h>
@@ -129,7 +129,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>960</x>
+      <x>900</x>
       <y>120</y>
       <w>690</w>
       <h>225</h>
@@ -150,7 +150,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1710</x>
+      <x>1650</x>
       <y>270</y>
       <w>795</w>
       <h>135</h>
@@ -167,7 +167,7 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>2880</x>
+      <x>2820</x>
       <y>345</y>
       <w>1305</w>
       <h>210</h>
@@ -187,7 +187,7 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1635</x>
+      <x>1575</x>
       <y>165</y>
       <w>960</w>
       <h>60</h>
@@ -199,7 +199,7 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1815</x>
+      <x>1755</x>
       <y>180</y>
       <w>45</w>
       <h>120</h>
@@ -210,7 +210,7 @@ extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>960</x>
+      <x>900</x>
       <y>495</y>
       <w>345</w>
       <h>225</h>
@@ -232,7 +232,7 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1125</x>
+      <x>1065</x>
       <y>330</y>
       <w>60</w>
       <h>195</h>
@@ -247,7 +247,7 @@ m2=n
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1125</x>
+      <x>1065</x>
       <y>705</y>
       <w>60</w>
       <h>375</h>
@@ -262,7 +262,7 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1425</x>
+      <x>1365</x>
       <y>450</y>
       <w>1080</w>
       <h>1050</h>
@@ -317,7 +317,7 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1335</x>
+      <x>1275</x>
       <y>1785</y>
       <w>765</w>
       <h>210</h>
@@ -336,7 +336,7 @@ Wrapper class for tiles
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1695</x>
+      <x>1635</x>
       <y>1485</y>
       <w>60</w>
       <h>330</h>
@@ -351,7 +351,7 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1950</x>
+      <x>1890</x>
       <y>1620</y>
       <w>1035</w>
       <h>150</h>
@@ -368,7 +368,7 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2325</x>
+      <x>2265</x>
       <y>1485</y>
       <w>120</w>
       <h>165</h>
@@ -381,7 +381,7 @@ extends
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1695</x>
+      <x>1635</x>
       <y>1650</y>
       <w>285</w>
       <h>75</h>
@@ -394,7 +394,7 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>2565</x>
+      <x>2505</x>
       <y>0</y>
       <w>1530</w>
       <h>300</h>
@@ -418,7 +418,7 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2685</x>
+      <x>2625</x>
       <y>285</y>
       <w>225</w>
       <h>180</h>

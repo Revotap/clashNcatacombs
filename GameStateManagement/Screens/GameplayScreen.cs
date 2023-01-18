@@ -89,9 +89,13 @@ namespace GameStateManagement
         private Tile chest_small;
         private Tile chest_medium;
         private Tile chest_large;
-        private Tile door_left;
-        private Tile door_right;
+        private Texture2D horizontal_door_left;
+        private Texture2D horizontal_door_right;
+        private Texture2D vertical_door_left;
+        private Texture2D vertical_door_right;
         private Tile peaks;
+
+        private Tile[,] crossInteractableTiles;
 
         //Sounds
         SoundEffect chest_open;
@@ -241,6 +245,11 @@ namespace GameStateManagement
             ground = new Tile(Content.Load<Texture2D>(@"OurContent\Map\ground"), false);
             background = new Tile(Content.Load<Texture2D>(@"OurContent\Map\background"), false);
 
+            horizontal_door_left = Content.Load<Texture2D>(@"OurContent\Map\horizontal_door_left");
+            horizontal_door_right = Content.Load<Texture2D>(@"OurContent\Map\horizontal_door_right");
+            vertical_door_left = Content.Load<Texture2D>(@"OurContent\Map\vertical_door_left");
+            vertical_door_right = Content.Load<Texture2D>(@"OurContent\Map\vertical_door_right");
+
             //Loot tables for chests
             List<Item> loot_table_chest_small = new List<Item>();
             loot_table_chest_small.Add(silver_key);
@@ -261,13 +270,13 @@ namespace GameStateManagement
             chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), false, loot_table_chest_large);
             chest_large.SetIsInteractable(ground.texture(), null, chest_open);
 
-            door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), true);
+            /*door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), true);
             door_left.SetIsLocked(silver_key);
             door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), true);
             door_right.SetIsLocked(silver_key);
 
             door_left.SetIsInteractable(ground.texture(), door_right, door_open);
-            door_right.SetIsInteractable(ground.texture(), door_left, door_open);
+            door_right.SetIsInteractable(ground.texture(), door_left, door_open);*/
 
             peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), false);
             List<Texture2D> peak_animation = new List<Texture2D>();
@@ -280,72 +289,139 @@ namespace GameStateManagement
 
             Vector2 playerStartingPos = new Vector2(0,0);
 
+            crossInteractableTiles = new Tile[2, 20];
+            
+            for(int i = 0; i< 2; i++)
+            {
+                for(int x = 0; x < 20; x++)
+                {
+                    crossInteractableTiles[i, x] = null;
+                }
+            }
+
             for (int x = 0; x < map.GetLength(0); x++)
             {
                 for(int y = 0; y < map.GetLength(1); y++)
                 {
-                    if (map[x, y] == "wl")
+                    String phrase = map[x, y];
+                    String[] words = phrase.Split('_');
+
+                    if (words[0] == "wl")
                     {
                         tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "wr")
+                    } else if (words[0] == "wr")
                     {
                         tilemap.Add(new TileEntry(wall_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "wt")
+                    } else if (words[0] == "wt")
                     {
                         tilemap.Add(new TileEntry(wall_top, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "wb")
+                    } else if (words[0] == "wb")
                     {
                         tilemap.Add(new TileEntry(wall_bottom, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "cl")
+                    } else if (words[0] == "cl")
                     {
                         tilemap.Add(new TileEntry(wall_leftcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "cr")
+                    } else if (words[0] == "cr")
                     {
                         tilemap.Add(new TileEntry(wall_rightcorner, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }
-                    else if (map[x, y] == "cl2")
+                    else if (words[0] == "cl2")
                     {
                         tilemap.Add(new TileEntry(wall_leftcorner_2, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }
-                    else if (map[x, y] == "cr2")
+                    else if (words[0] == "cr2")
                     {
                         tilemap.Add(new TileEntry(wall_rightcorner_2, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }
-                    else if (map[x, y] == "gr")
+                    else if (words[0] == "gr")
                     {
                         tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "bgrnd")
+                    }
+                    else if (words[0] == "bgrnd")
                     {
                         tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "dl")
+                    }
+                    else if (words[0] == "dl")
                     {
-                        tilemap.Add(new TileEntry(door_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x, y] == "dr")
+                        if (words[1] == "h")
+                        {
+                            //throw new Exception("Phrase: " + phrase + ", words[0]: " + words[0] + " words[1]: " + words[1] + " words[2]: " + words[2]);
+
+                            Tile tmp = new Tile(horizontal_door_left, true);
+                            if (words.Length > 2)
+                            {
+                                crossInteractableTiles[0, int.Parse(words[2])] = tmp;
+                            }
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else if (words[1] == "v")
+                        {
+                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            Tile tmp = new Tile(vertical_door_left, true);
+                            if (words.Length > 2)
+                            {
+                                crossInteractableTiles[0, int.Parse(words[2])] = tmp;
+                            }
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                    }
+                    else if (words[0] == "dr")
                     {
-                        tilemap.Add(new TileEntry(door_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    } else if (map[x,y] == "" || map[x,y] == "  ") {
+                        if (words[1] == "h")
+                        {
+                            Tile tmp = new Tile(horizontal_door_right, true);
+                            if (words.Length > 2)
+                            {
+                                crossInteractableTiles[1, int.Parse(words[2])] = tmp;
+                            }
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else if (words[1] == "v")
+                        {
+                            Tile tmp = new Tile(vertical_door_right, true);
+                            if (words.Length > 2)
+                            {
+                                crossInteractableTiles[1, int.Parse(words[2])] = tmp;
+                            }
+                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                    }
+                    else if (words[0] == "" || words[0] == "  ") {
                         tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                    }else
+                    }
+                    else
                         {
                             tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
 
-                            if (map[x, y] == "c0")
+                            if (words[0] == "c0")
                             {
                                 tilemap.Add(new TileEntry(chest_small, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (map[x, y] == "c1")
+                            } else if (words[0] == "c1")
                             {
                                 tilemap.Add(new TileEntry(chest_medium, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (map[x, y] == "c2")
+                            } else if (words[0] == "c2")
                             {
                                 tilemap.Add(new TileEntry(chest_large, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (map[x, y] == "pk")
+                            } else if (words[0] == "pk")
                             {
                                 tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            } else if (map[x, y] == "pl")
+                            } else if (words[0] == "pl")
                             {
                                 player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
                             }
                         }
+                }
+            }
+
+            //Link cross interactables
+            for(int i = 0; i < 20; i++)
+            {
+                if (crossInteractableTiles[0,i] != null && crossInteractableTiles[1,i] != null) {
+                    crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), crossInteractableTiles[1,i], door_open);
+                    crossInteractableTiles[0, i].SetIsLocked(silver_key);
+                    crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), crossInteractableTiles[0, i], door_open);
+                    crossInteractableTiles[1, i].SetIsLocked(silver_key);
                 }
             }
 

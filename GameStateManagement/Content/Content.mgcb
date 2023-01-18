@@ -787,7 +787,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:OurContent/Map/door_left.png
+/build:OurContent/Map/door_left.png;OurContent/Map/horizontal_door_left.png
 
 #begin OurContent/Map/door_right.png
 /importer:TextureImporter
@@ -799,7 +799,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:OurContent/Map/door_right.png
+/build:OurContent/Map/door_right.png;OurContent/Map/horizontal_door_right.png
 
 #begin OurContent/Map/Dungeon_Tileset.png
 /importer:TextureImporter
@@ -872,6 +872,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OurContent/Map/Peaks/peaks_4.png
+
+#begin OurContent/Map/vertical_door_left.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Map/vertical_door_left.png
+
+#begin OurContent/Map/vertical_door_right.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Map/vertical_door_right.png
 
 #begin OurContent/Map/wall_bottom.png
 /importer:TextureImporter
