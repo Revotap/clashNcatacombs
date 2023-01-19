@@ -134,6 +134,14 @@ namespace GameStateManagement
 
         private Vector2 ui_interact_string_vector = new Vector2(550, 400);
 
+        private Vector2 ui_inventory_equipted = new Vector2(30, 630);
+        private Vector2 ui_inventory_slot_0_vector = new Vector2(354,630);
+        private Texture2D ui_inventory_slot_empty;
+        private Texture2D ui_inventory_slot_selected;
+
+        private Vector2 ui_inventory_drop_text_vector = new Vector2(1000,660);
+        private Vector2 ui_inventory_use_text_vector = new Vector2(1100,660);
+
         //Debug UI
         private bool debug_mode_active = true;
         Texture2D debug_border;
@@ -198,8 +206,11 @@ namespace GameStateManagement
         {
             if (Content == null)
                 Content = new ContentManager(ScreenManager.Game.Services, "Content");
-            
-            if(player == null)
+
+            ui_inventory_slot_empty = Content.Load<Texture2D>(@"OurContent\Utility\Inventory\item");
+            ui_inventory_slot_selected = Content.Load<Texture2D>(@"OurContent\Utility\Inventory\item_selected");
+
+            if (player == null)
             {
                 List<Texture2D> animation = new List<Texture2D>();
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_0"));
@@ -208,7 +219,7 @@ namespace GameStateManagement
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
                 player = new Player("Spieler", 6, 64, 112, new Vector2(-200, -200), animation, 4f, 
                     Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1"),
-                    Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed"), null);
+                    Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed"), null, new Inventory(ui_inventory_slot_0_vector, ui_inventory_slot_empty, ui_inventory_slot_selected));
             }
 
             // Ein SpriteBatch zum Zeichnen
@@ -783,6 +794,39 @@ namespace GameStateManagement
                     player.moveDown();
                 }
 
+                if (keyboardState.IsKeyDown(Keys.D1))
+                {
+                    player.inventory.selectItemNumber(0);
+                }
+                if (keyboardState.IsKeyDown(Keys.D2))
+                {
+                    player.inventory.selectItemNumber(1);
+                }
+                if (keyboardState.IsKeyDown(Keys.D3))
+                {
+                    player.inventory.selectItemNumber(2);
+                }
+                if (keyboardState.IsKeyDown(Keys.D4))
+                {
+                    player.inventory.selectItemNumber(3);
+                }
+                if (keyboardState.IsKeyDown(Keys.D5))
+                {
+                    player.inventory.selectItemNumber(4);
+                }
+                if (keyboardState.IsKeyDown(Keys.D6))
+                {
+                    player.inventory.selectItemNumber(5);
+                }
+                if (keyboardState.IsKeyDown(Keys.D7))
+                {
+                    player.inventory.selectItemNumber(6);
+                }
+                if (keyboardState.IsKeyDown(Keys.D8))
+                {
+                    player.inventory.selectItemNumber(7);
+                }
+
                 if (keyboardState.IsKeyDown(Keys.E) && previousKeyboardState.IsKeyUp(Keys.E))
                 {
                     if(interactableNearby != null)
@@ -949,10 +993,17 @@ namespace GameStateManagement
                 _spriteBatch.Draw(healthbar_list[i], new Rectangle((int)healthbar_vector.X - (int)cameraPos.X + targetTextureResolution * i, (int)healthbar_vector.Y - (int) cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
             }
 
+            player.inventory.Draw(_spriteBatch, cameraPos, targetTextureResolution);
+
+            _spriteBatch.DrawString(spriteFont, "Equipted", new Vector2((int)ui_inventory_equipted.X - (int)cameraPos.X - 10, (int)ui_inventory_equipted.Y - (int)cameraPos.Y - 30), Color.White);
+            _spriteBatch.Draw(ui_inventory_slot_empty, new Rectangle((int)ui_inventory_equipted.X - (int)cameraPos.X, (int)ui_inventory_equipted.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+
             if (interactableNearby != null)
             {
                 _spriteBatch.DrawString(spriteFont, "Interact [E]", new Vector2(ui_interact_string_vector.X - cameraPos.X, ui_interact_string_vector.Y - cameraPos.Y), Color.White);
-            } 
+            }
+            _spriteBatch.DrawString(spriteFont, "Drop [Q]", new Vector2(ui_inventory_drop_text_vector.X - cameraPos.X, ui_inventory_drop_text_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Use/Equipt [F]", new Vector2(ui_inventory_use_text_vector.X - cameraPos.X, ui_inventory_use_text_vector.Y - cameraPos.Y), Color.White);
         }
 
         private void DrawDebugUI()

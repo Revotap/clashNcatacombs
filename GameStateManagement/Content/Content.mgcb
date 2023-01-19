@@ -1515,6 +1515,30 @@
 /processorParam:TextureFormat=Color
 /build:OurContent/Utility/Heart/heart_half.png
 
+#begin OurContent/Utility/Inventory/item_selected.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Utility/Inventory/item_selected.png
+
+#begin OurContent/Utility/Inventory/item.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Utility/Inventory/item.png
+
 #begin OurContent/Utility/Inventory/square_up_down_4.png
 /importer:TextureImporter
 /processor:TextureProcessor
