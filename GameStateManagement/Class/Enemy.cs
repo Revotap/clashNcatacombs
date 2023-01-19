@@ -61,7 +61,7 @@ namespace GameStateManagement.Class
             throw new NotImplementedException();
         }
 
-        public override void updatePosition(List<Rectangle> collisionObjects)
+        public override void updatePosition(List<TileEntry> collisionObjects)
         {
             throw new NotImplementedException();
         }

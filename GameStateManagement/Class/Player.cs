@@ -26,19 +26,19 @@ namespace GameStateManagement.Class
         {
             this.inventory= new Inventory();
         }
-        #endregion
 
+
+        #endregion
         #region Methods
-        
-        public override void updatePosition(List<Rectangle> collisionObjects)
+        public override void updatePosition(List<TileEntry> collisionObjects)
         {
-            foreach(Rectangle item in collisionObjects)
+            foreach(TileEntry item in collisionObjects)
             {
-                if(this.velocity.X > 0 && this.isTouchingRight(item) || this.velocity.X < 0 && this.isTouchingLeft(item)){
+                if(this.velocity.X > 0 && this.isTouchingRight(item.boundingBox) || this.velocity.X < 0 && this.isTouchingLeft(item.boundingBox)){
                     velocity = new Vector2(0, velocity.Y);
                 }
 
-                if(this.velocity.Y < 0 && this.isTouchingUp(item) || this.velocity.Y > 0 && this.isTouchingDown(item))
+                if(this.velocity.Y < 0 && this.isTouchingUp(item.boundingBox) || this.velocity.Y > 0 && this.isTouchingDown(item.boundingBox))
                 {
                     velocity = new Vector2(velocity.X, 0);
                 }

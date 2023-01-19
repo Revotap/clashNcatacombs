@@ -54,7 +54,7 @@ namespace GameStateManagement.Class
         #endregion
 
         #region Methods
-        public abstract void updatePosition(List<Rectangle> collisionObjects);
+        public abstract void updatePosition(List<TileEntry> collisionObjects);
         public abstract bool isTouchingLeft(Rectangle item);
         public abstract bool isTouchingRight(Rectangle item);
         public abstract bool isTouchingUp(Rectangle item);

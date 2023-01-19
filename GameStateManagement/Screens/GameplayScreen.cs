@@ -107,7 +107,7 @@ namespace GameStateManagement
         private Camera worldCamera;
 
         //Colliders
-        List<Rectangle> collider_map;
+        List<TileEntry> collider_map;
         private Vector2 oldPlayerPosition;
         private Vector2 playerVelocity;
         private bool collisionDetected = false;
@@ -472,15 +472,16 @@ namespace GameStateManagement
             cameraPos = new Vector3(player.position.X, player.position.Y, 0);
             worldCamera = new Camera(viewport);
 
-            collider_map = new List<Rectangle>();
+            collider_map = new List<TileEntry>();
             interactable_map = new List<TileEntry>();
             damage_tile_map= new List<TileEntry>();
+
             //generate collision map and interactable map
             foreach(TileEntry item in tilemap)
             {
                 if (item.tile.getHasCollision())
                 {
-                    collider_map.Add(item.boundingBox);
+                    collider_map.Add(item);
                 }
                 if(item.tile.getIsInteractable())
                 {
@@ -539,6 +540,16 @@ namespace GameStateManagement
 
             }
 
+            //Check if collision map has changed
+            for(int i = collider_map.Count - 1; i >= 0; i--)
+            {
+                if (!collider_map[i].tile.getHasCollision())
+                {
+                    collider_map.Remove(collider_map[i]);
+                }
+            }
+
+
             //Interactables
             //Check and remove already interacted interactables
             for (int i = interactable_map.Count - 1; i >= 0; i--)
@@ -550,7 +561,8 @@ namespace GameStateManagement
             }
             foreach (TileEntry item in interactable_map)
             {
-                if (item.boundingBox.Intersects(player.BoundingBox()))
+                //Increase size of player boundingBox temporarily to check for interaction
+                if (item.boundingBox.Intersects(new Rectangle(player.BoundingBox().X - 20, player.BoundingBox().Y - 20, player.BoundingBox().Width + 40, player.BoundingBox().Height + 40)))
                 {
                     debug_ui_interactable_collision = true;
                     interactableNearby = item;
@@ -579,7 +591,6 @@ namespace GameStateManagement
 
             //Check collision with walls
             player.updatePosition(collider_map);
-
 
             //UI
 
@@ -835,9 +846,11 @@ namespace GameStateManagement
 
         private void DrawDebugUI()
         {
-            foreach(Rectangle item in collider_map)
+            _spriteBatch.Draw(debug_border, new Rectangle(player.BoundingBox().X - 20, player.BoundingBox().Y - 20, player.BoundingBox().Width + 40, player.BoundingBox().Height + 40), Color.Purple);
+
+            foreach(TileEntry item in collider_map)
             {
-                _spriteBatch.Draw(debug_border, item, Color.White);
+                _spriteBatch.Draw(debug_border, item.boundingBox, Color.White);
             }
 
             foreach(TileEntry item in interactable_map)
