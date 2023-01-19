@@ -7,11 +7,11 @@ This is the project work for the university module "Game Developement". The goal
 ## Requirements:
 ### Basic functionality:
 - [X] The player can be moved with the keyboard or the mouse
-- [ ] Collision detection for player movement
+- [X] Collision detection for player movement
 - [X] A level contains at least 5 rooms
 - [X] At least 3 rooms are connected threw paths or doors
 - [ ] At least 3 different types of enemies. They differ in look, life total and speed and are placed in a room
-- [ ] Collision detection for enemies
+- [X] Collision detection for enemies
 - [ ] There are items in the rooms for players to pick up
 - [ ] Enemies and players can attack each other
 - [X] Visual representation of attacks in form of hitpoints or healthbar
