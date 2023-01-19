@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameStateManagement.Class
 {
-    internal abstract class Item
+    internal class Item
     {
         public string name { get; set; }
         public Texture2D texture { get; set; }

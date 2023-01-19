@@ -299,9 +299,9 @@ namespace GameStateManagement
             vampire_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Vampire\v1\vampire_v1_4"));
 
             //Items
-            Key silver_key = new Key("Silver Key", 0, null, 16);
-            Key golden_key = new Key("Golden Key", 1, null, 16);
-            Key diamond_key = new Key("Diamond Key", 2, null, 16);
+            Key silver_key = new Key("Silver Key", 0, Content.Load<Texture2D>(@"OurContent\Map\silver_key"), 16);
+            Key golden_key = new Key("Golden Key", 1, Content.Load<Texture2D>(@"OurContent\Map\golden_key"), 16);
+            Key diamond_key = new Key("Diamond Key", 2, Content.Load<Texture2D>(@"OurContent\Map\golden_key"), 16);
 
             //Loot tables for chests
             List<Item> loot_table_chest_small = new List<Item>();
@@ -717,6 +717,13 @@ namespace GameStateManagement
                 enemy_map[x].Update(gameTime);
                 if (enemy_map[x].Health() <= 0)
                 {
+                    Item loot = enemy_map[x].dropItem();
+                    List<Item> item = new List<Item>();
+                    item.Add(loot);
+                    ChestTile tmp_tile = new ChestTile(loot.texture, false, item);
+                    tmp_tile.SetIsInteractable(ground.texture(), null, chest_open);
+                    TileEntry tmp = new TileEntry(tmp_tile, enemy_map[x].position, targetTextureResolution);
+                    interactable_map.Add(tmp) ;
                     enemy_map.Remove(enemy_map[x]);
                 }
             }
@@ -771,7 +778,10 @@ namespace GameStateManagement
                 {
                     if(interactableNearby != null)
                     {
-                        player.inventory.AddItem(interactableNearby.tile.Interact(player.inventory));
+                        if (!player.inventory.invenotryFull())
+                        {
+                            player.inventory.AddItem(interactableNearby.tile.Interact(player.inventory));
+                        }
                     }
                 }
 
@@ -864,6 +874,11 @@ namespace GameStateManagement
             foreach(TileEntry entry in tilemap)
             {
                 _spriteBatch.Draw(entry.tile.texture(), new Rectangle((int)entry.drawVector.X, (int) entry.drawVector.Y, 64, 64), Color.White);
+            }
+
+            foreach (TileEntry entry in interactable_map)
+            {
+                _spriteBatch.Draw(entry.tile.texture(), new Rectangle((int)entry.drawVector.X, (int)entry.drawVector.Y, 64, 64), Color.White);
             }
         }
 

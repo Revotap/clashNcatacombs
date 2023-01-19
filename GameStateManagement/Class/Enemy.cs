@@ -33,7 +33,9 @@ namespace GameStateManagement.Class
         #region Methods
         public Item dropItem()
         {
-            return loot_table[new Random().Next(0, loot_table.Count)];
+            Item selectedItem = loot_table[new Random().Next(0, loot_table.Count)];
+            Item loot = new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation);
+            return loot;
         }
 
         public int ExpGrant()

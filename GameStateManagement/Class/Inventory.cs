@@ -17,6 +17,17 @@ namespace GameStateManagement.Class
             item_list = new List<Item>();
         }
 
+        public bool invenotryFull()
+        {
+            if (item_list.Count >= inventorySlots)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public bool AddItem(Item item) {
             if(item != null)
             {
