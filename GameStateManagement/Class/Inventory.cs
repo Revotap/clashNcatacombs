@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameStateManagement.Class
 {
@@ -93,21 +89,39 @@ namespace GameStateManagement.Class
             selected_item_id = index;
         }
 
-        public void Draw(SpriteBatch _spriteBatch, Vector3 cameraPos, int targetTextureResolution)
+        public void Draw(SpriteBatch _spriteBatch, SpriteFont spriteFont, Vector3 cameraPos, int targetTextureResolution)
         {
-            for(int i = 0; i < inventorySlots; i++)
+            int tmp = 0;
+            foreach(Item item in item_list)
             {
-                if(selected_item_id == i)
+                if (selected_item_id == tmp)
                 {
-                    _spriteBatch.Draw(selected_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * i) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                    _spriteBatch.DrawString(spriteFont, item.name, new Vector2(drawVector.X + 200 - cameraPos.X, drawVector.Y - cameraPos.Y - 40), Color.White);
+                    _spriteBatch.Draw(selected_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
                 }
                 else
                 {
-                    _spriteBatch.Draw(empty_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * i) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                    _spriteBatch.Draw(empty_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                }
+                tmp++;
+            }
+            for(; tmp < inventorySlots; tmp++)
+            {
+                if (selected_item_id == tmp)
+                {
+                    if(selected_item_id < item_list.Count)
+                    {
+                        _spriteBatch.DrawString(spriteFont, item_list[tmp].name, new Vector2(drawVector.X + 200 - cameraPos.X, drawVector.Y - cameraPos.Y - 40), Color.White);
+                    }
+                    _spriteBatch.Draw(selected_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                }
+                else
+                {
+                    _spriteBatch.Draw(empty_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
                 }
             }
 
-            int tmp = 0;
+            tmp = 0;
             foreach(Item item in item_list)
             {
                 _spriteBatch.Draw(item.texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);

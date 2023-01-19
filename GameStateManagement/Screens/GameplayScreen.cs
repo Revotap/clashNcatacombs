@@ -312,7 +312,7 @@ namespace GameStateManagement
             //Items
             Key silver_key = new Key("Silver Key", 0, Content.Load<Texture2D>(@"OurContent\Map\silver_key"), 16);
             Key golden_key = new Key("Golden Key", 1, Content.Load<Texture2D>(@"OurContent\Map\golden_key"), 16);
-            Key diamond_key = new Key("Diamond Key", 2, Content.Load<Texture2D>(@"OurContent\Map\golden_key"), 16);
+            Key diamond_key = new Key("Diamond Key", 2, Content.Load<Texture2D>(@"OurContent\Map\diamond_key"), 16);
 
             //Loot tables for chests
             List<Item> loot_table_chest_small = new List<Item>();
@@ -976,7 +976,6 @@ namespace GameStateManagement
             {
                 if(item.targetPosition.X < item.originPosition.X)
                 {
-                    //_spriteBatch.Draw(item.texture, item.Position, new Rectangle(0, 0, targetTextureResolution, targetTextureResolution), Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
                     _spriteBatch.Draw(item.texture, item.Position,null, Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
                 }
                 else
@@ -993,14 +992,21 @@ namespace GameStateManagement
                 _spriteBatch.Draw(healthbar_list[i], new Rectangle((int)healthbar_vector.X - (int)cameraPos.X + targetTextureResolution * i, (int)healthbar_vector.Y - (int) cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
             }
 
-            player.inventory.Draw(_spriteBatch, cameraPos, targetTextureResolution);
+            player.inventory.Draw(_spriteBatch,spriteFont, cameraPos, targetTextureResolution);
 
             _spriteBatch.DrawString(spriteFont, "Equipted", new Vector2((int)ui_inventory_equipted.X - (int)cameraPos.X - 10, (int)ui_inventory_equipted.Y - (int)cameraPos.Y - 30), Color.White);
             _spriteBatch.Draw(ui_inventory_slot_empty, new Rectangle((int)ui_inventory_equipted.X - (int)cameraPos.X, (int)ui_inventory_equipted.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
 
             if (interactableNearby != null)
             {
-                _spriteBatch.DrawString(spriteFont, "Interact [E]", new Vector2(ui_interact_string_vector.X - cameraPos.X, ui_interact_string_vector.Y - cameraPos.Y), Color.White);
+                if(interactableNearby.tile.getRequiredItem() != null)
+                {
+                    _spriteBatch.DrawString(spriteFont, "Interact [E][" + interactableNearby.tile.getRequiredItem().name + "]", new Vector2(ui_interact_string_vector.X - cameraPos.X, ui_interact_string_vector.Y - cameraPos.Y), Color.White);
+                }
+                else
+                {
+                    _spriteBatch.DrawString(spriteFont, "Interact [E]", new Vector2(ui_interact_string_vector.X - cameraPos.X, ui_interact_string_vector.Y - cameraPos.Y), Color.White);
+                }
             }
             _spriteBatch.DrawString(spriteFont, "Drop [Q]", new Vector2(ui_inventory_drop_text_vector.X - cameraPos.X, ui_inventory_drop_text_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "Use/Equipt [F]", new Vector2(ui_inventory_use_text_vector.X - cameraPos.X, ui_inventory_use_text_vector.Y - cameraPos.Y), Color.White);
