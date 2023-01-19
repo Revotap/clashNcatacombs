@@ -13,6 +13,7 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 #endregion Using Statements
 
@@ -68,6 +69,9 @@ namespace GameStateManagement
             graphics.ApplyChanges();
             IsMouseVisible = true;
             base.Initialize();
+
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0f / 60.0f);
         }
 
         /// <summary>

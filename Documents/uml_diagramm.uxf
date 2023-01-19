@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.0.0">
-  <zoom_level>15</zoom_level>
+  <zoom_level>14</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>45</x>
-      <y>120</y>
-      <w>825</w>
-      <h>765</h>
+      <x>14</x>
+      <y>0</y>
+      <w>770</w>
+      <h>854</h>
     </coordinates>
     <panel_attributes>Character
 &lt;&lt;abstract&gt;&gt;
@@ -17,6 +17,7 @@
 # baseDamage: int
 # boundingBox: Rectangle
 # movementSpeed: float
+# velocity: Vector2
 + position: Vector2
 # width: int
 # height: int
@@ -35,6 +36,11 @@
 	List&lt;Texture2D&gt; textures, float movementSpeed, SoundEffect damageReceivedSound,
 	SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Character
 --
++ updatePosition(List&lt;Rectangle&gt; collisionObjects) : void &lt;&lt;abstract&gt;&gt;
++ isTouchingLeft(Rectangle item) : bool &lt;&lt;abstract&gt;&gt;
++ isTouchingRight(Rectangle item) : bool &lt;&lt;abstract&gt;&gt;
++ isTouchingUp(Rectangle item) : bool &lt;&lt;abstract&gt;&gt;
++ isTouchingDown(Rectangle item) : bool &lt;&lt;abstract&gt;&gt;
 + Update(GameTime gameTime): void &lt;&lt;abstract&gt;&gt;
 + moveUp(): void &lt;&lt;abstract&gt;&gt;
 + moveDown(): void &lt;&lt;abstract&gt;&gt;
@@ -47,10 +53,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>495</x>
-      <y>1050</y>
-      <w>840</w>
-      <h>420</h>
+      <x>434</x>
+      <y>938</y>
+      <w>784</w>
+      <h>504</h>
     </coordinates>
     <panel_attributes>Player
 --
@@ -64,6 +70,11 @@
 List&lt;Texture2D&gt; textures, float movementSpeed, SoundEffect damageReceivedSound,
 SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 --
++ updatePosition(List&lt;Rectangle&gt; collisionObjects) : void &lt;&lt;override&gt;&gt;
++ isTouchingLeft(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingRight(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingUp(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingDown(Rectangle item) : bool &lt;&lt;override&gt;&gt;
 + moveUp(): void &lt;&lt;override&gt;&gt;
 + moveDown(): void &lt;&lt;override&gt;
 + moveLeft(): void &lt;&lt;override&gt;&gt;
@@ -76,10 +87,10 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>255</x>
-      <y>1500</y>
-      <w>990</w>
-      <h>420</h>
+      <x>210</x>
+      <y>1470</y>
+      <w>924</w>
+      <h>504</h>
     </coordinates>
     <panel_attributes>Enemy
 --
@@ -90,6 +101,11 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 --
 + Enemy(String name, List&lt;Texture2D&gt; texture, int width, int height, List&lt;Item&gt; loot, int exp): Enemy 
 --
++ updatePosition(List&lt;Rectangle&gt; collisionObjects) : void &lt;&lt;override&gt;&gt;
++ isTouchingLeft(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingRight(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingUp(Rectangle item) : bool &lt;&lt;override&gt;&gt;
++ isTouchingDown(Rectangle item) : bool &lt;&lt;override&gt;&gt;
 + moveUp(): void &lt;&lt;override&gt;&gt;
 + moveDown(): void &lt;&lt;override&gt;
 + moveLeft(): void &lt;override&gt;&gt;
@@ -105,34 +121,34 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>345</x>
-      <y>870</y>
-      <w>120</w>
-      <h>660</h>
+      <x>294</x>
+      <y>840</y>
+      <w>112</w>
+      <h>658</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;420.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;450.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>660</x>
-      <y>870</y>
-      <w>120</w>
-      <h>210</h>
+      <x>588</x>
+      <y>840</y>
+      <w>112</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>900</x>
-      <y>120</y>
-      <w>690</w>
-      <h>225</h>
+      <x>812</x>
+      <y>0</y>
+      <w>644</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>Item
 &lt;&lt;abstract&gt;&gt;
@@ -150,10 +166,10 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1650</x>
-      <y>270</y>
-      <w>795</w>
-      <h>135</h>
+      <x>1512</x>
+      <y>140</y>
+      <w>742</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>Key
 --
@@ -167,10 +183,10 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>2820</x>
-      <y>345</y>
-      <w>1305</w>
-      <h>210</h>
+      <x>2590</x>
+      <y>322</y>
+      <w>1218</w>
+      <h>196</h>
     </coordinates>
     <panel_attributes>Fireball
 --
@@ -187,22 +203,22 @@ Extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1575</x>
-      <y>165</y>
-      <w>960</w>
-      <h>60</h>
+      <x>1442</x>
+      <y>42</y>
+      <w>882</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>
-    <additional_attributes>620.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>610.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1755</x>
-      <y>180</y>
-      <w>45</w>
-      <h>120</h>
+      <x>1610</x>
+      <y>56</y>
+      <w>42</w>
+      <h>112</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
@@ -210,10 +226,10 @@ extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>900</x>
-      <y>495</y>
-      <w>345</w>
-      <h>225</h>
+      <x>812</x>
+      <y>350</y>
+      <w>322</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>Inventory
 --
@@ -232,10 +248,10 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1065</x>
-      <y>330</y>
-      <w>60</w>
-      <h>195</h>
+      <x>966</x>
+      <y>196</y>
+      <w>56</w>
+      <h>182</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
@@ -247,25 +263,25 @@ m2=n
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1065</x>
-      <y>705</y>
-      <w>60</w>
-      <h>375</h>
+      <x>966</x>
+      <y>546</y>
+      <w>56</w>
+      <h>420</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
 m2=1
 
 </panel_attributes>
-    <additional_attributes>10.0;230.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;280.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1365</x>
-      <y>450</y>
-      <w>1080</w>
-      <h>1050</h>
+      <x>1246</x>
+      <y>308</y>
+      <w>1008</w>
+      <h>980</h>
     </coordinates>
     <panel_attributes>Tile
 --
@@ -317,10 +333,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1275</x>
-      <y>1785</y>
-      <w>765</w>
-      <h>210</h>
+      <x>1162</x>
+      <y>1554</y>
+      <w>714</w>
+      <h>196</h>
     </coordinates>
     <panel_attributes>TileEntry
 Wrapper class for tiles
@@ -336,10 +352,10 @@ Wrapper class for tiles
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1635</x>
-      <y>1485</y>
-      <w>60</w>
-      <h>330</h>
+      <x>1498</x>
+      <y>1274</y>
+      <w>56</w>
+      <h>308</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=n
@@ -351,10 +367,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1890</x>
-      <y>1620</y>
-      <w>1035</w>
-      <h>150</h>
+      <x>1736</x>
+      <y>1400</y>
+      <w>966</w>
+      <h>140</h>
     </coordinates>
     <panel_attributes>ChestTile
 --
@@ -368,10 +384,10 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2265</x>
-      <y>1485</y>
-      <w>120</w>
-      <h>165</h>
+      <x>2086</x>
+      <y>1274</y>
+      <w>112</w>
+      <h>154</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends
@@ -381,10 +397,10 @@ extends
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1635</x>
-      <y>1650</y>
-      <w>285</w>
-      <h>75</h>
+      <x>1498</x>
+      <y>1428</y>
+      <w>266</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=-
 m2=1
@@ -394,10 +410,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>2505</x>
+      <x>2296</x>
       <y>0</y>
-      <w>1530</w>
-      <h>300</h>
+      <w>1428</w>
+      <h>280</h>
     </coordinates>
     <panel_attributes>Spell
 --
@@ -418,10 +434,10 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2625</x>
-      <y>285</y>
-      <w>225</w>
-      <h>180</h>
+      <x>2408</x>
+      <y>266</y>
+      <w>210</w>
+      <h>168</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>

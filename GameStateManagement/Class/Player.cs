@@ -29,33 +29,83 @@ namespace GameStateManagement.Class
         #endregion
 
         #region Methods
+        
+        public override void updatePosition(List<Rectangle> collisionObjects)
+        {
+            foreach(Rectangle item in collisionObjects)
+            {
+                if(this.velocity.X > 0 && this.isTouchingRight(item) || this.velocity.X < 0 && this.isTouchingLeft(item)){
+                    velocity = new Vector2(0, velocity.Y);
+                }
+
+                if(this.velocity.Y < 0 && this.isTouchingUp(item) || this.velocity.Y > 0 && this.isTouchingDown(item))
+                {
+                    velocity = new Vector2(velocity.X, 0);
+                }
+            }
+            position += velocity;
+            velocity = Vector2.Zero;
+        }
+        
         public override void moveUp()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                position = new Vector2(position.X, position.Y - movementSpeed);
+                velocity = new Vector2(velocity.X, velocity.Y - movementSpeed);
             }
         }
         public override void moveDown()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                position = new Vector2(position.X, position.Y + movementSpeed);
+                velocity = new Vector2(velocity.X, velocity.Y + movementSpeed);
             }
         }
         public override void moveLeft()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                position = new Vector2(position.X - movementSpeed, position.Y);
+                velocity = new Vector2(velocity.X - movementSpeed, velocity.Y);
             }
         }
         public override void moveRight()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                position = new Vector2(position.X + movementSpeed, position.Y);
+                velocity = new Vector2(velocity.X + movementSpeed, velocity.Y);
             }
+        }
+
+        public override bool isTouchingLeft(Rectangle rect)
+        {
+            return rect.Right > boundingBox.Left + velocity.X &&
+                rect.Left < boundingBox.Left &&
+                rect.Bottom > boundingBox.Top &&
+                rect.Top < boundingBox.Bottom;
+        }
+
+        public override bool isTouchingRight(Rectangle rect)
+        {
+            return rect.Left < boundingBox.Right + velocity.X &&
+                rect.Right > boundingBox.Right &&
+                rect.Bottom > boundingBox.Top &&
+                rect.Top < boundingBox.Bottom;
+        }
+
+        public override bool isTouchingUp(Rectangle rect)
+        {
+            return rect.Bottom > boundingBox.Top + velocity.Y &&
+                rect.Top < boundingBox.Top &&
+                rect.Right > boundingBox.Left &&
+                rect.Left < boundingBox.Right;
+        }
+
+        public override bool isTouchingDown(Rectangle rect)
+        {
+            return rect.Top < boundingBox.Bottom + velocity.Y &&
+                rect.Bottom > boundingBox.Bottom &&
+                rect.Right > boundingBox.Left &&
+                rect.Left < boundingBox.Right;
         }
 
         public override void Update(GameTime gameTime)

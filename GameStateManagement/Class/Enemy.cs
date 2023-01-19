@@ -61,6 +61,11 @@ namespace GameStateManagement.Class
             throw new NotImplementedException();
         }
 
+        public override void updatePosition(List<Rectangle> collisionObjects)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.boundingBox.X = (int)position.X;
@@ -107,6 +112,26 @@ namespace GameStateManagement.Class
         public void moveTo(Vector2 position)
         {
 
+        }
+
+        public override bool isTouchingLeft(Rectangle item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool isTouchingRight(Rectangle item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool isTouchingUp(Rectangle item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool isTouchingDown(Rectangle item)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

@@ -17,6 +17,7 @@ namespace GameStateManagement.Class
         protected int baseDamage = 1;
         protected Rectangle boundingBox;
         protected float movementSpeed = 2f;
+        protected Vector2 velocity { get; set; } = Vector2.Zero;
         public Vector2 position { get; set; }
         protected int width;
         protected int height;
@@ -53,6 +54,11 @@ namespace GameStateManagement.Class
         #endregion
 
         #region Methods
+        public abstract void updatePosition(List<Rectangle> collisionObjects);
+        public abstract bool isTouchingLeft(Rectangle item);
+        public abstract bool isTouchingRight(Rectangle item);
+        public abstract bool isTouchingUp(Rectangle item);
+        public abstract bool isTouchingDown(Rectangle item);
         public abstract void Update(GameTime gameTime);
         public abstract void moveUp();
         public abstract void moveDown();
@@ -73,6 +79,7 @@ namespace GameStateManagement.Class
             return null;
         }
         public Item EquiptedItem() { return equiptedItem; }
+        public Vector2 GetVelocity() { return velocity; }
         #endregion
 
     }

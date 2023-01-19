@@ -29,6 +29,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Timers;
 using System.Xml.Serialization;
 
 #endregion Using Statements
@@ -108,6 +109,8 @@ namespace GameStateManagement
         //Colliders
         List<Rectangle> collider_map;
         private Vector2 oldPlayerPosition;
+        private Vector2 playerVelocity;
+        private bool collisionDetected = false;
 
         //Interactables
         List<TileEntry> interactable_map;
@@ -151,6 +154,8 @@ namespace GameStateManagement
         private Vector2 debug_ui_inventory_2_vector = new Vector2(0,310);
         private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
 
+        private Vector2 debug_ui_player_velocity_vector = new Vector2(0, 370);
+
         //Spells
         Spell fireball;
         Texture2D fireball_texture;
@@ -178,7 +183,7 @@ namespace GameStateManagement
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_1"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_2"));
                 animation.Add(Content.Load<Texture2D>(@"OurContent\Player\Wizard\wizard_idle_3"));
-                player = new Player("Spieler", 6, 64, 112, new Vector2(0,1000), animation, 4f, 
+                player = new Player("Spieler", 6, 64, 112, new Vector2(-200, -200), animation, 4f, 
                     Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_1"),
                     Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed"), null);
             }
@@ -231,7 +236,7 @@ namespace GameStateManagement
 
             map = LevelManager.map_01;
 
-            tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
+            //tileset = Content.Load<Texture2D>(@"OurContent\Map\Dungeon_Tileset");
             tilemap = new List<TileEntry>();
             //Generate TileEntries
             wall_leftcorner = new Tile(Content.Load<Texture2D>(@"OurContent\Map\bottom_left_corner"), true);
@@ -347,6 +352,7 @@ namespace GameStateManagement
                     }
                     else if (words[0] == "dl")
                     {
+                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                         if (words[1] == "h")
                         {
                             Tile tmp = new Tile(horizontal_door_left, true);
@@ -358,7 +364,7 @@ namespace GameStateManagement
                         }
                         else if (words[1] == "v")
                         {
-                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            
                             Tile tmp = new Tile(vertical_door_left, true);
                             if (words.Length > 2)
                             {
@@ -369,6 +375,7 @@ namespace GameStateManagement
                     }
                     else if (words[0] == "dr")
                     {
+                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                         if (words[1] == "h")
                         {
                             Tile tmp = new Tile(horizontal_door_right, true);
@@ -385,7 +392,6 @@ namespace GameStateManagement
                             {
                                 crossInteractableTiles[1, int.Parse(words[2])] = tmp;
                             }
-                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                             tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                         }
                     }
@@ -420,6 +426,7 @@ namespace GameStateManagement
                             }
                             else if (words[0] == "pl")
                             {
+                                //Position the player directly without checking collisions when loading the game   
                                 player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
                             }
                         }
@@ -493,7 +500,8 @@ namespace GameStateManagement
 
             //Casted spells
             casted_spells = new List<Spell>();
-            fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\flamethrower_2_2");
+            //fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\flamethrower_2_2");
+            fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
 
             //UI
             heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
@@ -525,7 +533,6 @@ namespace GameStateManagement
             previousKeyboardState = currentKeyboardState;
 
             currentMouseState = Mouse.GetState();
-            //previousMouseState = currentMouseState;
 
             if (!otherScreenHasFocus)
             {
@@ -534,14 +541,14 @@ namespace GameStateManagement
 
             //Interactables
             //Check and remove already interacted interactables
-            for(int i = interactable_map.Count -1; i >= 0; i--)
+            for (int i = interactable_map.Count - 1; i >= 0; i--)
             {
                 if (!interactable_map[i].tile.getIsInteractable())
                 {
                     interactable_map.Remove(interactable_map[i]);
                 }
             }
-            foreach(TileEntry item in interactable_map)
+            foreach (TileEntry item in interactable_map)
             {
                 if (item.boundingBox.Intersects(player.BoundingBox()))
                 {
@@ -552,14 +559,14 @@ namespace GameStateManagement
                 interactableNearby = null;
                 debug_ui_interactable_collision = false;
             }
-            if(interactable_map.Count == 0)
+            if (interactable_map.Count == 0)
             {
                 interactableNearby = null;
                 debug_ui_interactable_collision = false;
             }
 
             //Damage from world
-            foreach(TileEntry item in damage_tile_map)
+            foreach (TileEntry item in damage_tile_map)
             {
                 if (item.boundingBox.Intersects(player.BoundingBox()))
                 {
@@ -571,30 +578,23 @@ namespace GameStateManagement
             }
 
             //Check collision with walls
-            foreach(Rectangle item in collider_map)
-            {
-                if (item.Intersects(player.BoundingBox()))
-                {
-                    debug_ui_wall_collision = true;
-                    //player.position = oldPlayerPosition;
-                    break;
-                }
-                debug_ui_wall_collision = false;
-            }
-            
+            player.updatePosition(collider_map);
+
+
             //UI
 
             //HealthBar
-            if(player.Health() >= 2)
+            if (player.Health() >= 2)
             {
                 healthbar_list[0] = heart_full;
-                if(player.Health() >= 4)
+                if (player.Health() >= 4)
                 {
                     healthbar_list[1] = heart_full;
-                    if(player.Health() >= 6)
+                    if (player.Health() >= 6)
                     {
                         healthbar_list[2] = heart_full;
-                    }else if(player.Health() == 5)
+                    }
+                    else if (player.Health() == 5)
                     {
                         healthbar_list[2] = heart_half;
                     }
@@ -602,7 +602,8 @@ namespace GameStateManagement
                     {
                         healthbar_list[2] = heart_empty;
                     }
-                }else if(player.Health() == 3)
+                }
+                else if (player.Health() == 3)
                 {
                     healthbar_list[1] = heart_half;
                     healthbar_list[2] = heart_empty;
@@ -612,7 +613,9 @@ namespace GameStateManagement
                     healthbar_list[1] = heart_empty;
                     healthbar_list[2] = heart_empty;
                 }
-            }else if(player.Health() == 1) {
+            }
+            else if (player.Health() == 1)
+            {
                 healthbar_list[0] = heart_half;
                 healthbar_list[1] = heart_empty;
                 healthbar_list[2] = heart_empty;
@@ -624,13 +627,7 @@ namespace GameStateManagement
                 healthbar_list[2] = heart_empty;
             }
 
-            oldPlayerPosition = player.position;
-
-
-            player.Update(gameTime);
-            peaks.Update(gameTime);
-
-            if(player.Health() <= 0)
+            if (player.Health() <= 0)
             {
                 ScreenManager.RemoveScreen(this);
                 MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\you_died_soundeffect"));
@@ -642,7 +639,7 @@ namespace GameStateManagement
             cameraPos.Y = (player.position.Y - 260) * -1;
 
             //Update casted spells
-            for(int i = casted_spells.Count-1; i >= 0; i--)
+            for (int i = casted_spells.Count - 1; i >= 0; i--)
             {
                 casted_spells[i].Update(gameTime);
                 if (Vector2.Distance(casted_spells[i].Position, casted_spells[i].originPosition) > maxDistanceOfCastedSpell)
@@ -650,9 +647,12 @@ namespace GameStateManagement
                     casted_spells.Remove(casted_spells[i]);
                 }
             }
+            player.Update(gameTime);
+            peaks.Update(gameTime);
 
             base.Update(gameTime, otherScreenHasFocus, false);
         }
+
 
         public override void HandleInput(InputState input)
         {
@@ -666,23 +666,14 @@ namespace GameStateManagement
 
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
             MouseState mouseState = Mouse.GetState();
-            GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
 
-            // The game pauses either if the user presses the pause button, or if
-            // they unplug the active gamepad. This requires us to keep track of
-            // whether a gamepad was ever plugged in, because we don't want to pause
-            // on PC if they are playing with a keyboard and have no gamepad at all!
-            bool gamePadDisconnected = !gamePadState.IsConnected &&
-                                       input.GamePadWasConnected[playerIndex];
-
-            if (input.IsPauseGame(ControllingPlayer) || gamePadDisconnected)
+            if (input.IsPauseGame(ControllingPlayer))
             {
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
             else
             {
                 // Otherwise move the player position.
-                Vector2 movement = Vector2.Zero;
 
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
@@ -710,8 +701,8 @@ namespace GameStateManagement
                         player.inventory.AddItem(interactableNearby.tile.Interact(player.inventory));
                     }
                 }
+
                 //Cast fireball
-                //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 if(currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton != ButtonState.Pressed)
                 {
                     // Get the mouse position in world coordinates
@@ -819,7 +810,8 @@ namespace GameStateManagement
             {
                 if(item.targetPosition.X < item.originPosition.X)
                 {
-                    _spriteBatch.Draw(item.texture, item.Position, null, Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
+                    //_spriteBatch.Draw(item.texture, item.Position, new Rectangle(0, 0, targetTextureResolution, targetTextureResolution), Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
+                    _spriteBatch.Draw(item.texture, item.Position,null, Color.White, item.rotation, new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1.0f, SpriteEffects.FlipHorizontally, 0);
                 }
                 else
                 {
@@ -868,6 +860,8 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "inventory_1: " + player.inventory.GetItemName(1), new Vector2(debug_ui_inventory_1_vector.X - cameraPos.X, debug_ui_inventory_1_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "inventory_2: " + player.inventory.GetItemName(2), new Vector2(debug_ui_inventory_2_vector.X - cameraPos.X, debug_ui_inventory_2_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "inventory_3: " + player.inventory.GetItemName(3), new Vector2(debug_ui_inventory_3_vector.X - cameraPos.X, debug_ui_inventory_3_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "velocity: [" + player.GetVelocity().X + "," + player.GetVelocity().Y + "]", new Vector2(debug_ui_player_velocity_vector.X - cameraPos.X, debug_ui_player_velocity_vector.Y - cameraPos.Y), Color.White);
+
         }
     }
     #endregion
