@@ -28,10 +28,10 @@ namespace GameStateManagement.Class
             {
                 //Returns random loot from Loottable
                 //return new Key("loot from table", 0, null, 16);
-                if(base.interactionSound != null)
+                /*if(base.interactionSound != null)
                 {
                     base.interactionSound.Play();
-                }
+                }*/
                 return loot[new Random().Next(0, loot.Count)];
             }
             else

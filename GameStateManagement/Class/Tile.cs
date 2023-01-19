@@ -145,10 +145,10 @@ namespace GameStateManagement.Class
                             {
                                 neightbourInteractable.Interact();
                             }
-                            if (interactionSound != null)
+                            /*if (interactionSound != null)
                             {
                                 interactionSound.Play();
-                            }
+                            }*/
                             return Interact(inventory);
                         }
                     }
@@ -162,10 +162,10 @@ namespace GameStateManagement.Class
                 {
                     neightbourInteractable.Interact();
                 }
-                if (interactionSound != null)
+                /*if (interactionSound != null)
                 {
                     interactionSound.Play();
-                }
+                }*/
 
                 return null;
             }
@@ -182,6 +182,14 @@ namespace GameStateManagement.Class
                     attackSound.Play();
                 }
                 target.receiveDamage(null,baseDamage);
+            }
+        }
+
+        public void PlayInteractionSound()
+        {
+            if (interactionSound != null)
+            {
+                interactionSound.Play();
             }
         }
     }

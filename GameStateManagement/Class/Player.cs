@@ -49,28 +49,28 @@ namespace GameStateManagement.Class
         
         public override void moveUp()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
                 velocity = new Vector2(velocity.X, velocity.Y - movementSpeed);
             }
         }
         public override void moveDown()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 velocity = new Vector2(velocity.X, velocity.Y + movementSpeed);
             }
         }
         public override void moveLeft()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 velocity = new Vector2(velocity.X - movementSpeed, velocity.Y);
             }
         }
         public override void moveRight()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 velocity = new Vector2(velocity.X + movementSpeed, velocity.Y);
             }

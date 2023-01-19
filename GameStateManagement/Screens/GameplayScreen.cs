@@ -571,8 +571,6 @@ namespace GameStateManagement
                                                        bool coveredByOtherScreen)
         {
             currentKeyboardState = Keyboard.GetState();
-            previousKeyboardState = currentKeyboardState;
-
             currentMouseState = Mouse.GetState();
 
             if (!otherScreenHasFocus)
@@ -755,7 +753,7 @@ namespace GameStateManagement
             // Look up inputs for the active player profile.
             int playerIndex = (int)ControllingPlayer.Value;
 
-            KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
+            KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
 
             if (input.IsPauseGame(ControllingPlayer))
@@ -765,35 +763,55 @@ namespace GameStateManagement
             else
             {
                 // Otherwise move the player position.
-
-                if (keyboardState.IsKeyDown(Keys.Left))
+                if (keyboardState.IsKeyDown(Keys.A))
                 {
                     player.moveLeft();
                 }
 
-                if (keyboardState.IsKeyDown(Keys.Right))
+                if (keyboardState.IsKeyDown(Keys.D))
                 {
                     player.moveRight();
                 }
                 
-                if(keyboardState.IsKeyDown(Keys.Up))
+                if(keyboardState.IsKeyDown(Keys.W))
                 {
                     player.moveUp();
                 }
 
-                if (keyboardState.IsKeyDown(Keys.Down))
+                if (keyboardState.IsKeyDown(Keys.S))
                 {
                     player.moveDown();
                 }
-                if (keyboardState.IsKeyDown(Keys.E))
+
+                if (keyboardState.IsKeyDown(Keys.E) && previousKeyboardState.IsKeyUp(Keys.E))
                 {
                     if(interactableNearby != null)
                     {
-                        if (!player.inventory.invenotryFull())
+                        Item loot = interactableNearby.tile.Interact(player.inventory);
+
+                        if(loot != null)
                         {
-                            player.inventory.AddItem(interactableNearby.tile.Interact(player.inventory));
+                            if (!player.inventory.invenotryFull())
+                            {
+                                player.inventory.AddItem(loot);
+                                interactableNearby.tile.PlayInteractionSound();
+                            }
+                            else
+                            {
+                                List<Item> item = new List<Item>();
+                                item.Add(loot);
+                                ChestTile tmp_tile = new ChestTile(loot.texture, false, item);
+                                tmp_tile.SetIsInteractable(ground.texture(), null, null);
+                                TileEntry tmp = new TileEntry(tmp_tile, new Vector2(interactableNearby.boundingBox.X, interactableNearby.boundingBox.Y), targetTextureResolution);
+                                interactable_map.Add(tmp);
+                            }
+                        }
+                        else
+                        {
+                            interactableNearby.tile.PlayInteractionSound();
                         }
                     }
+                    previousKeyboardState = keyboardState;
                 }
 
                 //Cast fireball
@@ -824,6 +842,7 @@ namespace GameStateManagement
                 {
                     previousMouseState = currentMouseState;
                 }
+                previousKeyboardState = keyboardState;
             }
         }
 
