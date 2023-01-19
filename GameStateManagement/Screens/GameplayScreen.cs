@@ -101,6 +101,7 @@ namespace GameStateManagement
         //Sounds
         SoundEffect chest_open;
         SoundEffect door_open;
+        Song game_finished;
 
         //Camera
         private Vector3 cameraPos;
@@ -246,6 +247,7 @@ namespace GameStateManagement
             vampire_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
             vampire_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
             vampire_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
+            game_finished = Content.Load<Song>(@"OurContent\Audio\SoundEffects\quest_complete");
 
             map = new string[,] { { "wl", "wt", "wt", "dl", "dl", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
@@ -499,8 +501,8 @@ namespace GameStateManagement
             for(int i = 0; i < 20; i++)
             {
                 if (crossInteractableTiles[0,i] != null && crossInteractableTiles[1,i] != null) {
-                    crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), crossInteractableTiles[1,i], door_open);
-                    crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), crossInteractableTiles[0, i], door_open);
+                        crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), crossInteractableTiles[1, i], door_open);
+                        crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), crossInteractableTiles[0, i], door_open);
                     //0,1 gold,6
                     if (i == 0 || i == 6)
                     {
@@ -520,12 +522,12 @@ namespace GameStateManagement
                 {
                     if(crossInteractableTiles[0, i] != null)
                     {
-                        crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), null, door_open);
+                        crossInteractableTiles[0, i].SetIsInteractable(ground.texture(), null, game_finished, false);
                         crossInteractableTiles[0, i].SetIsLocked(diamond_key);
                     }
                     else if (crossInteractableTiles[1, i] != null)
                     {
-                        crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), null, door_open);
+                        crossInteractableTiles[1, i].SetIsInteractable(ground.texture(), null, game_finished, false);
                         crossInteractableTiles[1, i].SetIsLocked(diamond_key);
                     }
                 }
@@ -845,6 +847,21 @@ namespace GameStateManagement
                     player.inventory.equipSelectedItem(player);
                 }
 
+                if (keyboardState.IsKeyDown(Keys.Q) && previousKeyboardState.IsKeyUp(Keys.Q))
+                {
+                    Item loot = player.inventory.dropSelectedItem();
+
+                    if(loot != null)
+                    {
+                        List<Item> item = new List<Item>();
+                        item.Add(loot);
+                        ChestTile tmp_tile = new ChestTile(loot.texture, false, item);
+                        tmp_tile.SetIsInteractable(ground.texture(), null, chest_open);
+                        TileEntry tmp = new TileEntry(tmp_tile, player.position, targetTextureResolution);
+                        interactable_map.Add(tmp);
+                    }
+                }
+
                 if (keyboardState.IsKeyDown(Keys.E) && previousKeyboardState.IsKeyUp(Keys.E))
                 {
                     if(interactableNearby != null)
@@ -870,7 +887,14 @@ namespace GameStateManagement
                         }
                         else
                         {
-                            interactableNearby.tile.PlayInteractionSound();
+                            if (interactableNearby.tile.hasInteractionSong())
+                            {
+                                interactableNearby.tile.PlayInteractionSong();
+                            }
+                            else
+                            {
+                                interactableNearby.tile.PlayInteractionSound();
+                            }
                         }
                     }
                     previousKeyboardState = keyboardState;

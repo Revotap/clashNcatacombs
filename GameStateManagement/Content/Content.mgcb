@@ -165,6 +165,12 @@
 /processorParam:Quality=Best
 /build:OurContent/Audio/SoundEffects/Player_Killed.wav
 
+#begin OurContent/Audio/SoundEffects/quest_complete.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:OurContent/Audio/SoundEffects/quest_complete.ogg
+
 #begin OurContent/Audio/SoundEffects/skull_explosion.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

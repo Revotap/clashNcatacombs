@@ -98,13 +98,13 @@ namespace GameStateManagement.Class
             }
         }
 
-        public Item dropSelectedItem(int index)
+        public Item dropSelectedItem()
         {
             if (selected_item_id < item_list.Count && item_list[selected_item_id] != null)
             {
-                //Item tmp = item_list[selected_item_id];
-
-                return item_list[selected_item_id];
+                Item item = item_list[selected_item_id];
+                RemoveItemWithIndex(selected_item_id);
+                return item;
             }
             else
             {

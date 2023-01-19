@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,8 @@ namespace GameStateManagement.Class
         private Tile neightbourInteractable;
         protected SoundEffect interactionSound { get; set; }
 
+        protected Song interactionSong { get; set; }
+
         private Item requiredItem { get; set; }
         public Item getRequiredItem() { return requiredItem; }
 
@@ -66,6 +69,14 @@ namespace GameStateManagement.Class
             this.interactedTexture = interactedTexture;
             this.neightbourInteractable= neighbourInteractable;
             this.interactionSound= interactionSound;
+        }
+
+        public void SetIsInteractable(Texture2D interactedTexture, Tile neighbourInteractable, Song interactionSong, bool test)
+        {
+            this.isInteractable = true;
+            this.interactedTexture = interactedTexture;
+            this.neightbourInteractable = neighbourInteractable;
+            this.interactionSong = interactionSong;
         }
 
         public void SetIsLocked(Item requiredItem)
@@ -191,6 +202,23 @@ namespace GameStateManagement.Class
             {
                 interactionSound.Play();
             }
+        }
+
+        public void PlayInteractionSong()
+        {
+            if (interactionSong != null)
+            {
+                MediaPlayer.Play(interactionSong);
+            }
+        }
+
+        public bool hasInteractionSong()
+        {
+            if(interactionSong != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
