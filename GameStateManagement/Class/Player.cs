@@ -163,6 +163,15 @@ namespace GameStateManagement.Class
         }
 
         public int getCurrentXP() { return currentXP; }
+        public override void addXP(int xp) {
+            currentXP += xp;
+            if(currentXP >= maxXPForCurrentLevel)
+            {
+                level++;
+                currentXP = currentXP - maxXPForCurrentLevel;
+                maxXPForCurrentLevel = maxXPForCurrentLevel * level;
+            }
+        }
         public int getMaxXForCurrentLevel() { return maxXPForCurrentLevel; }
         public int getLevel() { return level; }
         #endregion

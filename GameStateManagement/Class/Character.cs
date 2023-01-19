@@ -80,6 +80,19 @@ namespace GameStateManagement.Class
         }
         public Item EquiptedItem() { return equiptedItem; }
         public Vector2 GetVelocity() { return velocity; }
+        public bool hit(Vector2 targetVector)
+        {
+            if (targetVector.X > position.X && targetVector.X < (position.X + height) && targetVector.Y > position.Y && targetVector.Y < (position.Y + width))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public virtual void addXP(int xp) { }
         #endregion
 
     }

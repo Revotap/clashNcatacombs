@@ -92,6 +92,15 @@ namespace GameStateManagement.Class
             }
             
             health -= damage;
+
+            if (this.health <= 0)
+            {
+                if (deathSound != null)
+                {
+                    deathSound.Play();
+                }
+                source.addXP(exp);
+            }
         }
 
         public override void attack(GameTime gameTime, Character target)

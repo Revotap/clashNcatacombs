@@ -153,14 +153,37 @@ namespace GameStateManagement
         private Vector2 debug_ui_inventory_1_vector = new Vector2(0, 280);
         private Vector2 debug_ui_inventory_2_vector = new Vector2(0,310);
         private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
-
         private Vector2 debug_ui_player_velocity_vector = new Vector2(0, 370);
+        private Vector2 debug_ui_player_level_vector = new Vector2(0, 400);
+        private Vector2 debug_ui_player_currentXP_vector = new Vector2(0,430);
+        private Vector2 debug_ui_player_maxXP_vector = new Vector2(0, 460);
 
         //Spells
         Spell fireball;
         Texture2D fireball_texture;
         List<Spell> casted_spells;
         float maxDistanceOfCastedSpell = 2000;
+
+        //Enemies
+        List<Enemy> enemy_map= new List<Enemy>();
+        //Loot tables
+        List<Item> enemyLootTable_small= new List<Item>();
+        List<Item> enemyLootTable_medium = new List<Item>();
+        List<Item> enemyLootTable_boss = new List<Item>();
+        //Animations
+        List<Texture2D> skeleton_animation = new List<Texture2D>();
+        List<Texture2D> skull_animation = new List<Texture2D>();
+        List<Texture2D> vampire_animation = new List<Texture2D>();
+        //Sounds
+        SoundEffect skeleton_damageReceivedSound;
+        SoundEffect skeleton_deathSound;
+        SoundEffect skeleton_attackWithNoWeaponSound;
+        SoundEffect skull_damageReceivedSound;
+        SoundEffect skull_deathSound;
+        SoundEffect skull_attackWithNoWeaponSound;
+        SoundEffect vampire_damageReceivedSound;
+        SoundEffect vampire_deathSound;
+        SoundEffect vampire_attackWithNoWeaponSound;
         #endregion Variablen
 
 
@@ -201,15 +224,15 @@ namespace GameStateManagement
             SoundEffect.MasterVolume = 0.05f;
             chest_open = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Coins");
             door_open = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\door_wood_open");
-
-            //Items
-            Key silver_key = new Key("Silver Key", 0, null, 16);
-            Key golden_key = new Key("Golden Key", 1, null, 16);
-            Key diamond_key = new Key("Diamond Key", 2, null, 16);
-
-            //World
-            //Room r1 = new Room(24, 24);
-            //map = r1.Map;
+            skeleton_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
+            skeleton_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
+            skeleton_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
+            skull_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
+            skull_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
+            skull_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
+            vampire_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
+            vampire_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
+            vampire_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
 
             map = new string[,] { { "wl", "wt", "wt", "dl", "dl", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
@@ -221,17 +244,6 @@ namespace GameStateManagement
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr"},
                                     { "cl", "wb", "wb", "wb", "wb", "wb", "wb", "cr"}};
-
-            //FILESYSTEM TEST
-            /*XmlSerializer serializer = new XmlSerializer(typeof(string[,]));
-            using(FileStream fs = new FileStream("level.xml", FileMode.Create) )
-            {
-                serializer.Serialize(fs, map);
-            }*/
-
-            //MySerializer.Serialize("level.xml", map);
-
-            //map = MySerializer.Deserialize("level.xml");
 
 
             map = LevelManager.map_01;
@@ -255,37 +267,9 @@ namespace GameStateManagement
             vertical_door_left = Content.Load<Texture2D>(@"OurContent\Map\vertical_door_left");
             vertical_door_right = Content.Load<Texture2D>(@"OurContent\Map\vertical_door_right");
 
-            //Loot tables for chests
-            List<Item> loot_table_chest_small = new List<Item>();
-            loot_table_chest_small.Add(silver_key);
-
-            List<Item> loot_table_chest_medium = new List<Item>();
-            loot_table_chest_medium.Add(golden_key);
-
-            List<Item> loot_table_chest_large = new List<Item>();
-            loot_table_chest_large.Add(diamond_key);
-
             chest_small = Content.Load<Texture2D>(@"OurContent\Map\chest_small");
             chest_medium = Content.Load<Texture2D>(@"OurContent\Map\chest_medium");
             chest_large = Content.Load<Texture2D>(@"OurContent\Map\chest_large");
-
-            //Generate Chest Tiles
-            /*chest_small = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_small"), false, loot_table_chest_small);
-            chest_small.SetIsInteractable(ground.texture(), null, chest_open);
-
-            chest_medium = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_medium"), false, loot_table_chest_medium);
-            chest_medium.SetIsInteractable(ground.texture(), null, chest_open);
-
-            chest_large = new ChestTile(Content.Load<Texture2D>(@"OurContent\Map\chest_large"), false, loot_table_chest_large);
-            chest_large.SetIsInteractable(ground.texture(), null, chest_open);
-            */
-            /*door_left = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_left"), true);
-            door_left.SetIsLocked(silver_key);
-            door_right = new Tile(Content.Load<Texture2D>(@"OurContent\Map\door_right"), true);
-            door_right.SetIsLocked(silver_key);
-
-            door_left.SetIsInteractable(ground.texture(), door_right, door_open);
-            door_right.SetIsInteractable(ground.texture(), door_left, door_open);*/
 
             peaks = new Tile(Content.Load<Texture2D>(@"OurContent\Map\Peaks\peaks_1"), false);
             List<Texture2D> peak_animation = new List<Texture2D>();
@@ -297,6 +281,43 @@ namespace GameStateManagement
             peaks.SetIsAnimated(peak_animation, 400, null);
 
             Vector2 playerStartingPos = new Vector2(0,0);
+
+            //Animations
+            skeleton_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skeleton\v1\skeleton_v1_1"));
+            skeleton_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skeleton\v1\skeleton_v1_2"));
+            skeleton_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skeleton\v1\skeleton_v1_3"));
+            skeleton_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skeleton\v1\skeleton_v1_4"));
+
+            skull_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skull\v1\skull_v1_1"));
+            skull_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skull\v1\skull_v1_2"));
+            skull_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skull\v1\skull_v1_3"));
+            skull_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skull\v1\skull_v1_4"));
+
+            vampire_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Vampire\v1\vampire_v1_1"));
+            vampire_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Vampire\v1\vampire_v1_2"));
+            vampire_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Vampire\v1\vampire_v1_3"));
+            vampire_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Vampire\v1\vampire_v1_4"));
+
+            //Items
+            Key silver_key = new Key("Silver Key", 0, null, 16);
+            Key golden_key = new Key("Golden Key", 1, null, 16);
+            Key diamond_key = new Key("Diamond Key", 2, null, 16);
+
+            //Loot tables for chests
+            List<Item> loot_table_chest_small = new List<Item>();
+            loot_table_chest_small.Add(silver_key);
+
+            List<Item> loot_table_chest_medium = new List<Item>();
+            loot_table_chest_medium.Add(golden_key);
+
+            List<Item> loot_table_chest_large = new List<Item>();
+            loot_table_chest_large.Add(diamond_key);
+
+            //Loot tables for enemies
+            enemyLootTable_small.Add(silver_key);
+            enemyLootTable_medium.Add(golden_key);
+            enemyLootTable_boss.Add(diamond_key);
+
 
             crossInteractableTiles = new Tile[2, 20];
             
@@ -345,6 +366,25 @@ namespace GameStateManagement
                     else if (words[0] == "gr")
                     {
                         tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+
+                        Random random = new Random();
+                        if(random.Next(0,50) <= 2)
+                        {
+                            int tmp = random.Next(0, 9);
+                            if(0 <= tmp && tmp < 3)
+                            {
+                                enemy_map.Add(new Enemy("Skull", 1, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skull_animation, 1.0f, skull_damageReceivedSound, skull_deathSound, skull_attackWithNoWeaponSound, enemyLootTable_small, 2));
+                                
+                            }else if(3 <= tmp && tmp < 6)
+                            {
+                                enemy_map.Add(new Enemy("Skeleton", 2, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 1.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
+                            }
+                            else
+                            {
+                                enemy_map.Add(new Enemy("Vampire", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), vampire_animation, 1.0f, vampire_damageReceivedSound, vampire_deathSound, vampire_attackWithNoWeaponSound, enemyLootTable_boss, 2));
+                            }
+                        }
+
                     }
                     else if (words[0] == "bgrnd")
                     {
@@ -653,9 +693,31 @@ namespace GameStateManagement
             for (int i = casted_spells.Count - 1; i >= 0; i--)
             {
                 casted_spells[i].Update(gameTime);
+
                 if (Vector2.Distance(casted_spells[i].Position, casted_spells[i].originPosition) > maxDistanceOfCastedSpell)
                 {
                     casted_spells.Remove(casted_spells[i]);
+                }
+                else
+                {
+                    for (int x = enemy_map.Count - 1; x >= 0; x--)
+                    {
+                        if (enemy_map[x].hit(casted_spells[i].Position))
+                        {
+                            enemy_map[x].receiveDamage(player, 2);
+                            casted_spells.Remove(casted_spells[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (int x = enemy_map.Count - 1; x >= 0; x--)
+            {
+                enemy_map[x].Update(gameTime);
+                if (enemy_map[x].Health() <= 0)
+                {
+                    enemy_map.Remove(enemy_map[x]);
                 }
             }
             player.Update(gameTime);
@@ -807,7 +869,11 @@ namespace GameStateManagement
 
         private void DrawEnemy()
         {
-
+            foreach(Enemy item in enemy_map)
+            {
+                _spriteBatch.DrawString(spriteFont, item.Health().ToString(), new Vector2(item.position.X, item.position.Y - 20), Color.Red);
+                _spriteBatch.Draw(item.Texture(), new Rectangle((int)item.position.X, (int)item.position.Y, item.Width(), item.Height()), Color.White);
+            }
         }
         
         private void DrawPlayer()
@@ -874,7 +940,9 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "inventory_2: " + player.inventory.GetItemName(2), new Vector2(debug_ui_inventory_2_vector.X - cameraPos.X, debug_ui_inventory_2_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "inventory_3: " + player.inventory.GetItemName(3), new Vector2(debug_ui_inventory_3_vector.X - cameraPos.X, debug_ui_inventory_3_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "velocity: [" + player.GetVelocity().X + "," + player.GetVelocity().Y + "]", new Vector2(debug_ui_player_velocity_vector.X - cameraPos.X, debug_ui_player_velocity_vector.Y - cameraPos.Y), Color.White);
-
+            _spriteBatch.DrawString(spriteFont, "level: " + player.getLevel(), new Vector2(debug_ui_player_level_vector.X - cameraPos.X, debug_ui_player_level_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "current_xp: " + player.getCurrentXP(), new Vector2(debug_ui_player_currentXP_vector.X - cameraPos.X, debug_ui_player_currentXP_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "max_xp: " + player.getMaxXForCurrentLevel(), new Vector2(debug_ui_player_maxXP_vector.X - cameraPos.X, debug_ui_player_maxXP_vector.Y - cameraPos.Y), Color.White);
         }
     }
     #endregion
