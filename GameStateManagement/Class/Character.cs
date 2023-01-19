@@ -34,7 +34,7 @@ namespace GameStateManagement.Class
         protected SoundEffect attackWithNoWeaponSound;
         protected SoundEffect deathSound;
 
-        protected Item equiptedItem;
+        public Item equiptedItem;
         #endregion
 
         #region Constructor
@@ -93,6 +93,13 @@ namespace GameStateManagement.Class
         }
 
         public virtual void addXP(int xp) { }
+
+        public Item equipItem(Item item)
+        {
+            Item tmp = equiptedItem;
+            equiptedItem = item;
+            return tmp;
+        }
         #endregion
 
     }

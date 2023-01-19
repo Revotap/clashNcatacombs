@@ -165,10 +165,12 @@ namespace GameStateManagement
         private Vector2 debug_ui_player_level_vector = new Vector2(0, 400);
         private Vector2 debug_ui_player_currentXP_vector = new Vector2(0,430);
         private Vector2 debug_ui_player_maxXP_vector = new Vector2(0, 460);
+        private Vector2 debug_ui_player_equippedItem_vector = new Vector2(0, 490);
 
         //Spells
         Spell fireball;
         Texture2D fireball_texture;
+        Texture2D iceball_texture;
         List<Spell> casted_spells;
         float maxDistanceOfCastedSpell = 2000;
 
@@ -313,22 +315,31 @@ namespace GameStateManagement
             Key silver_key = new Key("Silver Key", 0, Content.Load<Texture2D>(@"OurContent\Map\silver_key"), 16);
             Key golden_key = new Key("Golden Key", 1, Content.Load<Texture2D>(@"OurContent\Map\golden_key"), 16);
             Key diamond_key = new Key("Diamond Key", 2, Content.Load<Texture2D>(@"OurContent\Map\diamond_key"), 16);
+            iceball_texture = Content.Load<Texture2D>(@"OurContent\Spells\ice_spell");
+            fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
+            Spell ice_spell = new Spell("Ice Spell", iceball_texture, 1, 2.0f, 15f);
+            Spell fire_spell = new Spell("Fire Spell", fireball_texture, 1, 2.0f, 10f);
+            player.equipItem(fire_spell);
 
             //Loot tables for chests
             List<Item> loot_table_chest_small = new List<Item>();
             loot_table_chest_small.Add(silver_key);
+            //loot_table_chest_small.Add(ice_spell);
 
             List<Item> loot_table_chest_medium = new List<Item>();
             loot_table_chest_medium.Add(golden_key);
+            loot_table_chest_medium.Add(ice_spell);
 
             List<Item> loot_table_chest_large = new List<Item>();
             loot_table_chest_large.Add(diamond_key);
 
             //Loot tables for enemies
             enemyLootTable_small.Add(silver_key);
+            enemyLootTable_small.Add(ice_spell);
             enemyLootTable_medium.Add(golden_key);
+            enemyLootTable_medium.Add(ice_spell);
             enemyLootTable_boss.Add(diamond_key);
-
+            enemyLootTable_boss.Add(ice_spell);
 
             crossInteractableTiles = new Tile[2, 20];
             
@@ -553,7 +564,7 @@ namespace GameStateManagement
             //Casted spells
             casted_spells = new List<Spell>();
             //fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\flamethrower_2_2");
-            fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
+            //fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
 
             //UI
             heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
@@ -701,6 +712,7 @@ namespace GameStateManagement
             //Update casted spells
             for (int i = casted_spells.Count - 1; i >= 0; i--)
             {
+
                 casted_spells[i].Update(gameTime);
 
                 if (Vector2.Distance(casted_spells[i].Position, casted_spells[i].originPosition) > maxDistanceOfCastedSpell)
@@ -732,6 +744,7 @@ namespace GameStateManagement
                 }
             }
 
+            //Update enemies
             for (int x = enemy_map.Count - 1; x >= 0; x--)
             {
                 enemy_map[x].Update(gameTime);
@@ -827,6 +840,11 @@ namespace GameStateManagement
                     player.inventory.selectItemNumber(7);
                 }
 
+                if(keyboardState.IsKeyDown(Keys.F) && previousKeyboardState.IsKeyUp(Keys.F))
+                {
+                    player.inventory.equipSelectedItem(player);
+                }
+
                 if (keyboardState.IsKeyDown(Keys.E) && previousKeyboardState.IsKeyUp(Keys.E))
                 {
                     if(interactableNearby != null)
@@ -865,17 +883,15 @@ namespace GameStateManagement
                     Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
 
                     // Get the direction from the player to the mouse
-                    Vector2 fireballDirection = new Vector2(mousePosition.X - player.position.X, mousePosition.Y - player.position.Y);
-                    fireballDirection.Normalize();
+                    Vector2 spellDirection = new Vector2(mousePosition.X - player.position.X, mousePosition.Y - player.position.Y);
+                    spellDirection.Normalize();
 
-                    float rotation = (float)Math.Atan2(fireballDirection.X, fireballDirection.Y);
-                    //Matrix rotationMatrix = Matrix.CreateRotationZ(rotation);
+                    float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
-                    // Create a new fireball at the player's position
-                    //fireball = new Fireball(fireball_texture, new Vector2(player.PositionX + player.Width/2, player.PositionY + player.Height/4*3), fireballDirection, 10f, rotation, player.Position, mousePosition);
-                    fireball = new Fireball("fireball", fireball_texture,0, rotation, 10f);
+                    // Create a new spell at the player's position
+                    Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().Speed);
                     Vector2 originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
-                    casted_spells.Add(fireball.Cast(originPosition, rotation, fireballDirection, mousePosition, originPosition));
+                    casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
 
                     // Play the fireball sound
                     //fireballSound.Play();
@@ -994,9 +1010,12 @@ namespace GameStateManagement
 
             player.inventory.Draw(_spriteBatch,spriteFont, cameraPos, targetTextureResolution);
 
-            _spriteBatch.DrawString(spriteFont, "Equipted", new Vector2((int)ui_inventory_equipted.X - (int)cameraPos.X - 10, (int)ui_inventory_equipted.Y - (int)cameraPos.Y - 30), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Equipped", new Vector2((int)ui_inventory_equipted.X - (int)cameraPos.X - 10, (int)ui_inventory_equipted.Y - (int)cameraPos.Y - 30), Color.White);
             _spriteBatch.Draw(ui_inventory_slot_empty, new Rectangle((int)ui_inventory_equipted.X - (int)cameraPos.X, (int)ui_inventory_equipted.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
-
+            if(player.EquiptedItem() != null)
+            {
+                _spriteBatch.Draw(player.EquiptedItem().texture, new Rectangle((int)ui_inventory_equipted.X - (int)cameraPos.X, (int)ui_inventory_equipted.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+            }
             if (interactableNearby != null)
             {
                 if(interactableNearby.tile.getRequiredItem() != null)
@@ -1045,6 +1064,14 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "level: " + player.getLevel(), new Vector2(debug_ui_player_level_vector.X - cameraPos.X, debug_ui_player_level_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "current_xp: " + player.getCurrentXP(), new Vector2(debug_ui_player_currentXP_vector.X - cameraPos.X, debug_ui_player_currentXP_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "max_xp: " + player.getMaxXForCurrentLevel(), new Vector2(debug_ui_player_maxXP_vector.X - cameraPos.X, debug_ui_player_maxXP_vector.Y - cameraPos.Y), Color.White);
+            if(player.EquiptedItem() != null)
+            {
+                _spriteBatch.DrawString(spriteFont, "equipped_item: " + player.EquiptedItem().name, new Vector2(debug_ui_player_equippedItem_vector.X - cameraPos.X, debug_ui_player_equippedItem_vector.Y - cameraPos.Y), Color.White);
+            }
+            else
+            {
+                _spriteBatch.DrawString(spriteFont, "equipped_item: none", new Vector2(debug_ui_player_equippedItem_vector.X - cameraPos.X, debug_ui_player_equippedItem_vector.Y - cameraPos.Y), Color.White);
+            }
         }
     }
     #endregion

@@ -34,8 +34,14 @@ namespace GameStateManagement.Class
         public Item dropItem()
         {
             Item selectedItem = loot_table[new Random().Next(0, loot_table.Count)];
-            Item loot = new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation);
-            return loot;
+            if(selectedItem is Spell)
+            {
+                return new Spell(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation, selectedItem.Speed);
+            }
+            else
+            {
+                return new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation);
+            }
         }
 
         public int ExpGrant()

@@ -32,7 +32,15 @@ namespace GameStateManagement.Class
                 {
                     base.interactionSound.Play();
                 }*/
-                return loot[new Random().Next(0, loot.Count)];
+                Item selectedItem = loot[new Random().Next(0, loot.Count)];
+                if (selectedItem is Spell)
+                {
+                    return new Spell(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation, selectedItem.Speed);
+                }
+                else
+                {
+                    return new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation);
+                }
             }
             else
             {

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GameStateManagement.Class
 {
@@ -84,6 +85,33 @@ namespace GameStateManagement.Class
             }
         }
 
+        public void equipSelectedItem(Character target)
+        {
+            if (selected_item_id < item_list.Count && item_list[selected_item_id] != null)
+            {
+                Item tmp = item_list[selected_item_id];
+
+                if (tmp is Spell)
+                {
+                    item_list[selected_item_id] = target.equipItem(tmp);
+                }
+            }
+        }
+
+        public Item dropSelectedItem(int index)
+        {
+            if (selected_item_id < item_list.Count && item_list[selected_item_id] != null)
+            {
+                //Item tmp = item_list[selected_item_id];
+
+                return item_list[selected_item_id];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public void selectItemNumber(int index)
         {
             selected_item_id = index;
@@ -96,7 +124,10 @@ namespace GameStateManagement.Class
             {
                 if (selected_item_id == tmp)
                 {
-                    _spriteBatch.DrawString(spriteFont, item.name, new Vector2(drawVector.X + 200 - cameraPos.X, drawVector.Y - cameraPos.Y - 40), Color.White);
+                    if(item != null)
+                    {
+                        _spriteBatch.DrawString(spriteFont, item.name, new Vector2(drawVector.X + 200 - cameraPos.X, drawVector.Y - cameraPos.Y - 40), Color.White);
+                    }
                     _spriteBatch.Draw(selected_texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
                 }
                 else
@@ -124,7 +155,10 @@ namespace GameStateManagement.Class
             tmp = 0;
             foreach(Item item in item_list)
             {
-                _spriteBatch.Draw(item.texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                if(item != null)
+                {
+                    _spriteBatch.Draw(item.texture, new Rectangle((int)drawVector.X + (targetTextureResolution * tmp) - (int)cameraPos.X, (int)drawVector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+                }
                 tmp++;
             }
         }
