@@ -700,13 +700,24 @@ namespace GameStateManagement
                 }
                 else
                 {
-                    for (int x = enemy_map.Count - 1; x >= 0; x--)
+                    foreach(TileEntry entry in collider_map)
                     {
-                        if (enemy_map[x].hit(casted_spells[i].Position))
+                        if (entry.hit(casted_spells[i].Position))
                         {
-                            enemy_map[x].receiveDamage(player, 2);
                             casted_spells.Remove(casted_spells[i]);
                             break;
+                        }
+                    }
+                    if(i < casted_spells.Count)
+                    {
+                        for (int x = enemy_map.Count - 1; x >= 0; x--)
+                        {
+                            if (enemy_map[x].hit(casted_spells[i].Position))
+                            {
+                                enemy_map[x].receiveDamage(player, 2);
+                                casted_spells.Remove(casted_spells[i]);
+                                break;
+                            }
                         }
                     }
                 }

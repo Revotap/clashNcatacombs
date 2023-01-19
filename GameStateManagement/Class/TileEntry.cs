@@ -25,5 +25,16 @@ namespace GameStateManagement.Class
                 this.boundingBox = new Rectangle((int)drawVector.X, (int)drawVector.Y, targetTextureResolution, targetTextureResolution);
             }    
         }
+        public bool hit(Vector2 targetVector)
+        {
+            if (targetVector.X > boundingBox.X && targetVector.X < (boundingBox.X + boundingBox.Height) && targetVector.Y > boundingBox.Y && targetVector.Y < (boundingBox.Y + boundingBox.Width))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
