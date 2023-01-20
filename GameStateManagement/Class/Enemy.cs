@@ -36,11 +36,11 @@ namespace GameStateManagement.Class
             Item selectedItem = loot_table[new Random().Next(0, loot_table.Count)];
             if(selectedItem is Spell)
             {
-                return new Spell(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation, selectedItem.Speed);
+                return new Spell(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation, selectedItem.value, selectedItem.Speed);
             }
             else
             {
-                return new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.rotation);
+                return new Item(selectedItem.name, selectedItem.texture, selectedItem.rarity, selectedItem.value, selectedItem.rotation);
             }
         }
 

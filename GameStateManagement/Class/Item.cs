@@ -17,27 +17,30 @@ namespace GameStateManagement.Class
         public float rotation { get; set; }
         public float Speed { get; set; }
 
+        public int value { get; }
         public bool isEquippable { get; }
 
 
-        public Item(String name, Texture2D texture, int rarity, float rotation) {
+        public Item(String name, Texture2D texture, int rarity, int value, float rotation) {
             this.name = name;
             this.texture = texture;
             this.rarity = rarity;
             this.rotation = rotation;
             this.isEquippable = false;
+            this.value = value;
         }
 
-        public Item(String name, Texture2D texture, int rarity, float rotation, bool isEquippable)
+        public Item(String name, Texture2D texture, int rarity, float rotation, int value, bool isEquippable)
         {
             this.name = name;
             this.texture = texture;
             this.rarity = rarity;
             this.rotation = rotation;
             this.isEquippable = isEquippable;
+            this.value = value;
         }
 
-        public Item(String name, Texture2D texture, int rarity, float rotation, bool isEquippable, float speed)
+        public Item(String name, Texture2D texture, int rarity, float rotation, int value, bool isEquippable, float speed)
         {
             this.name = name;
             this.texture = texture;
@@ -45,6 +48,7 @@ namespace GameStateManagement.Class
             this.rotation = rotation;
             this.isEquippable = isEquippable;
             this.Speed= speed;
+            this.value = value;
         }
     }
 }

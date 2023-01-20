@@ -10,6 +10,6 @@ namespace GameStateManagement.Class
 {
     internal class Key : Item
     {
-        public Key(string name, int rarity, Texture2D texture, float rotation) : base(name, texture, rarity, rotation) { }
+        public Key(string name, int rarity, Texture2D texture, float rotation, int value) : base(name, texture, rarity, value, rotation) { }
     }
 }
