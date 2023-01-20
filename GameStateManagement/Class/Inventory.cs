@@ -11,6 +11,8 @@ namespace GameStateManagement.Class
         public List<Item> item_list { get; set; }
         public int inventorySlots { get; } = 8;
 
+        private int gold = 0;
+
         private Vector2 drawVector;
         private Texture2D empty_texture;
         private Texture2D selected_texture;
@@ -38,6 +40,11 @@ namespace GameStateManagement.Class
         public bool AddItem(Item item) {
             if(item != null)
             {
+                if(item.name == "Coin")
+                {
+                    gold++;
+                    return true;
+                }
                 if (item_list.Count < inventorySlots)
                 {
                     item_list.Add(item);
@@ -116,6 +123,8 @@ namespace GameStateManagement.Class
         {
             selected_item_id = index;
         }
+
+        public int getGold() { return gold; }
 
         public void Draw(SpriteBatch _spriteBatch, SpriteFont spriteFont, Vector3 cameraPos, int targetTextureResolution)
         {

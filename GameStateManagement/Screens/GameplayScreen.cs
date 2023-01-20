@@ -155,6 +155,9 @@ namespace GameStateManagement
         private Vector2 ui_playerLevel_vector = new Vector2(5, 70);
         private Texture2D ui_xpbar_empty;
         private Texture2D ui_xpbar_filler;
+        private Texture2D coin_texture;
+        private Vector2 ui_gold_symbol_vector = new Vector2(5,90);
+        private Vector2 ui_gold_text_vector = new Vector2(60, 120);
 
         //Debug UI
         private bool debug_mode_active = false;
@@ -343,29 +346,33 @@ namespace GameStateManagement
             Key diamond_key = new Key("Diamond Key", 2, Content.Load<Texture2D>(@"OurContent\Map\diamond_key"), 16);
             iceball_texture = Content.Load<Texture2D>(@"OurContent\Spells\ice_spell");
             fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
-            Spell ice_spell = new Spell("Ice Spell", iceball_texture, 1, 2.0f, 15f);
+            Texture2D kinetic_ball_texture = Content.Load<Texture2D>(@"OurContent\Spells\kinetic_spell");
+            coin_texture = Content.Load<Texture2D>(@"OurContent\Map\coin");
+            Spell ice_spell = new Spell("Ice Spell", iceball_texture, 2, 2.0f, 15f);
             Spell fire_spell = new Spell("Fire Spell", fireball_texture, 1, 2.0f, 10f);
+            Spell kinetic_spell = new Spell("Kinetic Spell", kinetic_ball_texture, 3, 2.0f, 20f);
+            Item gold_coin = new Item("Coin", coin_texture, 1, 2.0f);
+
             player.equipItem(fire_spell);
 
             //Loot tables for chests
             List<Item> loot_table_chest_small = new List<Item>();
             loot_table_chest_small.Add(silver_key);
-            //loot_table_chest_small.Add(ice_spell);
 
             List<Item> loot_table_chest_medium = new List<Item>();
-            loot_table_chest_medium.Add(golden_key);
             loot_table_chest_medium.Add(ice_spell);
 
+            List<Item> loot_table_chest_large_item = new List<Item>();
+            loot_table_chest_large_item.Add(kinetic_spell);
+
             List<Item> loot_table_chest_large = new List<Item>();
-            loot_table_chest_large.Add(diamond_key);
+            loot_table_chest_large.Add(golden_key);
 
             //Loot tables for enemies
-            enemyLootTable_small.Add(silver_key);
-            enemyLootTable_small.Add(ice_spell);
+            enemyLootTable_small.Add(gold_coin);
             enemyLootTable_medium.Add(golden_key);
-            enemyLootTable_medium.Add(ice_spell);
+            enemyLootTable_medium.Add(gold_coin);
             enemyLootTable_boss.Add(diamond_key);
-            enemyLootTable_boss.Add(ice_spell);
 
             crossInteractableTiles = new Tile[2, 20];
             
@@ -549,9 +556,21 @@ namespace GameStateManagement
                         }
                         else if (words[0] == "c2")
                         {
-                            ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large);
-                            tmp.SetIsInteractable(ground.texture(), null, chest_open);
-                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            if(words.Length > 1)
+                            {
+                                if (words[1] == "x")
+                                {
+                                    ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large_item);
+                                    tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                                    tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                                }
+                            }
+                            else
+                            {
+                                ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large);
+                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
                         }
                         else if (words[0] == "pk")
                         {
@@ -996,6 +1015,31 @@ namespace GameStateManagement
                     // Play the fireball sound
                     //fireballSound.Play();
 
+                    if(player.equiptedItem.name == "Kinetic Spell")
+                    {
+                        // Get the direction from the player to the mouse
+                        spellDirection = new Vector2(mousePosition.X - player.position.X - 100, mousePosition.Y - player.position.Y - 100);
+                        spellDirection.Normalize();
+
+                        rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+
+                        // Create a new spell at the player's position
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().Speed);
+                        originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
+                        casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
+
+                        // Get the direction from the player to the mouse
+                        spellDirection = new Vector2(mousePosition.X - player.position.X + 100, mousePosition.Y - player.position.Y + 100);
+                        spellDirection.Normalize();
+
+                        rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+
+                        // Create a new spell at the player's position
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().Speed);
+                        originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
+                        casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
+                    }
+
                     previousMouseState = currentMouseState;
                 }
                 if(currentMouseState.LeftButton == ButtonState.Released)
@@ -1136,7 +1180,9 @@ namespace GameStateManagement
 
             float tmpWidth = (player.getCurrentXP() + 0.01F) / player.getMaxXForCurrentLevel();
             _spriteBatch.Draw(ui_xpbar_filler, new Rectangle((int)ui_xpbar_vector.X - (int)cameraPos.X, (int)ui_xpbar_vector.Y - (int)cameraPos.Y, (int) Math.Floor(128 * tmpWidth), 16), Color.White);
-
+            //Gold
+            _spriteBatch.Draw(coin_texture, new Rectangle((int) ui_gold_symbol_vector.X - (int)cameraPos.X, (int) ui_gold_symbol_vector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
+            _spriteBatch.DrawString(spriteFont, player.inventory.getGold().ToString(), new Vector2((int)ui_gold_text_vector.X - (int)cameraPos.X, (int)ui_gold_text_vector.Y - (int)cameraPos.Y), Color.White);
         }
 
         private void DrawDebugUI()

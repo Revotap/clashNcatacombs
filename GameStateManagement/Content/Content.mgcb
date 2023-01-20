@@ -1463,6 +1463,18 @@
 /processorParam:TextureFormat=Color
 /build:OurContent/Spells/ice_spell.png
 
+#begin OurContent/Spells/kinetic_spell.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Spells/kinetic_spell.png
+
 #begin OurContent/Utility/background.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
