@@ -11,6 +11,7 @@
 
 #region Using Statements
 
+using GameStateManagement.Class;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -28,6 +29,7 @@ namespace GameStateManagement
     public class GameStateManagementGame : Microsoft.Xna.Framework.Game
     {
         #region Fields
+
 
         private GraphicsDeviceManager graphics;
         private ScreenManager screenManager;
@@ -101,6 +103,7 @@ namespace GameStateManagement
         }
 
         #endregion Draw
+
     }
 
     #region Entry Point
