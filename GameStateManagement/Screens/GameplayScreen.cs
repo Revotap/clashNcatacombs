@@ -98,6 +98,14 @@ namespace GameStateManagement
 
         private Tile[,] crossInteractableTiles;
 
+        //Decorations walls
+        private Texture2D banner;
+        private Texture2D chains_1;
+        private Texture2D chains_2;
+        private Texture2D spider_web_1;
+        private Texture2D spider_web_2;
+        private Texture2D wall_torch;
+
         //Sounds
         SoundEffect chest_open;
         SoundEffect door_open;
@@ -130,7 +138,7 @@ namespace GameStateManagement
         private Texture2D heart_empty;
         private Texture2D heart_half;
         private Texture2D heart_full;
-        private Vector2 healthbar_vector;
+        private Vector2 healthbar_vector = new Vector2(0, 0);
         private List<Texture2D> healthbar_list;
 
         private Vector2 ui_interact_string_vector = new Vector2(550, 400);
@@ -143,8 +151,13 @@ namespace GameStateManagement
         private Vector2 ui_inventory_drop_text_vector = new Vector2(1000,660);
         private Vector2 ui_inventory_use_text_vector = new Vector2(1100,660);
 
+        private Vector2 ui_xpbar_vector = new Vector2(85, 77);
+        private Vector2 ui_playerLevel_vector = new Vector2(5, 70);
+        private Texture2D ui_xpbar_empty;
+        private Texture2D ui_xpbar_filler;
+
         //Debug UI
-        private bool debug_mode_active = true;
+        private bool debug_mode_active = false;
         Texture2D debug_border;
 
         private Vector2 debug_ui_player_position_vector = new Vector2(0, 70);
@@ -232,7 +245,7 @@ namespace GameStateManagement
             viewport = ScreenManager.GraphicsDevice.Viewport;
 
             // Font laden
-            spriteFont = Content.Load<SpriteFont>("Verdana");
+            spriteFont = Content.Load<SpriteFont>(@"OurContent\Utility\Silver");
 
             //Sound effects
             SoundEffect.MasterVolume = 0.05f;
@@ -295,7 +308,18 @@ namespace GameStateManagement
             peaks.SetDoesDamage(1, null, 700);
             peaks.SetIsAnimated(peak_animation, 400, null);
 
+            banner = Content.Load<Texture2D>(@"OurContent\Map\banner");
+            chains_1 = Content.Load<Texture2D>(@"OurContent\Map\chains_1");
+            chains_2 = Content.Load<Texture2D>(@"OurContent\Map\chains_2");
+            spider_web_1 = Content.Load<Texture2D>(@"OurContent\Map\spider_web_1");
+            spider_web_2 = Content.Load<Texture2D>(@"OurContent\Map\spider_web_2");
+            wall_torch = Content.Load<Texture2D>(@"OurContent\Map\wall_torch");
+
             Vector2 playerStartingPos = new Vector2(0,0);
+
+            //UI
+            ui_xpbar_empty = Content.Load<Texture2D>(@"OurContent\Utility\XPBar\xpbar_empty");
+            ui_xpbar_filler = Content.Load<Texture2D>(@"OurContent\Utility\XPBar\xpbar_filler");
 
             //Animations
             skeleton_animation.Add(Content.Load<Texture2D>(@"OurContent\Enemies\Skeleton\v1\skeleton_v1_1"));
@@ -353,6 +377,7 @@ namespace GameStateManagement
                 }
             }
 
+            //Generate Map
             for (int x = 0; x < map.GetLength(0); x++)
             {
                 for(int y = 0; y < map.GetLength(1); y++)
@@ -362,13 +387,57 @@ namespace GameStateManagement
 
                     if (words[0] == "wl")
                     {
-                        tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        if (words.Length > 1)
+                        {
+                            Tile tmp = new Tile(wall_left.texture(), false);
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else
+                        {
+                            tilemap.Add(new TileEntry(wall_left, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
                     } else if (words[0] == "wr")
                     {
-                        tilemap.Add(new TileEntry(wall_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        if (words.Length > 1)
+                        {
+                            Tile tmp = new Tile(wall_right.texture(), false);
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else
+                        {
+                            tilemap.Add(new TileEntry(wall_right, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
                     } else if (words[0] == "wt")
                     {
                         tilemap.Add(new TileEntry(wall_top, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+
+                        if(random.Next(0,4) == 0)
+                        {
+                            int tmp = random.Next(0,6);
+                            if(tmp == 0)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(banner, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }else if(tmp == 1)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(chains_1, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (tmp == 2)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(chains_2, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (tmp == 3)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(spider_web_1, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (tmp == 4)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(spider_web_2, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                            else if (tmp == 5)
+                            {
+                                tilemap.Add(new TileEntry(new Tile(wall_torch, false), new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                            }
+                        }
                     } else if (words[0] == "wb")
                     {
                         tilemap.Add(new TileEntry(wall_bottom, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
@@ -463,37 +532,37 @@ namespace GameStateManagement
                         tilemap.Add(new TileEntry(background, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                     }
                     else
-                        {
-                            tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                    {
+                        tilemap.Add(new TileEntry(ground, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
 
-                            if (words[0] == "c0")
-                            {
-                                ChestTile tmp = new ChestTile(chest_small, false, loot_table_chest_small);
-                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
-                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            }
-                            else if (words[0] == "c1")
-                            {
-                                ChestTile tmp = new ChestTile(chest_medium, false, loot_table_chest_medium);
-                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
-                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            }
-                            else if (words[0] == "c2")
-                            {
-                                ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large);
-                                tmp.SetIsInteractable(ground.texture(), null, chest_open);
-                                tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            }
-                            else if (words[0] == "pk")
-                            {
-                                tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
-                            }
-                            else if (words[0] == "pl")
-                            {
-                                //Position the player directly without checking collisions when loading the game   
-                                player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
-                            }
+                        if (words[0] == "c0")
+                        {
+                            ChestTile tmp = new ChestTile(chest_small, false, loot_table_chest_small);
+                            tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
                         }
+                        else if (words[0] == "c1")
+                        {
+                            ChestTile tmp = new ChestTile(chest_medium, false, loot_table_chest_medium);
+                            tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else if (words[0] == "c2")
+                        {
+                            ChestTile tmp = new ChestTile(chest_large, false, loot_table_chest_large);
+                            tmp.SetIsInteractable(ground.texture(), null, chest_open);
+                            tilemap.Add(new TileEntry(tmp, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else if (words[0] == "pk")
+                        {
+                            tilemap.Add(new TileEntry(peaks, new Vector2(targetTextureResolution * y, targetTextureResolution * x), 64));
+                        }
+                        else if (words[0] == "pl")
+                        {
+                            //Position the player directly without checking collisions when loading the game   
+                            player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
+                        }
+                    }
                 }
             }
 
@@ -572,7 +641,6 @@ namespace GameStateManagement
             heart_empty = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_empty");
             heart_half = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_half");
             heart_full = Content.Load<Texture2D>(@"OurContent\Utility\Heart\heart_full");
-            healthbar_vector = new Vector2(0,0);
             healthbar_list = new List<Texture2D>();
             healthbar_list.Add(heart_empty);
             healthbar_list.Add(heart_empty);
@@ -621,7 +689,7 @@ namespace GameStateManagement
                     if (interactable_map[i].tile.hasInteractionSong())
                     {
                         ScreenManager.RemoveScreen(this);
-                        MediaPlayer.Volume = 0.5F;
+                        MediaPlayer.Volume = 0.3F;
                         MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\quest_complete"));
                         ScreenManager.AddScreen(new DeathBackgroundScreen(), 0);
                         ScreenManager.AddScreen(new GameFinishedScreen(), 0);
@@ -954,12 +1022,12 @@ namespace GameStateManagement
 
             DrawCastedSpells();
 
-            DrawUi();
-
             if(debug_mode_active)
             {
                 DrawDebugUI();
             }
+
+            DrawUi();
 
             _spriteBatch.End();
 
@@ -1061,6 +1129,14 @@ namespace GameStateManagement
             }
             _spriteBatch.DrawString(spriteFont, "Drop [Q]", new Vector2(ui_inventory_drop_text_vector.X - cameraPos.X, ui_inventory_drop_text_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "Use/Equipt [F]", new Vector2(ui_inventory_use_text_vector.X - cameraPos.X, ui_inventory_use_text_vector.Y - cameraPos.Y), Color.White);
+
+            //Xp Bar
+            _spriteBatch.DrawString(spriteFont, "Level: " + player.getLevel(), new Vector2(ui_playerLevel_vector.X - cameraPos.X, ui_playerLevel_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.Draw(ui_xpbar_empty, new Rectangle((int)ui_xpbar_vector.X - (int)cameraPos.X, (int)ui_xpbar_vector.Y - (int)cameraPos.Y, 128, 16), Color.White);
+
+            float tmpWidth = (player.getCurrentXP() + 0.01F) / player.getMaxXForCurrentLevel();
+            _spriteBatch.Draw(ui_xpbar_filler, new Rectangle((int)ui_xpbar_vector.X - (int)cameraPos.X, (int)ui_xpbar_vector.Y - (int)cameraPos.Y, (int) Math.Floor(128 * tmpWidth), 16), Color.White);
+
         }
 
         private void DrawDebugUI()

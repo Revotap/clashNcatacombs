@@ -25,6 +25,20 @@
 /processorParam:TextureFormat=Color
 /build:../../../../Assets/Meine Assets/tileset/fireball_test.png;OurContent/Spells/Flame/fireball_test.png
 
+#begin ../../../../Assets/Meine Assets/ui/DungeonFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:../../../../Assets/Meine Assets/ui/DungeonFont.spritefont;OurContent/Utility/DungeonFont.spritefont
+
+#begin ../../../../Assets/Meine Assets/ui/Silver.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:../../../../Assets/Meine Assets/ui/Silver.spritefont;OurContent/Utility/Silver.spritefont
+
 #begin background.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1544,6 +1558,37 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OurContent/Utility/outline.png
+
+#begin OurContent/Utility/Silver.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:OurContent/Utility/Silver.spritefont
+
+#begin OurContent/Utility/XPBar/xpbar_empty.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Utility/XPBar/xpbar_empty.png
+
+#begin OurContent/Utility/XPBar/xpbar_filler.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:OurContent/Utility/XPBar/xpbar_filler.png
 
 #begin OurContent/Utility/you_died.jpg
 /importer:TextureImporter
