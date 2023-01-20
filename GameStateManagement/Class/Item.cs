@@ -16,10 +16,8 @@ namespace GameStateManagement.Class
         public int rarity { get; set; }
         public float rotation { get; set; }
         public float Speed { get; set; }
-
         public int value { get; }
         public bool isEquippable { get; }
-
 
         public Item(String name, Texture2D texture, int rarity, int value, float rotation) {
             this.name = name;

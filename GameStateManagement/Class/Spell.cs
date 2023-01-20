@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -16,22 +17,25 @@ namespace GameStateManagement.Class
         public Vector2 targetPosition { get; set; }
         public Vector2 originPosition { get; set; }
 
+        public SoundEffect sound { get; set; }
         public Character caster { get; set; }
-        public Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed) : base(name, texture, rarity, rotation, value, true, speed)
+        public Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, SoundEffect sound = null) : base(name, texture, rarity, rotation, value, true, speed)
         {
-
+            this.sound = sound;
         }
 
-        public Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Character caster) : base(name, texture, rarity, rotation, value, true, speed) {
+        public Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Character caster, SoundEffect sound = null) : base(name, texture, rarity, rotation, value, true, speed) {
             this.caster = caster;
+            this.sound = sound;
         }
 
-        protected Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition, Character caster) : base(name, texture, rarity, rotation,value, true, speed) {
+        protected Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition, Character caster, SoundEffect sound = null) : base(name, texture, rarity, rotation,value, true, speed) {
             this.Position= position;
             this.Direction= direction;
             this.targetPosition= targetPosition;
             this.originPosition= originPosition;
             this.caster= caster;
+            this.sound = sound;
         }
 
         public void Update(GameTime gameTime)
@@ -41,7 +45,11 @@ namespace GameStateManagement.Class
         }
         public Spell Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition)
         {
-            return new Spell(base.name, base.texture, base.rarity, rotation, base.value, Speed, position, direction, targetPosition, originPosition, caster);
+            if(sound != null)
+            {
+                sound.Play();
+            }
+            return new Spell(base.name, base.texture, base.rarity, rotation, base.value, Speed, position, direction, targetPosition, originPosition, caster, sound);
         }
     }
 }

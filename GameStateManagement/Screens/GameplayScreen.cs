@@ -19,8 +19,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using System;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
@@ -31,6 +31,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Timers;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 #endregion Using Statements
 
@@ -111,6 +112,7 @@ namespace GameStateManagement
         SoundEffect chest_open;
         SoundEffect door_open;
         Song game_finished;
+        SoundEffect step_sound;
 
         //Camera
         private Vector3 cameraPos;
@@ -215,6 +217,7 @@ namespace GameStateManagement
         SoundEffect vampire_damageReceivedSound;
         SoundEffect vampire_deathSound;
         SoundEffect vampire_attackWithNoWeaponSound;
+        SoundEffect spell_sound;
         #endregion Variablen
 
 
@@ -263,11 +266,13 @@ namespace GameStateManagement
             skeleton_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
             skull_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
             skull_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
-            skull_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
+            skull_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\skull_explosion");
             vampire_damageReceivedSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Hit_2");
             vampire_attackWithNoWeaponSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\melee_attack");
             vampire_deathSound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\Player_Killed");
             game_finished = Content.Load<Song>(@"OurContent\Audio\SoundEffects\quest_complete");
+            spell_sound = Content.Load<SoundEffect>(@"OurContent\Audio\SoundEffects\fireball_cast");
+
 
             map = new string[,] { { "wl", "wt", "wt", "dl", "dl", "wt", "wt", "wr" },
                                     {"wl", "gr", "gr", "gr", "gr", "gr", "gr", "wr" },
@@ -352,9 +357,9 @@ namespace GameStateManagement
             fireball_texture = Content.Load<Texture2D>(@"OurContent\Spells\Flame\fireball_test");
             Texture2D kinetic_ball_texture = Content.Load<Texture2D>(@"OurContent\Spells\kinetic_spell");
             coin_texture = Content.Load<Texture2D>(@"OurContent\Map\coin");
-            Spell ice_spell = new Spell("Ice Spell", iceball_texture, 2, 2.0f, 1, 15f);
-            Spell fire_spell = new Spell("Fire Spell", fireball_texture, 1, 2.0f, 1,10f);
-            Spell kinetic_spell = new Spell("Kinetic Spell", kinetic_ball_texture, 3, 2.0f,2, 20f);
+            Spell ice_spell = new Spell("Ice Spell", iceball_texture, 2, 2.0f, 1, 15f, spell_sound);
+            Spell fire_spell = new Spell("Fire Spell", fireball_texture, 1, 2.0f, 1,10f, spell_sound);
+            Spell kinetic_spell = new Spell("Kinetic Spell", kinetic_ball_texture, 3, 2.0f,2, 20f, spell_sound);
             Item gold_coin = new Item("Coin", coin_texture, 1, 1, 2.0f);
             Item health_potion = new Item("Health Potion", Content.Load<Texture2D>(@"OurContent\Map\health_flask"), 1, 4, 1.0F);
 
@@ -375,7 +380,7 @@ namespace GameStateManagement
 
             //Loot tables for enemies
             enemyLootTable_small.Add(gold_coin);
-            enemyLootTable_medium.Add(golden_key);
+            enemyLootTable_small.Add(health_potion);
             enemyLootTable_medium.Add(gold_coin);
             enemyLootTable_medium.Add(health_potion);
             enemyLootTable_boss.Add(diamond_key);
@@ -481,12 +486,12 @@ namespace GameStateManagement
                                 int tmp = random.Next(0, 9);
                                 if (0 <= tmp && tmp < 2)
                                 {
-                                    enemy_map.Add(new Enemy("Skull", 3, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skull_animation, 1.0f, skull_damageReceivedSound, skull_deathSound, skull_attackWithNoWeaponSound, enemyLootTable_small, 2));
+                                    enemy_map.Add(new Enemy("Skull", 3, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skull_animation, 3.5f, skull_damageReceivedSound, skull_deathSound, skull_attackWithNoWeaponSound, enemyLootTable_small, 2));
 
                                 }
                                 else if (3 <= tmp && tmp < 6)
                                 {
-                                    enemy_map.Add(new Enemy("Skeleton", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 1.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
+                                    enemy_map.Add(new Enemy("Skeleton", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 2.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
                                 }
                             }
                         }
@@ -877,32 +882,42 @@ namespace GameStateManagement
                 {
                     enemy_map[x].moveLeft();
                 }*/
-                Vector2 tmpPosition = Vector2.Lerp(enemy_map[x].position, player.position, enemy_map[x].movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-                if(tmpPosition.X < enemy_map[x].position.X)
+                /*if (LineIntersectsRectangle(enemy_map[x].position, player.position, player.BoundingBox()))
                 {
-                    enemy_map[x].moveLeft();
-                }else if(tmpPosition.X > enemy_map[x].position.X)
-                {
-                    enemy_map[x].moveRight();
-                }
-                if(tmpPosition.Y > enemy_map[x].position.Y)
-                {
-                    enemy_map[x].moveDown();
-                }else if(tmpPosition.Y < enemy_map[x].position.Y)
-                {
-                    enemy_map[x].moveUp();
-                }
+                    throw new Exception("true");
+                }*/
 
-                //throw new Exception("Enemy pos:" + enemy_map[x].position + ", player_pos:" + player.position + "new_pos:" + tmpPosition);
+                Vector2 tmpPlayerCenter = new Vector2(player.position.X, player.position.Y);
+                Rectangle newBox = new Rectangle((int)tmpPlayerCenter.X - player.Width()*4, (int)tmpPlayerCenter.Y - player.Height()*4, player.Width()*8, player.Height()*8);
+                if (enemy_map[x].BoundingBox().Intersects(newBox))
+                {
+                    if (enemy_map[x].equiptedItem != null)
+                    {
+                        enemy_map[x].attackWithSpell(gameTime, player, cameraPos, casted_spells);
+                    }
+
+                    Vector2 tmpPosition = Vector2.Lerp(enemy_map[x].position, player.position, enemy_map[x].movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    if (tmpPosition.X < enemy_map[x].position.X)
+                    {
+                        enemy_map[x].moveLeft();
+                    }
+                    else if (tmpPosition.X > enemy_map[x].position.X)
+                    {
+                        enemy_map[x].moveRight();
+                    }
+                    if (tmpPosition.Y > enemy_map[x].position.Y)
+                    {
+                        enemy_map[x].moveDown();
+                    }
+                    else if (tmpPosition.Y < enemy_map[x].position.Y)
+                    {
+                        enemy_map[x].moveUp();
+                    }
+                }
 
                 enemy_map[x].updatePosition(collider_map);
                 enemy_map[x].Update(gameTime);
-
-                if (enemy_map[x].equiptedItem != null)
-                {
-                    enemy_map[x].attackWithSpell(gameTime, player, cameraPos, casted_spells);
-                }
 
                 if (enemy_map[x].BoundingBox().Intersects(player.BoundingBox()))
                 {
@@ -1034,7 +1049,7 @@ namespace GameStateManagement
 
                         if(loot != null)
                         {
-                            if (!player.inventory.invenotryFull())
+                            if (!player.inventory.invenotryFull() || loot.name == "Coin")
                             {
                                 player.inventory.AddItem(loot);
                                 interactableNearby.tile.PlayInteractionSound();
@@ -1077,7 +1092,8 @@ namespace GameStateManagement
                     float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                     // Create a new spell at the player's position
-                    Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
+                    Spell tmpSpell = (Spell) player.EquiptedItem();
+                    Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player, tmpSpell.sound);
                     casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
 
                     // Play the fireball sound
@@ -1095,7 +1111,7 @@ namespace GameStateManagement
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
-                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player, tmpSpell.sound);
                         casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
 
                         //RIGHT
@@ -1106,7 +1122,7 @@ namespace GameStateManagement
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
-                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player, tmpSpell.sound);
                         casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
                     }
 
@@ -1327,26 +1343,215 @@ namespace GameStateManagement
             }*/
 
             DrawLine(debug_ui_beamTexture, new Vector2(player.position.X + player.Width() / 2 + 10, player.position.Y + player.Height() / 2 + 20), new Vector2(Mouse.GetState().Position.X - cameraPos.X, Mouse.GetState().Position.Y - cameraPos.Y), Color.Blue);
+            
+            /*foreach(Enemy enemy in enemy_map)
+            {
+                DrawLine(debug_ui_beamTexture, new Vector2(enemy.position.X + enemy.Width()/2 + 10, enemy.position.Y + enemy.Height()/2 + 20), new Vector2(player.position.X + player.Width()/2 + 10, player.position.Y + player.Height() / 2 + 20), Color.Red);
+            }*/
         }
-
-        /*public Rectangle DrawLOS(Vector2 point1, Vector2 point2)
-        {
-            var distance = Vector2.Distance(point1, point2);
-            new Rectangle(point1);
-        }*/
 
         public void DrawLine(Texture2D texture, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
         {
             var distance = Vector2.Distance(point1, point2);
             var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-            DrawLine(texture, point1, distance, angle, color, thickness);
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(distance, thickness);
+
+            _spriteBatch.Draw(texture, point1, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
-        public void DrawLine(Texture2D texture, Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        public static bool IsVectorOnLine(Vector2 start, Vector2 end, Vector2 check)
         {
-            var origin = new Vector2(0f, 0.5f);
-            var scale = new Vector2(length, thickness);
-            _spriteBatch.Draw(texture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+            float dot = Vector2.Dot(check - start, end - start);
+            if (dot > 0 && dot < Vector2.Dot(end - start, end - start))
+            {
+                var collinear = (check.X - start.X) * (end.Y - start.Y) - (check.Y - start.Y) * (end.X - start.X);
+                return Math.Abs(collinear) < float.Epsilon;
+            }
+            return false;
+        }
+
+        public static bool LineIntersectsRectangle(Vector2 lineStart, Vector2 lineEnd, Rectangle rectangle)
+        {
+            Vector2 lineDirection = lineEnd - lineStart;
+            Vector2 lineNormal = new Vector2(-lineDirection.Y, lineDirection.X);
+
+            // Check if the line is parallel to the rectangle
+            float dot = Vector2.Dot(lineNormal, new Vector2(rectangle.X, rectangle.Y) - lineStart);
+            if (Math.Abs(dot) < float.Epsilon)
+            {
+                return false;
+            }
+
+            // Check if the line intersects with any of the rectangle's edges
+            Vector2[] rectanglePoints = new Vector2[]
+            {
+            new Vector2(rectangle.X, rectangle.Y),
+            new Vector2(rectangle.X + rectangle.Width, rectangle.Y),
+            new Vector2(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height),
+            new Vector2(rectangle.X, rectangle.Y + rectangle.Height)
+            };
+
+            Vector2 intersectionPoint = Vector2.Zero;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 rectangleEdgeStart = rectanglePoints[i];
+                Vector2 rectangleEdgeEnd = rectanglePoints[(i + 1) % 4];
+
+                if (LineIntersection(lineStart, lineEnd, rectangleEdgeStart, rectangleEdgeEnd, out intersectionPoint))
+                {
+                    return true;
+                }
+            }
+
+            // If the line doesn't intersect with any of the rectangle's edges, check if the line is inside the rectangle
+            dot = Vector2.Dot(lineDirection, rectanglePoints[1] - lineStart);
+            if (dot > 0)
+            {
+                Vector2 nearestPoint = Vector2.Zero;
+                float distance = float.MaxValue;
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 point = rectanglePoints[i];
+                    float tempDistance = Vector2.DistanceSquared(lineStart, point);
+                    if (tempDistance < distance)
+                    {
+                        distance = tempDistance;
+                        nearestPoint = point;
+                    }
+                }
+
+                dot = Vector2.Dot(lineDirection, nearestPoint - lineStart);
+                if (dot > 0 && dot < Vector2.Dot(lineDirection, lineDirection))
+                {
+                    return rectangle.Contains((int)nearestPoint.X, (int)nearestPoint.Y);
+                }
+            }
+
+            return false;
+        }
+        public static bool LineIntersectsRectangle2(Vector2 lineStart, Vector2 lineEnd, Rectangle rectangle)
+        {
+            Vector2[] lines = new Vector2[4]
+            {
+            new Vector2(rectangle.X, rectangle.Y),
+            new Vector2(rectangle.Right, rectangle.Y),
+            new Vector2(rectangle.Right, rectangle.Bottom),
+            new Vector2(rectangle.X, rectangle.Bottom)
+            };
+
+            Vector2[] directions = new Vector2[4]
+            {
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(-1, 0),
+            new Vector2(0, -1)
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 intersection;
+                if (LineIntersection(lineStart, lineEnd, lines[i], lines[i] + directions[i], out intersection))
+                {
+                    if (rectangle.Contains((int)intersection.X, (int)intersection.Y))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool LineIntersectsRectangle3(Vector2 lineStart, Vector2 lineEnd, Rectangle rectangle)
+        {
+            if (rectangle.Contains((int)lineStart.X, (int)lineStart.Y) || rectangle.Contains((int)lineEnd.X, (int)lineEnd.Y))
+            {
+                return true;
+            }
+
+            //throw new Exception(lineStart.ToString() +"," +lineEnd.ToString() +","+ rectangle.X + "," + rectangle.Y + "," + rectangle.Width +", " + rectangle.Height );
+
+            Vector2[] lines = new Vector2[4]
+            {
+            new Vector2(rectangle.X, rectangle.Y),//5,-5
+            new Vector2(rectangle.Right, rectangle.Y), //15,-5
+            new Vector2(rectangle.Right, rectangle.Bottom),
+            new Vector2(rectangle.X, rectangle.Bottom)
+            };
+
+            //throw new Exception();
+
+            Vector2[] directions = new Vector2[4]
+            {
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(-1, 0),
+            new Vector2(0, -1)
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 intersection;
+                if (LineIntersection(lineStart, lineEnd, lines[i], lines[i] + directions[i], out intersection))
+                {
+                    throw new Exception();
+                    if (rectangle.Contains((int)intersection.X, (int)intersection.Y))
+                    {
+                        return true;
+                    }
+                }
+                throw new Exception();
+            }
+            return false;
+        }
+        public static bool LineIntersectsRectangle4(Vector2 lineStart, Vector2 lineEnd, Rectangle rectangle)
+        {
+            Vector2[] lines = new Vector2[4]
+            {
+            new Vector2(rectangle.X, rectangle.Y),
+            new Vector2(rectangle.Right, rectangle.Y),
+            new Vector2(rectangle.Right, rectangle.Bottom),
+            new Vector2(rectangle.X, rectangle.Bottom)
+            };
+
+            Vector2[] directions = new Vector2[4]
+            {
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(-1, 0),
+            new Vector2(0, -1)
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 intersection;
+                if(LineIntersection(lineStart, lineEnd, lines[i], lines[i] + directions[i], out intersection))
+            {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool LineIntersection(Vector2 A, Vector2 B, Vector2 C, Vector2 D, out Vector2 intersection)
+        {
+            intersection = Vector2.Zero;
+            float denominator = (B.X - A.X) * (D.Y - C.Y) - (B.Y - A.Y) * (D.X - C.X);
+            if (Math.Abs(denominator) < float.Epsilon)
+            {
+                throw new Exception();
+                return false;
+            }
+
+            float u = ((D.X - C.X) * (A.Y - C.Y) - (D.Y - C.Y) * (A.X - C.X)) / denominator;
+            float v = ((B.X - A.X) * (A.Y - C.Y) - (B.Y - A.Y) * (A.X - C.X)) / denominator;
+            if (u >= 0 && u <= 1 && v >= 0 && v <= 1)
+            {
+                intersection = A + u * (B - A);
+                return true;
+            }
+            throw new Exception();
+            return false;
         }
     }
     #endregion

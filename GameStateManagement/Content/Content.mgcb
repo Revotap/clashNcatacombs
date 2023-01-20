@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin ../../../../Assets/Meine Assets/beam.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../../../../Assets/Meine Assets/beam.png;OurContent/Utility/beam.png
+
 #begin ../../../../Assets/Meine Assets/tileset/fireball_test.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1486,18 +1498,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OurContent/Utility/background.jpg
-
-#begin OurContent/Utility/beam.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OurContent/Utility/beam.png
 
 #begin OurContent/Utility/Heart/heart_empty.png
 /importer:TextureImporter
