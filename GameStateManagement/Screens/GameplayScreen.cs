@@ -618,6 +618,14 @@ namespace GameStateManagement
             {
                 if (!interactable_map[i].tile.getIsInteractable())
                 {
+                    if (interactable_map[i].tile.hasInteractionSong())
+                    {
+                        ScreenManager.RemoveScreen(this);
+                        MediaPlayer.Volume = 0.5F;
+                        MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\quest_complete"));
+                        ScreenManager.AddScreen(new DeathBackgroundScreen(), 0);
+                        ScreenManager.AddScreen(new GameFinishedScreen(), 0);
+                    }
                     interactable_map.Remove(interactable_map[i]);
                 }
             }
