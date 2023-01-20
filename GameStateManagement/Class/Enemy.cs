@@ -5,9 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameStateManagement.Class
 {
@@ -27,6 +24,13 @@ namespace GameStateManagement.Class
         {
             this.loot_table = loot;
             this.exp = exp;
+        }
+
+        public Enemy(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound, List<Item> loot, int exp, Spell equippedItem) : base(name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
+        {
+            this.loot_table = loot;
+            this.exp = exp;
+            base.equiptedItem = equippedItem;
         }
         #endregion
 
@@ -125,27 +129,48 @@ namespace GameStateManagement.Class
             }
         }
 
+        public void attackWithSpell(GameTime gameTime, Character target,Vector3 cameraPos, List<Spell> casted_spells)
+        {
+            timeSinceLastAttack += gameTime.ElapsedGameTime.Milliseconds;
+            if (timeSinceLastAttack > attackSpeed)
+            {
+                timeSinceLastAttack -= attackSpeed;
+                if (attackWithNoWeaponSound != null)
+                {
+                    attackWithNoWeaponSound.Play();
+                }
+                // Get the mouse position in world coordinates
+                Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
+
+                // Get the direction from the player to the mouse
+                Vector2 spellDirection = new Vector2(mousePosition.X - target.position.X, mousePosition.Y - target.position.Y);
+                spellDirection.Normalize();
+
+                float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+
+                // Create a new spell at the player's position
+                Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, target.EquiptedItem().value, target.EquiptedItem().Speed, this);
+                Vector2 originPosition = new Vector2(position.X + Width() / 2, position.Y + Height() / 4 * 3);
+                casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, target.position, originPosition));
+            }
+        }
+
         //Not in use currently
         public void moveTo(Vector2 position)
         {
-
         }
-
         public override bool isTouchingLeft(Rectangle item)
         {
             throw new NotImplementedException();
         }
-
         public override bool isTouchingRight(Rectangle item)
         {
             throw new NotImplementedException();
         }
-
         public override bool isTouchingUp(Rectangle item)
         {
             throw new NotImplementedException();
         }
-
         public override bool isTouchingDown(Rectangle item)
         {
             throw new NotImplementedException();
@@ -153,8 +178,6 @@ namespace GameStateManagement.Class
         #endregion
 
     }
-
-
 }
  
 

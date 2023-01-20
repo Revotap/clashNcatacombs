@@ -585,7 +585,7 @@ namespace GameStateManagement
                             player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
                         }else if (words[0] == "boss")
                         {
-                            enemy_map.Add(new Enemy("Vampire", 6, 128, 224, new Vector2(targetTextureResolution * y, targetTextureResolution * x), vampire_animation, 1.0f, vampire_damageReceivedSound, vampire_deathSound, vampire_attackWithNoWeaponSound, enemyLootTable_boss, 2));
+                            enemy_map.Add(new Enemy("Vampire", 6, 128, 224, new Vector2(targetTextureResolution * y, targetTextureResolution * x), vampire_animation, 1.0f, vampire_damageReceivedSound, vampire_deathSound, vampire_attackWithNoWeaponSound, enemyLootTable_boss, 2, fire_spell));
                         }
                     }
                 }
@@ -831,13 +831,24 @@ namespace GameStateManagement
                     }
                     if(i < casted_spells.Count)
                     {
-                        for (int x = enemy_map.Count - 1; x >= 0; x--)
+                        if (casted_spells[i].caster.GetType() == typeof(Player))
                         {
-                            if (enemy_map[x].hit(casted_spells[i].Position))
+                            for (int x = enemy_map.Count - 1; x >= 0; x--)
                             {
-                                enemy_map[x].receiveDamage(player, player.EquiptedItem().value);
+                                if (enemy_map[x].hit(casted_spells[i].Position))
+                                {
+                                    enemy_map[x].receiveDamage(player, player.EquiptedItem().value);
+                                    casted_spells.Remove(casted_spells[i]);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (player.hit(casted_spells[i].Position))
+                            {
+                                player.receiveDamage(casted_spells[i].caster, casted_spells[i].value);
                                 casted_spells.Remove(casted_spells[i]);
-                                break;
                             }
                         }
                     }
@@ -848,6 +859,11 @@ namespace GameStateManagement
             for (int x = enemy_map.Count - 1; x >= 0; x--)
             {
                 enemy_map[x].Update(gameTime);
+
+                if (enemy_map[x].equiptedItem != null)
+                {
+                    enemy_map[x].attackWithSpell(gameTime, player, cameraPos, casted_spells);
+                }
 
                 if (enemy_map[x].BoundingBox().Intersects(player.BoundingBox()))
                 {
@@ -1022,7 +1038,7 @@ namespace GameStateManagement
                     float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                     // Create a new spell at the player's position
-                    Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2));
+                    Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
                     Vector2 originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
                     casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
 
@@ -1038,7 +1054,7 @@ namespace GameStateManagement
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
-                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2));
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
                         originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
                         casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
 
@@ -1049,7 +1065,7 @@ namespace GameStateManagement
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
-                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2));
+                        spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
                         originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
                         casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
                     }
