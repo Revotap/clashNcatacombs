@@ -13,7 +13,7 @@ This is the project work for the university module "Game Developement". The goal
 - [X] At least 3 different types of enemies. They differ in look, life total and speed and are placed in a room
 - [X] Collision detection for enemies
 - [X] There are items in the rooms for players to pick up
-- [ ] Enemies and players can attack each other
+- [X] Enemies and players can attack each other
 - [X] Visual representation of attacks in form of hitpoints or healthbar
 - [X] Enemies with zero health get removed from the game
 - [X] Removed enemies drop gold and/or items
@@ -25,8 +25,8 @@ This is the project work for the university module "Game Developement". The goal
 - [X] Player can win the game. Killing the endboss or collection a special item for the exit
 ### Extended functionality
 - [ ] Levels are not static anymore. They get generated randomly at game start. Special rooms can perist and appear again (boss room, starting room)
-- [ ] Close and ranged combat for enemies and players
-- [ ] Items that heal or buff the player
+- [X] Close and ranged combat for enemies and players
+- [X] Items that heal or buff the player
 - [X] doors with keys to be unlocked
 - [X] Traps in the gameworld
 - [X] Sound effects

@@ -14,6 +14,7 @@ namespace GameStateManagement.Class
         #region Variables
         protected String name;
         protected int health;
+        public int maxHealth { get; set; }
         protected int baseDamage = 1;
         protected Rectangle boundingBox;
         public float movementSpeed = 2f;
@@ -41,6 +42,7 @@ namespace GameStateManagement.Class
         public Character(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound) {
             this.name = name;
             this.health = health;
+            this.maxHealth = health;
             this.width = width;
             this.height = height;
             this.position = position;
@@ -104,9 +106,9 @@ namespace GameStateManagement.Class
         public void healLife(int amount)
         {
             health += amount;
-            if (health > 6)
+            if (health > maxHealth)
             {
-                health = 6;
+                health = maxHealth;
             }
         }
         #endregion

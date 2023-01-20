@@ -19,6 +19,8 @@ namespace GameStateManagement.Class
         public int value { get; }
         public bool isEquippable { get; }
 
+        public SoundEffect sound { get; set; }
+
         public Item(String name, Texture2D texture, int rarity, int value, float rotation) {
             this.name = name;
             this.texture = texture;

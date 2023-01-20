@@ -163,7 +163,7 @@ namespace GameStateManagement
         private Vector2 ui_gold_text_vector = new Vector2(60, 120);
 
         //Debug UI
-        private bool debug_mode_active = true;
+        private bool debug_mode_active = false;
         Texture2D debug_border;
 
         private static Vector2 debug_ui_vector = new Vector2(0, 120);
@@ -481,7 +481,7 @@ namespace GameStateManagement
                         if(words.Length == 1)
                         {
                             Random random = new Random();
-                            if (random.Next(0, 50) <= 5)
+                            if (random.Next(0, 50) <= 9)
                             {
                                 int tmp = random.Next(0, 9);
                                 if (0 <= tmp && tmp < 2)
@@ -491,7 +491,7 @@ namespace GameStateManagement
                                 }
                                 else if (3 <= tmp && tmp < 6)
                                 {
-                                    enemy_map.Add(new Enemy("Skeleton", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 2.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
+                                    enemy_map.Add(new Enemy("Skeleton", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 2.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2, fire_spell, 1200));
                                 }
                             }
                         }
@@ -722,9 +722,9 @@ namespace GameStateManagement
                     if (interactable_map[i].tile.hasInteractionSong())
                     {
                         ScreenManager.RemoveScreen(this);
-                        MediaPlayer.Volume = 0.3F;
+                        MediaPlayer.Volume = 0.1F;
                         MediaPlayer.Play(Content.Load<Song>(@"OurContent\Audio\SoundEffects\quest_complete"));
-                        ScreenManager.AddScreen(new DeathBackgroundScreen(), 0);
+                        ScreenManager.AddScreen(new GameFinishedBackgroundScreen(), 0);
                         ScreenManager.AddScreen(new GameFinishedScreen(), 0);
                     }
                     interactable_map.Remove(interactable_map[i]);
@@ -1021,7 +1021,7 @@ namespace GameStateManagement
                     player.inventory.selectItemNumber(7);
                 }
 
-                if(keyboardState.IsKeyDown(Keys.F) && previousKeyboardState.IsKeyUp(Keys.F))
+                if(keyboardState.IsKeyDown(Keys.Space) && previousKeyboardState.IsKeyUp(Keys.Space))
                 {
                     player.inventory.equipSelectedItem(player);
                 }
@@ -1206,7 +1206,6 @@ namespace GameStateManagement
         {
             foreach(Enemy item in enemy_map)
             {
-                _spriteBatch.DrawString(spriteFont, item.Health().ToString(), new Vector2(item.position.X, item.position.Y - 20), Color.Red);
                 _spriteBatch.Draw(item.Texture(), new Rectangle((int)item.position.X, (int)item.position.Y, item.Width(), item.Height()), Color.White);
             }
         }
@@ -1280,7 +1279,7 @@ namespace GameStateManagement
                 }
             }
             _spriteBatch.DrawString(spriteFont, "Drop [Q]", new Vector2(ui_inventory_drop_text_vector.X - cameraPos.X, ui_inventory_drop_text_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "Use/Equipt [F]", new Vector2(ui_inventory_use_text_vector.X - cameraPos.X, ui_inventory_use_text_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Use/Equipt [Space]", new Vector2(ui_inventory_use_text_vector.X - cameraPos.X, ui_inventory_use_text_vector.Y - cameraPos.Y), Color.White);
 
             //Xp Bar
             _spriteBatch.DrawString(spriteFont, "Level: " + player.getLevel(), new Vector2(ui_playerLevel_vector.X - cameraPos.X, ui_playerLevel_vector.Y - cameraPos.Y), Color.White);
@@ -1291,6 +1290,14 @@ namespace GameStateManagement
             //Gold
             _spriteBatch.Draw(coin_texture, new Rectangle((int) ui_gold_symbol_vector.X - (int)cameraPos.X, (int) ui_gold_symbol_vector.Y - (int)cameraPos.Y, targetTextureResolution, targetTextureResolution), Color.White);
             _spriteBatch.DrawString(spriteFont, player.inventory.getGold().ToString(), new Vector2((int)ui_gold_text_vector.X - (int)cameraPos.X, (int)ui_gold_text_vector.Y - (int)cameraPos.Y), Color.White);
+
+            foreach(Enemy enemy in enemy_map)
+            {
+                float tmpHealth = (enemy.Health() + 0.01F) / enemy.maxHealth;
+                _spriteBatch.Draw(ui_xpbar_empty, new Rectangle((int)enemy.position.X, (int)enemy.position.Y - 10, enemy.Width(), 16), Color.White);
+                _spriteBatch.Draw(ui_xpbar_filler, new Rectangle((int)enemy.position.X, (int)enemy.position.Y - 10, (int)Math.Floor(enemy.Width() * tmpHealth), 16), Color.White);
+                
+            }
         }
 
         private void DrawDebugUI()
@@ -1310,6 +1317,11 @@ namespace GameStateManagement
             {
                 _spriteBatch.Draw(debug_border, new Rectangle((int)item.drawVector.X, (int)item.drawVector.Y, targetTextureResolution, targetTextureResolution), Color.Yellow);
             }
+            foreach(Enemy enemy in enemy_map)
+            {
+                _spriteBatch.DrawString(spriteFont, enemy.Health().ToString(), new Vector2(enemy.position.X, enemy.position.Y - 40), Color.Red);
+            }
+
             _spriteBatch.DrawString(spriteFont, "player_location: [X:" + player.position.X + ",Y:" + player.position.Y, new Vector2(debug_ui_player_position_vector.X - cameraPos.X, debug_ui_player_position_vector.Y - cameraPos.Y), Color.White);
 
             _spriteBatch.DrawString(spriteFont, "wall_collision:" + debug_ui_wall_collision, new Vector2(debug_ui_wall_collision_vector.X - cameraPos.X, debug_ui_wall_collision_vector.Y - cameraPos.Y), Color.White);

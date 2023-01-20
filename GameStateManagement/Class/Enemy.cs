@@ -31,11 +31,12 @@ namespace GameStateManagement.Class
             lastDirection = random.Next(0, 4);
         }
 
-        public Enemy(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound, List<Item> loot, int exp, Spell equippedItem) : base(name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
+        public Enemy(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound, List<Item> loot, int exp, Spell equippedItem, int attackSpeed = 700) : base(name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
         {
             this.loot_table = loot;
             this.exp = exp;
             base.equiptedItem = equippedItem;
+            base.attackSpeed = attackSpeed;
             lastDirection = random.Next(0, 4);
         }
         #endregion
@@ -172,31 +173,49 @@ namespace GameStateManagement.Class
                     attackWithNoWeaponSound.Play();
                 }
 
-                Vector2 originPosition = new Vector2(position.X + width/2, position.Y + height/2);
-
-                List<Vector2> targetVectors = new List<Vector2>();               
-
-                //ziel - standort
-                targetVectors.Add(new Vector2(position.X + 1, position.Y - 100));
-                targetVectors.Add(new Vector2(position.X + 1, position.Y + 100));
-                targetVectors.Add(new Vector2(position.X - 100, position.Y + 1));
-                targetVectors.Add(new Vector2(position.X + 100, position.Y + 1));
-                targetVectors.Add(new Vector2(position.X + 100, position.Y - 100));
-                targetVectors.Add(new Vector2(position.X - 100, position.Y + 100));
-                targetVectors.Add(new Vector2(position.X - 100, position.Y - 100));
-                targetVectors.Add(new Vector2(position.X + 100, position.Y + 100));
-
-                foreach (Vector2 targetVector in targetVectors)
+                if(name == "Vampire")
                 {
+                    Vector2 originPosition = new Vector2(position.X + width / 2, position.Y + height / 2);
+
+                    List<Vector2> targetVectors = new List<Vector2>();
+
+                    //ziel - standort
+                    targetVectors.Add(new Vector2(position.X + 1, position.Y - 100));
+                    targetVectors.Add(new Vector2(position.X + 1, position.Y + 100));
+                    targetVectors.Add(new Vector2(position.X - 100, position.Y + 1));
+                    targetVectors.Add(new Vector2(position.X + 100, position.Y + 1));
+                    targetVectors.Add(new Vector2(position.X + 100, position.Y - 100));
+                    targetVectors.Add(new Vector2(position.X - 100, position.Y + 100));
+                    targetVectors.Add(new Vector2(position.X - 100, position.Y - 100));
+                    targetVectors.Add(new Vector2(position.X + 100, position.Y + 100));
+
+                    foreach (Vector2 targetVector in targetVectors)
+                    {
+                        // Get the direction from the player to the mouse
+                        Vector2 spellDirection = new Vector2(targetVector.X - position.X, targetVector.Y - position.Y);
+                        spellDirection.Normalize();
+
+                        float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+
+                        // Create a new spell at the player's position
+                        Spell tmpSpell = (Spell)EquiptedItem();
+                        Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, EquiptedItem().value, EquiptedItem().Speed, this, tmpSpell.sound);
+                        casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, targetVector, originPosition));
+                    }
+                }
+                else
+                {
+                    Vector2 enemyPositonForCast = new Vector2(position.X + Width() / 2, position.Y + Height() / 4 * 3);
                     // Get the direction from the player to the mouse
-                    Vector2 spellDirection = new Vector2(targetVector.X - position.X, targetVector.Y - position.Y);
+                    Vector2 spellDirection = new Vector2(target.position.X - enemyPositonForCast.X, target.position.Y - enemyPositonForCast.Y);
                     spellDirection.Normalize();
 
                     float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                     // Create a new spell at the player's position
-                    Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, EquiptedItem().value, EquiptedItem().Speed, this);
-                    casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, targetVector, originPosition));
+                    Spell tmpSpell = (Spell)EquiptedItem();
+                    Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, EquiptedItem().value, EquiptedItem().Speed, this , tmpSpell.sound);
+                    casted_spells.Add(spell.Cast(enemyPositonForCast, rotation, spellDirection, target.position, enemyPositonForCast));
                 }
             }
         }
@@ -205,33 +224,30 @@ namespace GameStateManagement.Class
         public override bool isTouchingLeft(Rectangle rect)
         {
             return rect.Right > boundingBox.Left + velocity.X &&
-                rect.Left < boundingBox.Left &&
-                rect.Bottom > boundingBox.Top &&
-                rect.Top < boundingBox.Bottom;
+            rect.Left < boundingBox.Left &&
+            rect.Bottom > boundingBox.Top &&
+            rect.Top < boundingBox.Bottom;
         }
-
         public override bool isTouchingRight(Rectangle rect)
         {
             return rect.Left < boundingBox.Right + velocity.X &&
-                rect.Right > boundingBox.Right &&
-                rect.Bottom > boundingBox.Top &&
-                rect.Top < boundingBox.Bottom;
+            rect.Right > boundingBox.Right &&
+            rect.Bottom > boundingBox.Top &&
+            rect.Top < boundingBox.Bottom;
         }
-
         public override bool isTouchingUp(Rectangle rect)
         {
             return rect.Bottom > boundingBox.Top + velocity.Y &&
-                rect.Top < boundingBox.Top &&
-                rect.Right > boundingBox.Left &&
-                rect.Left < boundingBox.Right;
+            rect.Top < boundingBox.Top &&
+            rect.Right > boundingBox.Left &&
+            rect.Left < boundingBox.Right;
         }
-
         public override bool isTouchingDown(Rectangle rect)
         {
             return rect.Top < boundingBox.Bottom + velocity.Y &&
-                rect.Bottom > boundingBox.Bottom &&
-                rect.Right > boundingBox.Left &&
-                rect.Left < boundingBox.Right;
+            rect.Bottom > boundingBox.Bottom &&
+            rect.Right > boundingBox.Left &&
+            rect.Left < boundingBox.Right;
         }
 
         public override void updatePosition(List<TileEntry> collisionObjects)

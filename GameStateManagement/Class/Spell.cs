@@ -16,8 +16,6 @@ namespace GameStateManagement.Class
         public Vector2 Direction { get; set; }
         public Vector2 targetPosition { get; set; }
         public Vector2 originPosition { get; set; }
-
-        public SoundEffect sound { get; set; }
         public Character caster { get; set; }
         public Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, SoundEffect sound = null) : base(name, texture, rarity, rotation, value, true, speed)
         {
