@@ -17,6 +17,10 @@ namespace GameStateManagement.Class
         //Not in use currently
         private Vector2 direction;
         private float rotation;
+
+        private Random random = new Random();
+        int traveledInSameDirection = 0;
+        int lastDirection;
         #endregion
 
         #region Constructor
@@ -24,6 +28,7 @@ namespace GameStateManagement.Class
         {
             this.loot_table = loot;
             this.exp = exp;
+            lastDirection = random.Next(0, 4);
         }
 
         public Enemy(String name, int health, int width, int height, Vector2 position, List<Texture2D> textures, float movementSpeed, SoundEffect damageReceivedSound, SoundEffect deathSound, SoundEffect attackWithNoWeaponSound, List<Item> loot, int exp, Spell equippedItem) : base(name, health, width, height, position, textures, movementSpeed, damageReceivedSound, deathSound, attackWithNoWeaponSound)
@@ -31,6 +36,7 @@ namespace GameStateManagement.Class
             this.loot_table = loot;
             this.exp = exp;
             base.equiptedItem = equippedItem;
+            lastDirection = random.Next(0, 4);
         }
         #endregion
 
@@ -53,29 +59,55 @@ namespace GameStateManagement.Class
             return exp;
         }
 
+        public int getNextMove()
+        {
+            //caclculate random movement based on random numbers and times
+            if(traveledInSameDirection < random.Next(300,600) && lastDirection == 0)
+            {
+                traveledInSameDirection++;
+                return 0;
+            }
+            else if(traveledInSameDirection < random.Next(300, 600) && lastDirection == 1)
+            {
+                traveledInSameDirection++;
+                return 1;
+            }
+            else if (traveledInSameDirection < random.Next(300, 600) && lastDirection == 2)
+            {
+                traveledInSameDirection++;
+                return 2;
+            }
+            else if (traveledInSameDirection < random.Next(300, 600) && lastDirection == 3)
+            {
+                traveledInSameDirection++;
+                return 3;
+            }
+            traveledInSameDirection= 0;
+            int tmpNum = random.Next(0, 4);
+            lastDirection= tmpNum;
+            return tmpNum;
+        }
+
+        public int getNextMove(Vector2 target)
+        {
+            return 0;
+        }
+
         public override void moveUp()
         {
-            throw new NotImplementedException();
+            velocity = new Vector2(velocity.X, velocity.Y - movementSpeed);
         }
-
         public override void moveDown()
         {
-            throw new NotImplementedException();
+            velocity = new Vector2(velocity.X, velocity.Y + movementSpeed);
         }
-
         public override void moveLeft()
         {
-            throw new NotImplementedException();
+            velocity = new Vector2(velocity.X - movementSpeed, velocity.Y);
         }
-
         public override void moveRight()
         {
-            throw new NotImplementedException();
-        }
-
-        public override void updatePosition(List<TileEntry> collisionObjects)
-        {
-            throw new NotImplementedException();
+            velocity = new Vector2(velocity.X + movementSpeed, velocity.Y);
         }
 
         public override void Update(GameTime gameTime)
@@ -170,24 +202,54 @@ namespace GameStateManagement.Class
         }
 
         //Not in use currently
-        public void moveTo(Vector2 position)
+        public override bool isTouchingLeft(Rectangle rect)
         {
+            return rect.Right > boundingBox.Left + velocity.X &&
+                rect.Left < boundingBox.Left &&
+                rect.Bottom > boundingBox.Top &&
+                rect.Top < boundingBox.Bottom;
         }
-        public override bool isTouchingLeft(Rectangle item)
+
+        public override bool isTouchingRight(Rectangle rect)
         {
-            throw new NotImplementedException();
+            return rect.Left < boundingBox.Right + velocity.X &&
+                rect.Right > boundingBox.Right &&
+                rect.Bottom > boundingBox.Top &&
+                rect.Top < boundingBox.Bottom;
         }
-        public override bool isTouchingRight(Rectangle item)
+
+        public override bool isTouchingUp(Rectangle rect)
         {
-            throw new NotImplementedException();
+            return rect.Bottom > boundingBox.Top + velocity.Y &&
+                rect.Top < boundingBox.Top &&
+                rect.Right > boundingBox.Left &&
+                rect.Left < boundingBox.Right;
         }
-        public override bool isTouchingUp(Rectangle item)
+
+        public override bool isTouchingDown(Rectangle rect)
         {
-            throw new NotImplementedException();
+            return rect.Top < boundingBox.Bottom + velocity.Y &&
+                rect.Bottom > boundingBox.Bottom &&
+                rect.Right > boundingBox.Left &&
+                rect.Left < boundingBox.Right;
         }
-        public override bool isTouchingDown(Rectangle item)
+
+        public override void updatePosition(List<TileEntry> collisionObjects)
         {
-            throw new NotImplementedException();
+            foreach (TileEntry item in collisionObjects)
+            {
+                if (this.velocity.X > 0 && this.isTouchingRight(item.boundingBox) || this.velocity.X < 0 && this.isTouchingLeft(item.boundingBox))
+                {
+                    velocity = new Vector2(0, velocity.Y);
+                }
+
+                if (this.velocity.Y < 0 && this.isTouchingUp(item.boundingBox) || this.velocity.Y > 0 && this.isTouchingDown(item.boundingBox))
+                {
+                    velocity = new Vector2(velocity.X, 0);
+                }
+            }
+            position += velocity;
+            velocity = Vector2.Zero;
         }
         #endregion
 

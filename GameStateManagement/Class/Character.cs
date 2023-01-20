@@ -16,7 +16,7 @@ namespace GameStateManagement.Class
         protected int health;
         protected int baseDamage = 1;
         protected Rectangle boundingBox;
-        protected float movementSpeed = 2f;
+        public float movementSpeed = 2f;
         protected Vector2 velocity { get; set; } = Vector2.Zero;
         public Vector2 position { get; set; }
         protected int width;

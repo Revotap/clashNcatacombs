@@ -164,26 +164,28 @@ namespace GameStateManagement
         private bool debug_mode_active = true;
         Texture2D debug_border;
 
-        private Vector2 debug_ui_player_position_vector = new Vector2(0, 70);
+        private static Vector2 debug_ui_vector = new Vector2(0, 120);
+        private static int lineHeight = 30;
+        private static Vector2 debug_ui_player_position_vector = new Vector2(debug_ui_vector.X+0, debug_ui_vector.Y+lineHeight);
         private bool debug_ui_wall_collision = false;
-        private Vector2 debug_ui_wall_collision_vector = new Vector2(0,100);
+        private static Vector2 debug_ui_wall_collision_vector = new Vector2(debug_ui_player_position_vector.X+0, debug_ui_player_position_vector.Y + lineHeight);
         private bool debug_ui_interactable_collision = false;
-        private Vector2 debug_ui_interactable_collision_vector = new Vector2(0,130);
+        private static Vector2 debug_ui_interactable_collision_vector = new Vector2(debug_ui_wall_collision_vector.X + 0, debug_ui_wall_collision_vector.Y + lineHeight);
         private bool debug_ui_enemy_collision = false;
-        private Vector2 debug_ui_enemy_collision_vector = new Vector2(0, 160);
+        private static Vector2 debug_ui_enemy_collision_vector = new Vector2(debug_ui_interactable_collision_vector.X + 0, debug_ui_interactable_collision_vector.Y + lineHeight);
         private bool debug_ui_damagingWorld_collision = false;
-        private Vector2 debug_ui_damagingWorld_collision_vector = new Vector2(0, 190);
-        private Vector2 debug_ui_testing_value_vector = new Vector2(0,220);
+        private static Vector2 debug_ui_damagingWorld_collision_vector = new Vector2(debug_ui_enemy_collision_vector.X + 0, debug_ui_enemy_collision_vector.Y + lineHeight);
 
-        private Vector2 debug_ui_inventory_0_vector = new Vector2(0,250);
-        private Vector2 debug_ui_inventory_1_vector = new Vector2(0, 280);
-        private Vector2 debug_ui_inventory_2_vector = new Vector2(0,310);
-        private Vector2 debug_ui_inventory_3_vector = new Vector2(0, 340);
-        private Vector2 debug_ui_player_velocity_vector = new Vector2(0, 370);
-        private Vector2 debug_ui_player_level_vector = new Vector2(0, 400);
-        private Vector2 debug_ui_player_currentXP_vector = new Vector2(0,430);
-        private Vector2 debug_ui_player_maxXP_vector = new Vector2(0, 460);
-        private Vector2 debug_ui_player_equippedItem_vector = new Vector2(0, 490);
+        private static Vector2 debug_ui_inventory_0_vector = new Vector2(debug_ui_damagingWorld_collision_vector.X + 0, debug_ui_damagingWorld_collision_vector.Y + lineHeight);
+        private static Vector2 debug_ui_inventory_1_vector = new Vector2(debug_ui_inventory_0_vector.X + 0, debug_ui_inventory_0_vector.Y + lineHeight);
+        private static Vector2 debug_ui_inventory_2_vector = new Vector2(debug_ui_inventory_1_vector.X + 0, debug_ui_inventory_1_vector.Y + lineHeight);
+        private static Vector2 debug_ui_inventory_3_vector = new Vector2(debug_ui_inventory_2_vector.X + 0, debug_ui_inventory_2_vector.Y + lineHeight);
+        private static Vector2 debug_ui_player_velocity_vector = new Vector2(debug_ui_inventory_3_vector.X + 0, debug_ui_inventory_3_vector.Y + lineHeight);
+        private static Vector2 debug_ui_player_level_vector = new Vector2(debug_ui_player_velocity_vector.X + 0, debug_ui_player_velocity_vector.Y + lineHeight);
+        private static Vector2 debug_ui_player_currentXP_vector = new Vector2(debug_ui_player_level_vector.X + 0, debug_ui_player_level_vector.Y + lineHeight);
+        private static Vector2 debug_ui_player_maxXP_vector = new Vector2(debug_ui_player_currentXP_vector.X + 0, debug_ui_player_currentXP_vector.Y + lineHeight);
+        private static Vector2 debug_ui_player_equippedItem_vector = new Vector2(debug_ui_player_maxXP_vector.X + 0, debug_ui_player_maxXP_vector.Y + lineHeight);
+        private static Vector2 debug_ui_playerHealth_vector = new Vector2(debug_ui_player_equippedItem_vector.X + 0, debug_ui_player_equippedItem_vector.Y + lineHeight);
 
         private Texture2D debug_ui_beamTexture;
         //Spells
@@ -859,6 +861,42 @@ namespace GameStateManagement
             //Update enemies´and check enemie collision with player
             for (int x = enemy_map.Count - 1; x >= 0; x--)
             {
+                /*int tmpMove = enemy_map[x].getNextMove();
+                if (tmpMove == 0)
+                {
+                    enemy_map[x].moveUp();
+                }else if (tmpMove == 1)
+                {
+                    enemy_map[x].moveRight();
+                }
+                else if(tmpMove == 2)
+                {
+                    enemy_map[x].moveDown();
+                }
+                else if(tmpMove == 3)
+                {
+                    enemy_map[x].moveLeft();
+                }*/
+                Vector2 tmpPosition = Vector2.Lerp(enemy_map[x].position, player.position, enemy_map[x].movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                if(tmpPosition.X < enemy_map[x].position.X)
+                {
+                    enemy_map[x].moveLeft();
+                }else if(tmpPosition.X > enemy_map[x].position.X)
+                {
+                    enemy_map[x].moveRight();
+                }
+                if(tmpPosition.Y > enemy_map[x].position.Y)
+                {
+                    enemy_map[x].moveDown();
+                }else if(tmpPosition.Y < enemy_map[x].position.Y)
+                {
+                    enemy_map[x].moveUp();
+                }
+
+                //throw new Exception("Enemy pos:" + enemy_map[x].position + ", player_pos:" + player.position + "new_pos:" + tmpPosition);
+
+                enemy_map[x].updatePosition(collider_map);
                 enemy_map[x].Update(gameTime);
 
                 if (enemy_map[x].equiptedItem != null)
@@ -1262,7 +1300,7 @@ namespace GameStateManagement
             _spriteBatch.DrawString(spriteFont, "interactable_collision:" + debug_ui_interactable_collision, new Vector2(debug_ui_interactable_collision_vector.X - cameraPos.X, debug_ui_interactable_collision_vector.Y -(int)cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "enemy_collision:" + debug_ui_enemy_collision, new Vector2(debug_ui_enemy_collision_vector.X - cameraPos.X, debug_ui_enemy_collision_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "damagingWorld_collision:" + debug_ui_damagingWorld_collision, new Vector2(debug_ui_damagingWorld_collision_vector.X - cameraPos.X, debug_ui_damagingWorld_collision_vector.Y - cameraPos.Y), Color.White);
-            _spriteBatch.DrawString(spriteFont, "health: " + player.Health(), new Vector2(debug_ui_testing_value_vector.X - cameraPos.X, debug_ui_testing_value_vector.Y - cameraPos.Y), Color.White);
+            _spriteBatch.DrawString(spriteFont, "health: " + player.Health(), new Vector2(debug_ui_playerHealth_vector.X - cameraPos.X, debug_ui_playerHealth_vector.Y - cameraPos.Y), Color.White);
 
             _spriteBatch.DrawString(spriteFont, "inventory_0: " + player.inventory.GetItemName(0), new Vector2(debug_ui_inventory_0_vector.X - cameraPos.X, debug_ui_inventory_0_vector.Y - cameraPos.Y), Color.White);
             _spriteBatch.DrawString(spriteFont, "inventory_1: " + player.inventory.GetItemName(1), new Vector2(debug_ui_inventory_1_vector.X - cameraPos.X, debug_ui_inventory_1_vector.Y - cameraPos.Y), Color.White);
@@ -1281,13 +1319,21 @@ namespace GameStateManagement
                 _spriteBatch.DrawString(spriteFont, "equipped_item: none", new Vector2(debug_ui_player_equippedItem_vector.X - cameraPos.X, debug_ui_player_equippedItem_vector.Y - cameraPos.Y), Color.White);
             }
 
+            //Drawing of casted spell lines is not working
             /*foreach(Spell spell in casted_spells)
             {
                 Vector2 casterPos = new Vector2(spell.caster.position.X + spell.caster.Width()/2, spell.caster.position.Y + spell.caster.Height()/2);
                 DrawLine(debug_ui_beamTexture, casterPos, spell.Direction * 100, Color.White);
             }*/
-            DrawLine(debug_ui_beamTexture, new Vector2(player.position.X + player.Width() / 2 + 10, player.position.Y + player.Height() / 2 + 20), new Vector2(Mouse.GetState().Position.X - cameraPos.X, Mouse.GetState().Position.Y - cameraPos.Y), Color.White);
+
+            DrawLine(debug_ui_beamTexture, new Vector2(player.position.X + player.Width() / 2 + 10, player.position.Y + player.Height() / 2 + 20), new Vector2(Mouse.GetState().Position.X - cameraPos.X, Mouse.GetState().Position.Y - cameraPos.Y), Color.Blue);
         }
+
+        /*public Rectangle DrawLOS(Vector2 point1, Vector2 point2)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            new Rectangle(point1);
+        }*/
 
         public void DrawLine(Texture2D texture, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
         {
