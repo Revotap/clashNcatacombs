@@ -139,19 +139,33 @@ namespace GameStateManagement.Class
                 {
                     attackWithNoWeaponSound.Play();
                 }
-                // Get the mouse position in world coordinates
-                Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
 
-                // Get the direction from the player to the mouse
-                Vector2 spellDirection = new Vector2(mousePosition.X - target.position.X, mousePosition.Y - target.position.Y);
-                spellDirection.Normalize();
+                Vector2 originPosition = new Vector2(position.X + width/2, position.Y + height/2);
 
-                float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+                List<Vector2> targetVectors = new List<Vector2>();               
 
-                // Create a new spell at the player's position
-                Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, target.EquiptedItem().value, target.EquiptedItem().Speed, this);
-                Vector2 originPosition = new Vector2(position.X + Width() / 2, position.Y + Height() / 4 * 3);
-                casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, target.position, originPosition));
+                //ziel - standort
+                targetVectors.Add(new Vector2(position.X + 1, position.Y - 100));
+                targetVectors.Add(new Vector2(position.X + 1, position.Y + 100));
+                targetVectors.Add(new Vector2(position.X - 100, position.Y + 1));
+                targetVectors.Add(new Vector2(position.X + 100, position.Y + 1));
+                targetVectors.Add(new Vector2(position.X + 100, position.Y - 100));
+                targetVectors.Add(new Vector2(position.X - 100, position.Y + 100));
+                targetVectors.Add(new Vector2(position.X - 100, position.Y - 100));
+                targetVectors.Add(new Vector2(position.X + 100, position.Y + 100));
+
+                foreach (Vector2 targetVector in targetVectors)
+                {
+                    // Get the direction from the player to the mouse
+                    Vector2 spellDirection = new Vector2(targetVector.X - position.X, targetVector.Y - position.Y);
+                    spellDirection.Normalize();
+
+                    float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
+
+                    // Create a new spell at the player's position
+                    Spell spell = new Spell(EquiptedItem().name, EquiptedItem().texture, EquiptedItem().rarity, rotation, EquiptedItem().value, EquiptedItem().Speed, this);
+                    casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, targetVector, originPosition));
+                }
             }
         }
 
