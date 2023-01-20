@@ -161,7 +161,7 @@ namespace GameStateManagement
         private Vector2 ui_gold_text_vector = new Vector2(60, 120);
 
         //Debug UI
-        private bool debug_mode_active = false;
+        private bool debug_mode_active = true;
         Texture2D debug_border;
 
         private Vector2 debug_ui_player_position_vector = new Vector2(0, 70);
@@ -353,6 +353,7 @@ namespace GameStateManagement
             Spell fire_spell = new Spell("Fire Spell", fireball_texture, 1, 2.0f, 1,10f);
             Spell kinetic_spell = new Spell("Kinetic Spell", kinetic_ball_texture, 3, 2.0f,2, 20f);
             Item gold_coin = new Item("Coin", coin_texture, 1, 1, 2.0f);
+            Item health_potion = new Item("Health Potion", Content.Load<Texture2D>(@"OurContent\Map\health_flask"), 1, 4, 1.0F);
 
             player.equipItem(fire_spell);
 
@@ -373,6 +374,7 @@ namespace GameStateManagement
             enemyLootTable_small.Add(gold_coin);
             enemyLootTable_medium.Add(golden_key);
             enemyLootTable_medium.Add(gold_coin);
+            enemyLootTable_medium.Add(health_potion);
             enemyLootTable_boss.Add(diamond_key);
 
             crossInteractableTiles = new Tile[2, 20];
@@ -750,9 +752,6 @@ namespace GameStateManagement
                 debug_ui_damagingWorld_collision = false;
             }
 
-            //Check collision with walls
-            player.updatePosition(collider_map);
-
             //UI
 
             //HealthBar
@@ -845,10 +844,17 @@ namespace GameStateManagement
                 }
             }
 
-            //Update enemies
+            //Update enemies´and check enemie collision with player
             for (int x = enemy_map.Count - 1; x >= 0; x--)
             {
                 enemy_map[x].Update(gameTime);
+
+                if (enemy_map[x].BoundingBox().Intersects(player.BoundingBox()))
+                {
+                    enemy_map[x].attack(gameTime, player);
+                    player.calculatePushBack(enemy_map[x].BoundingBox(), collider_map);
+                }
+
                 if (enemy_map[x].Health() <= 0)
                 {
                     Item loot = enemy_map[x].dropItem();
@@ -861,6 +867,10 @@ namespace GameStateManagement
                     enemy_map.Remove(enemy_map[x]);
                 }
             }
+
+            //Check collision with walls
+            player.updatePosition(collider_map);
+
             player.Update(gameTime);
             peaks.Update(gameTime);
 

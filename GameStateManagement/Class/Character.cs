@@ -27,7 +27,7 @@ namespace GameStateManagement.Class
         protected int timeSinceLastFrame = 0;
         protected int frameSpeed = 150;
 
-        protected int timeSinceLastAttack = 0;
+        protected int timeSinceLastAttack = 700;
         protected int attackSpeed = 700;
 
         protected SoundEffect damageReceivedSound;
@@ -99,6 +99,15 @@ namespace GameStateManagement.Class
             Item tmp = equiptedItem;
             equiptedItem = item;
             return tmp;
+        }
+
+        public void healLife(int amount)
+        {
+            health += amount;
+            if (health > 6)
+            {
+                health = 6;
+            }
         }
         #endregion
 

@@ -174,6 +174,38 @@ namespace GameStateManagement.Class
         }
         public int getMaxXForCurrentLevel() { return maxXPForCurrentLevel; }
         public int getLevel() { return level; }
+
+        public void calculatePushBack(Rectangle rect, List<TileEntry> collisionObjects)
+        {
+            //bool tmpBoolLeft = this.isTouchingLeft(rect);
+            //bool tmpBoolRight = this.isTouchingRight(rect);
+            //bool tmpBoolUp = this.isTouchingUp(rect);
+            //bool tmpBoolDown = this.isTouchingDown(rect);
+            //throw new Exception(tmpBoolLeft.ToString() + tmpBoolRight + tmpBoolUp + tmpBoolDown + tmpVelocity.X + tmpVelocity.Y);
+            if (velocity.X > 0 && this.isTouchingRight(rect) || velocity.X < 0 && this.isTouchingLeft(rect))
+            {
+                velocity = new Vector2(velocity.X * (-10), velocity.Y);
+            }
+
+            if (velocity.Y < 0 && this.isTouchingUp(rect) || velocity.Y > 0 && this.isTouchingDown(rect))
+            {
+                velocity = new Vector2(velocity.X, velocity.Y * (-10));
+            }
+            foreach (TileEntry item in collisionObjects)
+            {
+                if (velocity.X > 0 && this.isTouchingRight(item.boundingBox) || velocity.X < 0 && this.isTouchingLeft(item.boundingBox))
+                {
+                    velocity = new Vector2(0, velocity.Y);
+                }
+
+                if (velocity.Y < 0 && this.isTouchingUp(item.boundingBox) || velocity.Y > 0 && this.isTouchingDown(item.boundingBox))
+                {
+                    velocity = new Vector2(velocity.X, 0);
+                }
+            }
+            position += velocity;
+            velocity = Vector2.Zero;
+        }
         #endregion
     }
 }

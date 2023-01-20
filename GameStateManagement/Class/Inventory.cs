@@ -101,6 +101,16 @@ namespace GameStateManagement.Class
                 if (tmp is Spell)
                 {
                     item_list[selected_item_id] = target.equipItem(tmp);
+                }else if(tmp.name == "Health Potion")
+                {
+                    if(target is Player)
+                    {
+                        if(target.Health() < 6)
+                        {
+                            target.healLife(item_list[selected_item_id].value);
+                            RemoveItemWithIndex(selected_item_id);
+                        }
+                    }
                 }
             }
         }
