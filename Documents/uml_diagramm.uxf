@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.0.0">
-  <zoom_level>14</zoom_level>
+  <zoom_level>12</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>0</x>
-      <y>252</y>
-      <w>770</w>
-      <h>854</h>
+      <x>204</x>
+      <y>84</y>
+      <w>660</w>
+      <h>816</h>
     </coordinates>
     <panel_attributes>Character
 &lt;&lt;abstract&gt;&gt;
 --
 # name: String
-# healths int
+# health int
++ maxHealht: int
 # baseDamage: int
 # boundingBox: Rectangle
 # movementSpeed: float
@@ -47,16 +48,20 @@
 + moveLeft(): void &lt;&lt;abstract&gt;&gt;
 + moveRight(): void &lt;&lt;abstract&gt;&gt;
 + attack(GameTime, Character target): void &lt;&lt;abstract&gt;&gt;
-+ receiveDamage(Character source, int damage): void &lt;&lt;abstract&gt;&gt;</panel_attributes>
++ receiveDamage(Character source, int damage): void &lt;&lt;abstract&gt;&gt;
++ hit(Vector2 targetVector): bool
++ addXP(int xp): void &lt;&lt;virtual&gt;&gt;
++ equipItem(Item item): Item
++ healLife(int amount): vooid</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>420</x>
-      <y>1190</y>
-      <w>784</w>
-      <h>504</h>
+      <x>564</x>
+      <y>948</y>
+      <w>672</w>
+      <h>432</h>
     </coordinates>
     <panel_attributes>Player
 --
@@ -68,7 +73,8 @@
 --
 + Player(String name, int health, int width, int height, Vector2 position,
 List&lt;Texture2D&gt; textures, float movementSpeed, SoundEffect damageReceivedSound,
-SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
+SoundEffect deathSound, SoundEffect attackWithNoWeaponSound,
+Invenotry inventory): Player
 --
 + updatePosition(List&lt;Rectangle&gt; collisionObjects) : void &lt;&lt;override&gt;&gt;
 + isTouchingLeft(Rectangle item) : bool &lt;&lt;override&gt;&gt;
@@ -81,16 +87,21 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 + moveRight(): void &lt;&lt;override&gt;&gt;
 + Update(GameTime): void &lt;&lt;override&gt;&gt;
 + receiveDamage(int): void &lt;&lt;override&gt;&gt;
-+ attack(GameTime, Character): void &lt;&lt;override&gt;&gt;</panel_attributes>
++ attack(GameTime, Character): void &lt;&lt;override&gt;&gt;
++ getCurrentXP(): int
++ addXP(int xp): void &lt;&lt;override&gt;&gt;
++ getMaxXForCurrentLevel(): int
++ getLevel: int
++ calculatePushBack(): void</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>196</x>
-      <y>1722</y>
-      <w>924</w>
-      <h>504</h>
+      <x>300</x>
+      <y>1416</y>
+      <w>864</w>
+      <h>600</h>
     </coordinates>
     <panel_attributes>Enemy
 --
@@ -98,8 +109,13 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 - exp: int
 - direction: Vector2
 - rotation: Vector2
+- random: Random
+- traveledInSameDirection
+- lastDirection
 --
 + Enemy(String name, List&lt;Texture2D&gt; texture, int width, int height, List&lt;Item&gt; loot, int exp): Enemy 
++ Enemy(String name, List&lt;Texture2D&gt; texture, int width, int height, List&lt;Item&gt; loot, int exp,
+Spell equippedItem, int attackSPpeed = 700): Enemy 
 --
 + updatePosition(List&lt;Rectangle&gt; collisionObjects) : void &lt;&lt;override&gt;&gt;
 + isTouchingLeft(Rectangle item) : bool &lt;&lt;override&gt;&gt;
@@ -115,40 +131,43 @@ SoundEffect deathSound, SoundEffect attackWithNoWeaponSound): Player
 + attack(GameTime, Character): void &lt;&lt;override&gt;&gt;
 + dropItem(): Item
 + expGrant(): int
-+ moveTo(Vector2 targetPosition): void</panel_attributes>
++ getNextMove(Vector2 target): int
++ getNextMove(): int
++ attackWithSpell(GameTime gameTime, Character target, Vector3 cameraPos, List&lt;Spells&gt; castedSpells) : void
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
-      <y>1092</y>
-      <w>112</w>
-      <h>658</h>
+      <x>372</x>
+      <y>888</y>
+      <w>96</w>
+      <h>552</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;450.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;440.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>574</x>
-      <y>1092</y>
-      <w>112</w>
-      <h>126</h>
+      <x>696</x>
+      <y>888</y>
+      <w>96</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 Extends</panel_attributes>
-    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>798</x>
-      <y>252</y>
-      <w>644</w>
-      <h>210</h>
+      <x>888</x>
+      <y>84</y>
+      <w>552</w>
+      <h>276</h>
     </coordinates>
     <panel_attributes>Item
 &lt;&lt;abstract&gt;&gt;
@@ -157,8 +176,13 @@ Extends</panel_attributes>
 + texture: Texture2D
 + rarity: int
 + rotation: Vector2
++ speed: float
++ value: int
++ isEquippable: bool
 --
 + Item(String name, Texture2D texture, int rarity, Vector2 rotation): Item
++ Item(String name, Texture2D texture, int rarity, Vector2 rotation, int value, bool isEquippable): Item
++ Item(String name, Texture2D texture, int rarity, Vector2 rotation, int value, bool isEquippable, float speed): Item
 --
 </panel_attributes>
     <additional_attributes/>
@@ -166,10 +190,10 @@ Extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1498</x>
-      <y>392</y>
-      <w>742</w>
-      <h>126</h>
+      <x>1488</x>
+      <y>264</y>
+      <w>636</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>Key
 --
@@ -181,32 +205,12 @@ Extends</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>2576</x>
-      <y>574</y>
-      <w>1218</w>
-      <h>196</h>
-    </coordinates>
-    <panel_attributes>Fireball
---
-
---
-+ Fireball(String name, Vector2 position, Vector2 direction, float speed, float rotation, Vector2 originPosition, Vector2 targetPosition): Fireball
-- Fireball(String name, Texture2D texture, int rarity, Vector2 rotation, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Fireball
-
---
-+ Update(GameTime gameTime): void &lt;&lt;override&gt;&gt;
-+ Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Fireball &lt;&lt;override&gt;&gt;</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
       <x>1428</x>
-      <y>294</y>
-      <w>882</w>
-      <h>56</h>
+      <y>180</y>
+      <w>756</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends</panel_attributes>
@@ -215,10 +219,10 @@ extends</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1596</x>
-      <y>308</y>
-      <w>42</w>
-      <h>112</h>
+      <x>1572</x>
+      <y>192</y>
+      <w>36</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
@@ -226,62 +230,72 @@ extends</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>798</x>
-      <y>602</y>
-      <w>322</w>
-      <h>210</h>
+      <x>888</x>
+      <y>444</y>
+      <w>276</w>
+      <h>300</h>
     </coordinates>
     <panel_attributes>Inventory
 --
 + item_list: List&lt;Item&gt;
 + inventorySlots: int
++ gold: int
+- drawVector: Vector2
+- empty_texture: Texture2D
+- selected_texture: Texture2D
+- selected_item_id: int 
 --
 + Inventory(): Inventory
 --
++ invenotryFull(): bool
 + AddItem(Item item): bool
 + RemoveItem(Item item): bool
 + GetItemName(int index): String
 + RemoveItemWithIndex(int index): bool
++ euqipSelectedItem(Character target): void
++ dropSelectedItem(int index): void
++ getGold(): int
++ Draw(): void
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>952</x>
-      <y>448</y>
-      <w>56</w>
-      <h>182</h>
+      <x>1020</x>
+      <y>348</y>
+      <w>48</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
 m2=n
 
 </panel_attributes>
-    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>952</x>
-      <y>798</y>
-      <w>56</w>
-      <h>420</h>
+      <x>1020</x>
+      <y>732</y>
+      <w>48</w>
+      <h>240</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=1
 m2=1
 
 </panel_attributes>
-    <additional_attributes>10.0;280.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;180.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1232</x>
-      <y>560</y>
-      <w>1008</w>
-      <h>980</h>
+      <x>1260</x>
+      <y>408</y>
+      <w>864</w>
+      <h>840</h>
     </coordinates>
     <panel_attributes>Tile
 --
@@ -327,16 +341,19 @@ m2=1
 + texture(): Texture2D
 + getHasCollision(): bool
 + getIsInteractable(): bool
-+ getDoesDamage(): bool</panel_attributes>
++ getDoesDamage(): bool
++ playInteractionSound: void
++ playInteractionSong: void
++ hasInteractionSong(): bool</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1148</x>
-      <y>1806</y>
-      <w>714</w>
-      <h>196</h>
+      <x>1188</x>
+      <y>1476</y>
+      <w>612</w>
+      <h>168</h>
     </coordinates>
     <panel_attributes>TileEntry
 Wrapper class for tiles
@@ -346,16 +363,17 @@ Wrapper class for tiles
 - targetTextureResolution
 + boundingBox: Rectangle
 --
-+ TileEntry(Tile tile, Vector2 drawVector, int targetTextureResolution): TileEntry</panel_attributes>
++ TileEntry(Tile tile, Vector2 drawVector, int targetTextureResolution): TileEntry
++ hit(Vector2): bool</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1484</x>
-      <y>1526</y>
-      <w>56</w>
-      <h>308</h>
+      <x>1476</x>
+      <y>1236</y>
+      <w>48</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 m1=n
@@ -367,10 +385,10 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1722</x>
-      <y>1652</y>
-      <w>966</w>
-      <h>140</h>
+      <x>1680</x>
+      <y>1344</y>
+      <w>828</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>ChestTile
 --
@@ -384,10 +402,10 @@ m2=1
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2072</x>
-      <y>1526</y>
-      <w>112</w>
-      <h>154</h>
+      <x>1980</x>
+      <y>1236</y>
+      <w>96</w>
+      <h>132</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-
 extends
@@ -397,10 +415,10 @@ extends
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1484</x>
-      <y>1680</y>
-      <w>266</w>
-      <h>70</h>
+      <x>1476</x>
+      <y>1368</y>
+      <w>228</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-
 m2=1
@@ -410,37 +428,26 @@ m2=1
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>2282</x>
-      <y>252</y>
-      <w>1428</w>
-      <h>280</h>
+      <x>2160</x>
+      <y>144</y>
+      <w>1224</w>
+      <h>240</h>
     </coordinates>
     <panel_attributes>Spell
 --
 + position: Vector2
 + direction: Vector2
-+ speed: float
 + targetPosition: Vector2
 + originPosition: Vector2
++ caster: Character
 --
-+ Spell(String name, Texture2D texture, int rarity, Vector2 rotation, float speed): Spell
-# Spell(String name, Texture2D texture, int rarity, Vector2 rotation, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition): Spell
++ Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, SoundEffect sound = null): Spell
++ Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Character caster, SoundEffect sound = null): Spell
+# Spell(String name, Texture2D texture, int rarity, float rotation, int value, float speed, Vector2 position, Vector2 direction, Vector2 targetPosition, Vector2 originPosition, Character caster, SoundEffect sound = null): Spell
 --
 + Update(GameTime gameTime): void &lt;&lt;abstract&gt;&gt;
 + Cast(Vector2 position, float rotation, Vector2 direction, Vector2 targetPosition, Vector2 originPosition) : void &lt;&lt;abstract&gt;&gt;
 </panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>2394</x>
-      <y>518</y>
-      <w>210</w>
-      <h>168</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;-
-extends</panel_attributes>
-    <additional_attributes>130.0;100.0;20.0;100.0;20.0;10.0</additional_attributes>
   </element>
 </diagram>

@@ -116,7 +116,6 @@ namespace GameStateManagement
 
         //Camera
         private Vector3 cameraPos;
-        private Camera worldCamera;
 
         //Colliders
         List<TileEntry> collider_map;
@@ -163,7 +162,7 @@ namespace GameStateManagement
         private Vector2 ui_gold_text_vector = new Vector2(60, 120);
 
         //Debug UI
-        private bool debug_mode_active = false;
+        private bool debug_mode_active = true;
         Texture2D debug_border;
 
         private static Vector2 debug_ui_vector = new Vector2(0, 120);
@@ -636,7 +635,6 @@ namespace GameStateManagement
             }
 
             cameraPos = new Vector3(player.position.X, player.position.Y, 0);
-            worldCamera = new Camera(viewport);
 
             collider_map = new List<TileEntry>();
             interactable_map = new List<TileEntry>();
