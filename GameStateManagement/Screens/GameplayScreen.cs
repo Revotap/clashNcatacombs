@@ -185,6 +185,7 @@ namespace GameStateManagement
         private Vector2 debug_ui_player_maxXP_vector = new Vector2(0, 460);
         private Vector2 debug_ui_player_equippedItem_vector = new Vector2(0, 490);
 
+        private Texture2D debug_ui_beamTexture;
         //Spells
         Spell fireball;
         Texture2D fireball_texture;
@@ -229,7 +230,7 @@ namespace GameStateManagement
 
             ui_inventory_slot_empty = Content.Load<Texture2D>(@"OurContent\Utility\Inventory\item");
             ui_inventory_slot_selected = Content.Load<Texture2D>(@"OurContent\Utility\Inventory\item_selected");
-
+            debug_ui_beamTexture = Content.Load<Texture2D>(@"OurContent\Utility\beam");
             if (player == null)
             {
                 List<Texture2D> animation = new List<Texture2D>();
@@ -478,12 +479,12 @@ namespace GameStateManagement
                                 int tmp = random.Next(0, 9);
                                 if (0 <= tmp && tmp < 2)
                                 {
-                                    enemy_map.Add(new Enemy("Skull", 1, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skull_animation, 1.0f, skull_damageReceivedSound, skull_deathSound, skull_attackWithNoWeaponSound, enemyLootTable_small, 2));
+                                    enemy_map.Add(new Enemy("Skull", 3, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skull_animation, 1.0f, skull_damageReceivedSound, skull_deathSound, skull_attackWithNoWeaponSound, enemyLootTable_small, 2));
 
                                 }
                                 else if (3 <= tmp && tmp < 6)
                                 {
-                                    enemy_map.Add(new Enemy("Skeleton", 2, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 1.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
+                                    enemy_map.Add(new Enemy("Skeleton", 6, 64, 112, new Vector2(targetTextureResolution * y, targetTextureResolution * x), skeleton_animation, 1.0f, skeleton_damageReceivedSound, skeleton_deathSound, skeleton_attackWithNoWeaponSound, enemyLootTable_medium, 2));
                                 }
                             }
                         }
@@ -585,7 +586,7 @@ namespace GameStateManagement
                             player.position = new Vector2(targetTextureResolution * y, targetTextureResolution * x);
                         }else if (words[0] == "boss")
                         {
-                            enemy_map.Add(new Enemy("Vampire", 6, 128, 224, new Vector2(targetTextureResolution * y, targetTextureResolution * x), vampire_animation, 1.0f, vampire_damageReceivedSound, vampire_deathSound, vampire_attackWithNoWeaponSound, enemyLootTable_boss, 2, fire_spell));
+                            enemy_map.Add(new Enemy("Vampire", 50, 128, 224, new Vector2(targetTextureResolution * y, targetTextureResolution * x), vampire_animation, 1.0f, vampire_damageReceivedSound, vampire_deathSound, vampire_attackWithNoWeaponSound, enemyLootTable_boss, 2, fire_spell));
                         }
                     }
                 }
@@ -1030,44 +1031,45 @@ namespace GameStateManagement
                 {
                     // Get the mouse position in world coordinates
                     Vector2 mousePosition = new Vector2(Mouse.GetState().X - cameraPos.X, Mouse.GetState().Y - cameraPos.Y);
-
+                    Vector2 playerPositonForCast = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
                     // Get the direction from the player to the mouse
-                    Vector2 spellDirection = new Vector2(mousePosition.X - player.position.X, mousePosition.Y - player.position.Y);
+                    Vector2 spellDirection = new Vector2(mousePosition.X - playerPositonForCast.X, mousePosition.Y - playerPositonForCast.Y);
                     spellDirection.Normalize();
 
                     float rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                     // Create a new spell at the player's position
                     Spell spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
-                    Vector2 originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
-                    casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
+                    casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
 
                     // Play the fireball sound
                     //fireballSound.Play();
 
                     if(player.equiptedItem.name == "Kinetic Spell")
                     {
+                        //LEFT
                         // Get the direction from the player to the mouse
-                        spellDirection = new Vector2(mousePosition.X - player.position.X - 100, mousePosition.Y - player.position.Y - 100);
+                        //double angle = 45;
+                        //Vector2 spellDirectionLeft = new Vector2(spellDirection.X * (int)Math.Sin(angle), spellDirection.Y * (int)Math.Cos(angle));
+                        spellDirection = new Vector2(mousePosition.X - playerPositonForCast.X + 100, mousePosition.Y - playerPositonForCast.Y + 100);
                         spellDirection.Normalize();
 
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
                         spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
-                        originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
-                        casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
+                        casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
 
+                        //RIGHT
                         // Get the direction from the player to the mouse
-                        spellDirection = new Vector2(mousePosition.X - player.position.X + 100, mousePosition.Y - player.position.Y + 100);
+                        spellDirection = new Vector2(mousePosition.X - playerPositonForCast.X - 100, mousePosition.Y - playerPositonForCast.Y - 100);
                         spellDirection.Normalize();
 
                         rotation = (float)Math.Atan2(spellDirection.X, spellDirection.Y);
 
                         // Create a new spell at the player's position
                         spell = new Spell(player.EquiptedItem().name, player.EquiptedItem().texture, player.EquiptedItem().rarity, rotation, player.EquiptedItem().value, player.EquiptedItem().Speed + (player.getLevel() * 2), player);
-                        originPosition = new Vector2(player.position.X + player.Width() / 2, player.position.Y + player.Height() / 4 * 3);
-                        casted_spells.Add(spell.Cast(originPosition, rotation, spellDirection, mousePosition, originPosition));
+                        casted_spells.Add(spell.Cast(playerPositonForCast, rotation, spellDirection, mousePosition, playerPositonForCast));
                     }
 
                     previousMouseState = currentMouseState;
@@ -1278,6 +1280,27 @@ namespace GameStateManagement
             {
                 _spriteBatch.DrawString(spriteFont, "equipped_item: none", new Vector2(debug_ui_player_equippedItem_vector.X - cameraPos.X, debug_ui_player_equippedItem_vector.Y - cameraPos.Y), Color.White);
             }
+
+            /*foreach(Spell spell in casted_spells)
+            {
+                Vector2 casterPos = new Vector2(spell.caster.position.X + spell.caster.Width()/2, spell.caster.position.Y + spell.caster.Height()/2);
+                DrawLine(debug_ui_beamTexture, casterPos, spell.Direction * 100, Color.White);
+            }*/
+            DrawLine(debug_ui_beamTexture, new Vector2(player.position.X + player.Width() / 2 + 10, player.position.Y + player.Height() / 2 + 20), new Vector2(Mouse.GetState().Position.X - cameraPos.X, Mouse.GetState().Position.Y - cameraPos.Y), Color.White);
+        }
+
+        public void DrawLine(Texture2D texture, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(texture, point1, distance, angle, color, thickness);
+        }
+
+        public void DrawLine(Texture2D texture, Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+            _spriteBatch.Draw(texture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
     }
     #endregion
