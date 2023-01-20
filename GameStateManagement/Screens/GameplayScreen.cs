@@ -52,6 +52,7 @@ namespace GameStateManagement
         #region Variablen
 
         private Player player;
+        private int prevDirection;
 
         // Grafische Ausgabe
         private GraphicsDeviceManager _graphics;
@@ -1130,7 +1131,29 @@ namespace GameStateManagement
         
         private void DrawPlayer()
         {
-            _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), Color.White);
+            if((player.GetVelocity().X < 0))
+            {
+                //invert player texture here
+                //_spriteBatch.Draw(player.Texture(), player.position, new Rectangle(0, 0, 64, 112), Color.White, 1.0f, Vector2.Zero, 1.0F, SpriteEffects.FlipVertically, 0); ;
+                _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 0);
+                prevDirection = (int) player.GetVelocity().X;
+            }
+            else if(player.GetVelocity().X > 0)
+            {
+                _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), Color.White);
+                prevDirection = (int)player.GetVelocity().X;
+            }
+            else
+            {
+                if(prevDirection < 0)
+                {
+                    _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 0);
+                }
+                else
+                {
+                    _spriteBatch.Draw(player.Texture(), new Rectangle((int)player.position.X, (int)player.position.Y, 64, 112), Color.White);
+                }
+            }
         }
 
         private void DrawCastedSpells()
